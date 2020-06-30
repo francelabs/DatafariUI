@@ -1,36 +1,37 @@
 import React, { Suspense } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-function MyComponent() {
+import MainNavigation from './Components/Navigation/MainNavigation';
+
+import HomePage from './Pages/Home/Home';
+import SearchPage from './Pages/Search/Search';
+
+function Main() {
   const { t } = useTranslation();
+  const menuEntries = [
+    { path: '/', label: t('Home Page') },
+    { path: '/search', label: t('Search Page') },
+  ];
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          <Trans t={t} i18nKey="editSource">
-            Edit <code>src/App.js</code> and save to reload.
-          </Trans>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('Learn React')}
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <MainNavigation entries={menuEntries} />
+      <main>
+        <Switch>
+          <Route path="/" component={HomePage} exact />
+          <Route path="/search" component={SearchPage} />
+        </Switch>
+      </main>
+    </BrowserRouter>
   );
 }
 
+// Main trick required for suspense to work properly.
 function App() {
   return (
     <Suspense fallback="loading">
-      <MyComponent />
+      <Main />
     </Suspense>
   );
 }
