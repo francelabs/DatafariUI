@@ -22,6 +22,11 @@ i18n
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
+
+    backend: {
+      // for all available options read the backend's repository readme file
+      loadPath: process.env.PUBLIC_URL + '/locales/{{lng}}/{{ns}}.json',
+    },
   });
 
 export default i18n;

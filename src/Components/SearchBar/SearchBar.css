@@ -1,0 +1,47 @@
+.search-bar__container {
+  border: 1px solid;
+  width: 60%;
+  height: 2em;
+  overflow: hidden;
+  margin: auto;
+}
+
+.search-bar__content {
+  width: 100%;
+  height: 2em;
+  line-height: 2em;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: pre;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.search-bar__content::-webkit-scrollbar {
+  display: none;
+}
+
+.search-bar__input {
+  min-width: 1ch;
+  border: none;
+  outline: none;
+}
+
+.search-bar__input::-ms-clear {
+  display: none;
+}
+
+.search-bar__tag {
+  border-radius: 0.5em;
+  background-color: blue;
+}
+
+.search-bar__elm {
+  margin: 0;
+  margin-right: 0.5em;
+  padding: 0;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}

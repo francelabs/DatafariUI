@@ -23,6 +23,7 @@ const Home = (props) => {
         >
           {t('Learn React')}
         </a>
+        <input type="text" style={{ border: 'none' }} />
       </header>
     </div>
   );

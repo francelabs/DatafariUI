@@ -1,0 +1,9 @@
+.pager__button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pager__button__active {
+  font-weight: bold;
+}

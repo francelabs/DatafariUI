@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
 import './MainNavigation.css';
 
@@ -11,9 +10,7 @@ const mainNavigation = (props) => (
     <nav>
       <ul>
         {props.entries.map((entry) => (
-          <li>
-            <NavLink to={entry.path}>{entry.label}</NavLink>
-          </li>
+          <li>{entry}</li>
         ))}
       </ul>
     </nav>
