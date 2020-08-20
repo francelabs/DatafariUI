@@ -1,43 +1,79 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
+
+export const SET_RESULTS = 'SET_RESULTS';
+export const SET_ERROR = 'SET_ERROR';
+export const SET_IS_LOADING = 'SET_IS_LOADING';
+
+export const DEFAULT_RESULT = {
+  error: undefined,
+  isLoading: false,
+  results: [],
+  fieldFacets: {},
+  queryFacets: {},
+  elements: [],
+  numFound: 0,
+  rows: 10,
+  start: 0,
+};
+/*
+Note error evaluates to false (null / undefined / false) when there are no errors 
+{
+  error: {
+    code: int,
+    message: str,
+  },
+
+  isLoading: bool,
+  results: [solrDocs],
+  fieldFacets: {
+    extension: {
+      field: 'extension',
+      tag: 'extention',
+      selected: ['pdf', 'doc'],
+      op: 'OR',
+    }
+  },
+  queryFacets: {
+    date: {
+      labels: ['Less than a month', 'Less than a year'],
+      queries: ['last_modified:[NOW-1MONTH TO NOW]', 'last_modified:[NOW-1YEAR TO NOW]'],
+      op: 'OR',
+      selected: ['Less than a month'],
+    }
+   },
+   elements: ['strategy', '2020'],
+   numFound: int,
+   rows: int,
+   start: int,
+}
+*/
+
+const resultsReducer = (results, action) => {
+  switch (action.type) {
+    case SET_ERROR:
+      return { ...results, error: action.error };
+    case SET_IS_LOADING:
+      return { ...results, isLoading: action.isLoading };
+    case SET_RESULTS:
+      return { ...results, ...action.results };
+    default:
+      return { ...results };
+  }
+};
 
 export const ResultsContext = React.createContext({
-  results: [],
-  setResults: () => {},
-  isLoading: false,
-  setIsLoading: () => {},
-  error: undefined,
-  setError: () => {},
-  fieldFacets: {},
-  setFieldFacets: () => {},
-  queryFacets: {},
-  setQueryFacets: () => {},
-  numFound: 0,
-  setNumFound: () => {},
+  results: {},
+  dispatch: () => {},
 });
 
 const ResultsContextProvider = (props) => {
-  const [currentResults, setCurrentResults] = useState([]);
-  const [fieldFacets, setFieldFacets] = useState({});
-  const [queryFacets, setQueryFacets] = useState({});
-  const [currentLoading, setCurrentLoading] = useState(false);
-  const [currentError, setCurrentError] = useState(undefined);
-  const [numFound, setNumFound] = useState(0);
+  const [results, resultsDispatch] = useReducer(resultsReducer, DEFAULT_RESULT);
 
   return (
     <ResultsContext.Provider
       value={{
-        results: currentResults,
-        setResults: setCurrentResults,
-        isLoading: currentLoading,
-        setIsLoading: setCurrentLoading,
-        error: currentError,
-        setError: setCurrentError,
-        fieldFacets: fieldFacets,
-        setFieldFacets: setFieldFacets,
-        queryFacets: queryFacets,
-        setQueryFacets: setQueryFacets,
-        numFound: numFound,
-        setNumFound: setNumFound,
+        results: results,
+        dispatch: resultsDispatch,
       }}
     >
       {props.children}

@@ -1,5 +1,50 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 
+export const SET_FIELD_FACETS = 'SET_FIELD_FACETS';
+export const SET_QUERY_FACETS = 'SET_QUERY_FACETS';
+export const SET_ROWS = 'SET_ROWS';
+export const SET_PAGE = 'SET_PAGE';
+export const SET_ELEMENTS = 'SET_ELEMENTS';
+export const RESET_FACETS_SELECTION = 'RESET_FACET_SELECTION';
+
+const resetFacetSelection = (fieldFacets, queryFacets) => {
+  const newFieldFacets = { ...fieldFacets };
+  for (const key in newFieldFacets) {
+    delete newFieldFacets[key].selected;
+  }
+  const newQueryFacets = { ...queryFacets };
+  for (const key in newQueryFacets) {
+    delete newQueryFacets[key].selected;
+  }
+  return [newFieldFacets, newQueryFacets];
+};
+
+const queryReducer = (query, action) => {
+  switch (action.type) {
+    case SET_FIELD_FACETS:
+      return { ...query, page: 1, fieldFacets: action.fieldFacets };
+    case SET_QUERY_FACETS:
+      return { ...query, page: 1, queryFacets: action.queryFacets };
+    case SET_ROWS:
+      return { ...query, page: 1, rows: action.rows };
+    case SET_PAGE:
+      return { ...query, page: action.page };
+    case SET_ELEMENTS:
+      return { ...query, page: 1, elements: action.elements };
+    case RESET_FACETS_SELECTION:
+      const [newFieldFacets, newQueryFacets] = resetFacetSelection(
+        query.fieldFacets,
+        query.queryFacets
+      );
+      return {
+        ...query,
+        queryFacets: newQueryFacets,
+        fieldFacets: newFieldFacets,
+      };
+    default:
+      return { ...query };
+  }
+};
 /*
  {
    fieldFacets: {
@@ -18,7 +63,6 @@ import React, { useState } from 'react';
        selected: ['Less than a month'],
      }
    }
-   Moins%20de%20un%20an}
    elements: ['strategy', '2020'],
    rows: 10,
    page: 1,
@@ -26,47 +70,32 @@ import React, { useState } from 'react';
  */
 
 export const QueryContext = React.createContext({
-  fieldFacets: {},
-  setFieldFacets: () => {},
-  queryFacets: {},
-  setQueryFacets: () => {},
-  elements: [],
-  setElements: () => {},
-  rows: 10,
-  setRows: () => {},
-  page: 1,
-  setPage: () => {},
-  resetFacetSelection: () => {},
+  query: {
+    fieldFacets: {},
+    queryFacets: {},
+    elements: '',
+    rows: 10,
+    page: 1,
+    op: 'AND',
+  },
+  dispatch: () => {},
 });
 
 const QueryContextProvider = (props) => {
-  const [elements, setElements] = useState([]);
-  const [fieldFacets, setFieldFacets] = useState({});
-  const [queryFacets, setQueryFacets] = useState({});
-  const [page, setPage] = useState(1);
-  const [rows, setRows] = useState(10);
-
-  const resetFacetSelection = () => {
-    const newFieldFacets = { ...fieldFacets };
-    for (const key in newFieldFacets) {
-      delete newFieldFacets[key].selected;
-    }
-  };
+  const [query, queryDispatcher] = useReducer(queryReducer, {
+    fieldFacets: {},
+    queryFacets: {},
+    elements: '',
+    rows: 10,
+    page: 1,
+    op: 'AND',
+  });
 
   return (
     <QueryContext.Provider
       value={{
-        elements: elements,
-        setElements: setElements,
-        fieldFacets: fieldFacets,
-        setFieldFacets: setFieldFacets,
-        queryFacets: queryFacets,
-        setQueryFacets: setQueryFacets,
-        page: page,
-        setPage: setPage,
-        rows: rows,
-        setRows: setRows,
-        resetFacetSelection: resetFacetSelection,
+        query: query,
+        dispatch: queryDispatcher,
       }}
     >
       {props.children}

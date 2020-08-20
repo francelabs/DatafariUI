@@ -1,29 +1,30 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import SearchBarElement from './SearchBarElement';
-import { QueryContext } from '../../Contexts/query-context';
-
-import useDatafari from '../../Hooks/useDatafari';
+import {
+  QueryContext,
+  SET_ELEMENTS,
+  RESET_FACETS_SELECTION,
+} from '../../Contexts/query-context';
 
 import './SearchBar.css';
 
 const SearchBar = (props) => {
-  const queryContext = useContext(QueryContext);
+  const { query, dispatch: queryDispatch } = useContext(QueryContext);
 
-  const datafari = useDatafari();
   const [querySuggestion, setQuerySuggestion] = useState(false);
 
   const onClick = useCallback(
     (i, event) => {
       event.stopPropagation();
-      let newElements = [...queryContext.elements];
+      let newElements = [...query.elements];
       newElements = newElements.map((element) => {
         return { ...element, isEditing: false };
       });
       newElements[i].isEditing = true;
-      queryContext.setElements(newElements);
+      queryDispatch({ type: SET_ELEMENTS, elements: newElements });
     },
-    [queryContext]
+    [query.elements, queryDispatch]
   );
 
   useEffect(() => {
@@ -35,11 +36,11 @@ const SearchBar = (props) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [setQuerySuggestion, queryContext]);
+  }, [setQuerySuggestion, query.elements]);
 
   const onChange = useCallback(
     (i, newText) => {
-      let newElements = [...queryContext.elements];
+      let newElements = [...query.elements];
       let insertedTexts = newText.split(' ').filter((elm) => elm !== '');
       if (insertedTexts.length === 1) {
         newElements[i].text = newText;
@@ -60,49 +61,48 @@ const SearchBar = (props) => {
         });
         newElements.splice(i, 1, ...insertedElements);
       }
-      queryContext.setElements(newElements);
+      queryDispatch({ type: SET_ELEMENTS, elements: newElements });
     },
-    [queryContext]
+    [query, queryDispatch]
   );
 
   const onBlur = useCallback(
     (i) => {
-      let newElements = [...queryContext.elements];
+      let newElements = [...query.elements];
       newElements[i].isEditing = false;
-      queryContext.setElements(newElements);
+      queryDispatch({ type: SET_ELEMENTS, elements: newElements });
     },
-    [queryContext]
+    [query, queryDispatch]
   );
 
   function addElement(event) {
     if (
-      queryContext.elements.length === 0 ||
-      queryContext.elements[queryContext.elements.length - 1].text !== ''
+      query.elements.length === 0 ||
+      query.elements[query.elements.length - 1].text !== ''
     ) {
-      let newElements = [...queryContext.elements];
+      let newElements = [...query.elements];
       newElements = newElements.map((element) => {
         return { ...element, isEditing: false };
       });
-      queryContext.setElements([
-        ...newElements,
-        { isTag: false, text: '', isEditing: true },
-      ]);
+      queryDispatch({
+        type: SET_ELEMENTS,
+        elements: [...newElements, { isTag: false, text: '', isEditing: true }],
+      });
     } else {
-      onClick(queryContext.elements.length - 1, event);
+      onClick(query.elements.length - 1, event);
     }
   }
 
   const search = (event) => {
     event.stopPropagation();
-    queryContext.resetFacetSelection();
-    datafari.makeRequest();
+    queryDispatch({ type: RESET_FACETS_SELECTION });
   };
 
   return (
     <React.Fragment>
       <div className="search-bar__container">
         <div className="search-bar__content" onClick={addElement}>
-          {queryContext.elements.map((element, i) => (
+          {query.elements.map((element, i) => (
             <SearchBarElement
               isTag={element.isTag}
               isEditing={element.isEditing}

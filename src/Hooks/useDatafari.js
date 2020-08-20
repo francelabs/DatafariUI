@@ -1,36 +1,19 @@
 import { useContext, useEffect, useCallback } from 'react';
 
 import { QueryContext } from '../Contexts/query-context';
-import { ResultsContext } from '../Contexts/results-context';
+import {
+  ResultsContext,
+  SET_RESULTS,
+  DEFAULT_RESULT,
+} from '../Contexts/results-context';
 import useHttp from './useHttp';
 
 const useDatafari = () => {
   const baseURL = '/Datafari/SearchAggregator';
-  const {
-    elements,
-    fieldFacets,
-    queryFacets,
-    page,
-    rows,
-    setPage,
-  } = useContext(QueryContext);
-  const {
-    setResults,
-    setFieldFacets,
-    setIsLoading,
-    setError,
-    setQueryFacets,
-    setNumFound,
-    numFound,
-  } = useContext(ResultsContext);
+  const { query } = useContext(QueryContext);
+  const { dispatch: resultsDispatch } = useContext(ResultsContext);
 
-  const { isLoading, error, data, sendRequest, reqIdentifer } = useHttp();
-
-  const clearResults = useCallback(() => {
-    setResults([]);
-    setFieldFacets({});
-    setQueryFacets({});
-  }, [setFieldFacets, setResults, setQueryFacets]);
+  const { isLoading, error, data, sendRequest } = useHttp();
 
   const buildQueryString = useCallback((queryParams) => {
     let result = '';
@@ -64,48 +47,60 @@ const useDatafari = () => {
   const prepareFieldFacets = useCallback(() => {
     const fieldFacetsParams = [];
     const selectedFieldFacets = [];
-    for (const key in fieldFacets) {
+    for (const key in query.fieldFacets) {
       fieldFacetsParams.push(
-        `{!ex=${fieldFacets[key].tag}}${fieldFacets[key].field}`
+        `{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`
       );
-      if (fieldFacets[key].selected && fieldFacets[key].selected.length > 0) {
+      if (
+        query.fieldFacets[key].selected &&
+        query.fieldFacets[key].selected.length > 0
+      ) {
         selectedFieldFacets.push(
-          fieldFacets[key].selected.reduce((accu, element, index, array) => {
-            let next = accu + `${fieldFacets[key].field}:${element}`;
-            if (index < array.length - 1) {
-              next += ` ${fieldFacets[key].op} `;
-            } else {
-              next += ')';
-            }
-            return next;
-          }, `{!tag=${fieldFacets[key].tag}}(`)
+          query.fieldFacets[key].selected.reduce(
+            (accu, element, index, array) => {
+              let next = accu + `${query.fieldFacets[key].field}:${element}`;
+              if (index < array.length - 1) {
+                next += ` ${query.fieldFacets[key].op} `;
+              } else {
+                next += ')';
+              }
+              return next;
+            },
+            `{!tag=${query.fieldFacets[key].tag}}(`
+          )
         );
       }
     }
     return [fieldFacetsParams, selectedFieldFacets];
-  }, [fieldFacets]);
+  }, [query.fieldFacets]);
 
   const prepareQueryFacets = useCallback(() => {
     let queryFacetsParams = [];
     let selectedQueryFacets = [];
-    for (const key in queryFacets) {
+    for (const key in query.queryFacets) {
       if (
-        queryFacets[key].queries &&
-        queryFacets[key].labels &&
-        queryFacets[key].queries.length === queryFacets[key].labels.length
+        query.queryFacets[key].queries &&
+        query.queryFacets[key].labels &&
+        query.queryFacets[key].queries.length ===
+          query.queryFacets[key].labels.length
       ) {
-        const currentQueryFacetParams = queryFacets[key].queries.map(
+        const currentQueryFacetParams = query.queryFacets[key].queries.map(
           (query, index) => {
             return `{!key=${key}_${index}}${query}`;
           }
         );
         queryFacetsParams = queryFacetsParams.concat(currentQueryFacetParams);
-        if (queryFacets[key].selected && queryFacets[key].selected.length > 0) {
-          const currentSelectedQueries = queryFacets[key].selected
-            .filter((label) => queryFacets[key].labels.indexOf(label) !== -1)
+        if (
+          query.queryFacets[key].selected &&
+          query.queryFacets[key].selected.length > 0
+        ) {
+          const currentSelectedQueries = query.queryFacets[key].selected
+            .filter(
+              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
+            )
             .map((label) => {
-              const index = queryFacets[key].labels.indexOf(label);
-              return `{!tag=${key}_${index}}${queryFacets[key].queries[index]}`;
+              const index = query.queryFacets[key].labels.indexOf(label);
+              return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
             });
           selectedQueryFacets = selectedQueryFacets.concat(
             currentSelectedQueries
@@ -114,7 +109,7 @@ const useDatafari = () => {
       }
     }
     return [queryFacetsParams, selectedQueryFacets];
-  }, [queryFacets]);
+  }, [query.queryFacets]);
 
   const prepareFacetsParams = useCallback(() => {
     const facetParams = {};
@@ -144,13 +139,12 @@ const useDatafari = () => {
   }, [prepareFieldFacets, prepareQueryFacets]);
 
   const makeRequest = useCallback(() => {
-    clearResults();
     const facetsParams = prepareFacetsParams();
     const queryParameters = {
-      q: elements
-        .map((element) => element.text.trim())
-        .join(' ')
-        .trim(),
+      q: query.elements,
+      // .map((element) => element.text.trim())
+      // .join(' ')
+      // .trim(),
       fl: [
         'title',
         'url',
@@ -162,11 +156,12 @@ const useDatafari = () => {
         'author',
         'original_file_size',
         'emptied',
+        'repo_source',
       ].join(','),
       sort: 'score desc',
       'q.op': 'AND',
-      rows: rows,
-      start: (page - 1) * rows,
+      rows: query.rows,
+      start: (query.page - 1) * query.rows,
       ...facetsParams,
     };
     if (queryParameters.q === '') {
@@ -176,17 +171,16 @@ const useDatafari = () => {
     const queryString = buildQueryString(queryParameters);
     sendRequest(baseURL + '/select?' + queryString, 'GET', null);
   }, [
-    page,
-    elements,
-    rows,
+    query.page,
+    query.elements,
+    query.rows,
     buildQueryString,
-    clearResults,
     sendRequest,
     prepareFacetsParams,
   ]);
 
   const prepareAndSetQueryFacets = useCallback(
-    (queryFacetsResult) => {
+    (queryFacetsResult, newResults) => {
       const result = {};
       for (const key in queryFacetsResult) {
         const splitKey = key.split('_');
@@ -197,41 +191,37 @@ const useDatafari = () => {
         }
         result[facetId][queryIndex] = queryFacetsResult[key];
       }
-      setQueryFacets(result);
+      newResults.queryFacets = result;
     },
-    [setQueryFacets]
+    []
   );
 
   useEffect(() => {
-    setIsLoading(isLoading);
-    setError(error);
+    const newRequest = setTimeout(() => {
+      makeRequest();
+    }, 150);
+    return () => clearTimeout(newRequest);
+  }, [makeRequest]);
+
+  useEffect(() => {
+    let newResults = {};
+    newResults.isLoading = isLoading;
+    newResults.error = error;
     if (!isLoading && !error && data) {
+      newResults = { ...newResults, ...DEFAULT_RESULT };
       if (data.response.docs && data.response.docs.length > 0) {
-        setResults(data.response.docs);
+        newResults.results = data.response.docs;
         if (data.facet_counts) {
-          setFieldFacets(data.facet_counts.facet_fields);
-          prepareAndSetQueryFacets(data.facet_counts.facet_queries);
+          newResults.fieldFacets = data.facet_counts.facet_fields;
+          prepareAndSetQueryFacets(data.facet_counts.facet_queries, newResults);
         }
-        if (data.response.numFound !== numFound) {
-          setPage(1);
-        }
-        setNumFound(data.response.numFound);
+        newResults.numFound = data.response.numFound;
+        newResults.rows = data.responseHeader.rows;
+        newResults.start = data.response.start;
       }
     }
-  }, [
-    isLoading,
-    data,
-    reqIdentifer,
-    error,
-    numFound,
-    setPage,
-    setResults,
-    setError,
-    setIsLoading,
-    setFieldFacets,
-    prepareAndSetQueryFacets,
-    setNumFound,
-  ]);
+    resultsDispatch({ type: SET_RESULTS, results: newResults });
+  }, [isLoading, data, error, prepareAndSetQueryFacets, resultsDispatch]);
 
   return {
     makeRequest,

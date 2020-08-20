@@ -8,13 +8,20 @@
   z-index: 50;
 }
 
+.modal__content {
+  width: 90%;
+  max-height: calc(75vh - 4rem);
+  overflow-y: scroll;
+  margin: 2rem auto;
+}
+
 .modal {
   position: fixed;
-  top: 25vh;
+  top: 12vh;
   min-height: 10rem;
-  max-height: 50vh;
-  left: calc(50% - 15rem);
-  width: 30rem;
+  max-height: 75vh;
+  left: calc(50% - 40%);
+  width: 80%;
   background: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   z-index: 100;

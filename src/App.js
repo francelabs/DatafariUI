@@ -1,43 +1,50 @@
 import React, { Suspense } from 'react';
 import './App.css';
-import { useTranslation } from 'react-i18next';
-import { BrowserRouter, Route, Switch, NavLink } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import MainNavigation from './Components/Navigation/MainNavigation';
+import TopMenu from './Components/TopMenu/TopMenu';
 import QueryContextProvider from './Contexts/query-context';
 import ResultsContextProvider from './Contexts/results-context';
 
-import HomePage from './Pages/Home/Home';
 import SearchPage from './Pages/Search/Search';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+
+const defaultTheme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#ffffff',
+      main: '#ffffff',
+      dark: '#fafafa',
+    },
+    secondary: {
+      light: '#99cc33',
+      main: '#679439',
+      dark: '#648542',
+    },
+  },
+});
 
 function Main() {
-  const { t } = useTranslation();
-  const menuEntries = [
-    <NavLink to="/">{t('Home Page')}</NavLink>,
-    <NavLink to="/search">{t('Search Page')}</NavLink>,
-    <a href={'/Datafari/login?redirect=' + window.location.href}>
-      {t('Login')}
-    </a>,
-    <a href={'/Datafari/admin/'}>{t('Admin')}</a>,
-  ];
   return (
-    <QueryContextProvider>
-      <ResultsContextProvider>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
-          <MainNavigation entries={menuEntries} />
-          <div>
-            <Switch>
-              <Route path="/" component={HomePage} exact />
-              <Route path="/search" component={SearchPage} />
-            </Switch>
-          </div>
-        </BrowserRouter>
-      </ResultsContextProvider>
-    </QueryContextProvider>
+    <ThemeProvider theme={defaultTheme}>
+      <QueryContextProvider>
+        <ResultsContextProvider>
+          <BrowserRouter basename={process.env.PUBLIC_URL}>
+            <TopMenu />
+            {/* <MainNavigation entries={menuEntries} /> */}
+            <div>
+              <Switch>
+                <Route path="/" component={SearchPage} exact />
+                <Route path="/search" component={SearchPage} />
+              </Switch>
+            </div>
+          </BrowserRouter>
+        </ResultsContextProvider>
+      </QueryContextProvider>
+    </ThemeProvider>
   );
 }
 
-// Main trick required for suspense to work properly.
 function App() {
   return (
     <Suspense fallback="loading">

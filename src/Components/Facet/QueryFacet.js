@@ -1,30 +1,45 @@
-import React, { useContext, useEffect } from 'react';
-import { QueryContext } from '../../Contexts/query-context';
+import React, { useContext, useEffect, useState } from 'react';
+import { QueryContext, SET_QUERY_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
-import useDatafari from '../../Hooks/useDatafari';
 import FacetEntry from './FacetEntry';
+import { Divider, IconButton, makeStyles, List } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+
+const useStyles = makeStyles((theme) => ({
+  facetTitleText: {
+    color: theme.palette.secondary.main,
+    flexGrow: 1,
+  },
+  facetHeader: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
 
 const QueryFacet = (props) => {
-  const { queryFacets, setQueryFacets } = useContext(QueryContext);
-  const { queryFacets: resultQueryFacets } = useContext(ResultsContext);
+  const classes = useStyles();
+  const [expanded, setExpanded] = useState(true);
+  const { query, dispatch: queryDispatch } = useContext(QueryContext);
+  const { results } = useContext(ResultsContext);
   const { id, labels, queries } = props;
-  const { makeRequest } = useDatafari();
   const multipleSelect =
     props.multipleSelect !== undefined && props.multipleSelect !== null
       ? props.multipleSelect
       : false;
 
   useEffect(() => {
-    if (!queryFacets[id]) {
-      const newQueryFacets = { ...queryFacets };
+    if (!query.queryFacets[id]) {
+      const newQueryFacets = { ...query.queryFacets };
       newQueryFacets[id] = { labels: labels, queries: queries };
-      setQueryFacets(newQueryFacets);
+      queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
     }
-  }, [id, queryFacets, setQueryFacets, labels, queries]);
+  }, [id, query, queryDispatch, labels, queries]);
 
   const onClick = (value) => {
     return () => {
-      const newQueryFacets = { ...queryFacets };
+      const newQueryFacets = { ...query.queryFacets };
       if (multipleSelect) {
         if (!newQueryFacets[id].selected) {
           newQueryFacets[id].selected = [];
@@ -46,39 +61,54 @@ const QueryFacet = (props) => {
           newQueryFacets[id].selected = [value];
         }
       }
-      setQueryFacets(newQueryFacets);
-      makeRequest();
+      queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
+      // makeRequest();
     };
   };
 
   let facetValues = [];
-  if (resultQueryFacets[id]) {
+  if (results.queryFacets[id]) {
     for (let index = 0; index < labels.length; index++) {
-      if (resultQueryFacets[id][index]) {
+      if (results.queryFacets[id][index]) {
         facetValues.push(
           <FacetEntry
             onClick={onClick(labels[index])}
             value={labels[index]}
-            count={resultQueryFacets[id][index]}
+            count={results.queryFacets[id][index]}
             selected={
-              queryFacets[id] &&
-              queryFacets[id].selected &&
-              queryFacets[id].selected.indexOf(labels[index]) !== -1
+              query.queryFacets[id] &&
+              query.queryFacets[id].selected &&
+              query.queryFacets[id].selected.indexOf(labels[index]) !== -1
             }
+            id={`facet-${id}-${index}`}
           />
         );
       }
     }
   }
 
+  const handleExpandClick = () => {
+    setExpanded((previous) => !previous);
+  };
+
   // The insertion of children allow the addition of element with specific behavior
   // such as a date picker for a date query facet, range picker for weight facet etc.
-  return (
-    <div>
-      {facetValues}
+  return facetValues.length > 0 ? (
+    <>
+      <div className={classes.facetHeader}>
+        <IconButton>
+          <MoreVertIcon />
+        </IconButton>
+        <span className={classes.facetTitleText}>{props.title}</span>
+        <IconButton onClick={handleExpandClick}>
+          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </IconButton>
+      </div>
+      {expanded && <List dense>{facetValues}</List>}
       {props.children}
-    </div>
-  );
+      <Divider />
+    </>
+  ) : null;
 };
 
 export default QueryFacet;

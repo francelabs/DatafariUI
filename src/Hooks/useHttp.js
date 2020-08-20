@@ -21,6 +21,7 @@ const httpReducer = (curHttpState, action) => {
         ...curHttpState,
         loading: false,
         data: action.responseData,
+        identifier: action.identifier,
       };
     case 'ERROR':
       return {
@@ -29,6 +30,7 @@ const httpReducer = (curHttpState, action) => {
         error: {
           message: action.errorMessage,
           code: action.errorCode,
+          identifier: action.identifier,
         },
       };
     case 'CLEAR':
@@ -43,8 +45,9 @@ const useHttp = () => {
 
   const clear = useCallback(() => dispatchHttp({ type: 'CLEAR' }), []);
 
-  const sendRequest = useCallback((url, method, body, reqIdentifer) => {
-    dispatchHttp({ type: 'SEND', identifier: reqIdentifer });
+  const sendRequest = useCallback((url, method, body, reqIdentifier) => {
+    const currentID = reqIdentifier;
+    dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
     fetch(url, {
       method: method,
       body: body,
@@ -53,28 +56,37 @@ const useHttp = () => {
       },
     })
       .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          dispatchHttp({
-            type: 'ERROR',
-            errorCode: response.status,
-            errorMessage: response.statusText,
-          });
+        if (currentID === reqIdentifier) {
+          if (response.ok) {
+            return response.json();
+          } else {
+            dispatchHttp({
+              type: 'ERROR',
+              errorCode: response.status,
+              errorMessage: response.statusText,
+              identifier: reqIdentifier,
+            });
+          }
         }
       })
       .then((responseData) => {
-        dispatchHttp({
-          type: 'RESPONSE',
-          responseData: responseData,
-        });
+        if (currentID === reqIdentifier) {
+          dispatchHttp({
+            type: 'RESPONSE',
+            responseData: responseData,
+            identifier: reqIdentifier,
+          });
+        }
       })
       .catch((error) => {
-        dispatchHttp({
-          type: 'ERROR',
-          errorMessage: error.message,
-          errorCode: -1,
-        });
+        if (currentID === reqIdentifier) {
+          dispatchHttp({
+            type: 'ERROR',
+            errorMessage: error.message,
+            errorCode: -1,
+            identifier: reqIdentifier,
+          });
+        }
       });
   }, []);
 
@@ -83,7 +95,7 @@ const useHttp = () => {
     data: httpState.data,
     error: httpState.error,
     sendRequest: sendRequest,
-    reqIdentifer: httpState.identifier,
+    reqIdentifier: httpState.identifier,
     clear: clear,
   };
 };
