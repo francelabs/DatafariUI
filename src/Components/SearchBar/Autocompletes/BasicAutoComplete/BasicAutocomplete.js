@@ -1,7 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { MenuList, MenuItem, useTheme } from '@material-ui/core';
+import {
+  MenuList,
+  MenuItem,
+  useTheme,
+  ListSubheader,
+  Typography,
+  Divider,
+  makeStyles,
+} from '@material-ui/core';
 import useHttp from '../../../../Hooks/useHttp';
 import Spinner from '../../../Spinner/Spinner';
+
+const useStyles = makeStyles((theme) => ({
+  autocompleteTitleContainer: {
+    display: 'flex',
+  },
+
+  autocompleteTitle: {
+    flexGrow: 1,
+  },
+}));
 
 const SimpleAutocomplete = (props) => {
   const baseURL = '/Datafari/SearchAggregator';
@@ -10,6 +28,7 @@ const SimpleAutocomplete = (props) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [queryID, setQueryID] = useState(null);
+  const classes = useStyles();
 
   useEffect(() => {
     if (props.active) {
@@ -48,9 +67,29 @@ const SimpleAutocomplete = (props) => {
       <Spinner />
     ) : (
       <>
-        {suggestions.map((element) => (
-          <MenuItem>{element}</MenuItem>
-        ))}
+        <ListSubheader className={classes.autocompleteTitleContainer}>
+          <Typography className={classes.autocompleteTitle}>
+            SUGGESTED QUERIES
+          </Typography>
+          <Typography>Queries extending you current query terms</Typography>
+        </ListSubheader>
+        <Divider />
+        {suggestions &&
+          suggestions.length > 0 &&
+          suggestions.map((element) => (
+            <MenuItem
+              onClick={() => {
+                if (props.onSelect) {
+                  props.onSelect(element);
+                }
+              }}
+            >
+              {element}
+            </MenuItem>
+          ))}
+        {(!suggestions || suggestions.length === 0) && (
+          <Typography>No suggestions</Typography>
+        )}
       </>
     ))
   );

@@ -7,12 +7,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   FormControl,
   FilledInput,
-  InputLabel,
   InputAdornment,
   MenuList,
+  IconButton,
+  ClickAwayListener,
 } from '@material-ui/core';
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -30,12 +32,17 @@ const SimpleSearchBar = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
 
   const [querySuggestion, setQuerySuggestion] = useState(false);
-  const [queryText, setQueryText] = useState('');
+  const [textState, setTextState] = useState({
+    queryText: '',
+    triggerSuggestion: false,
+  });
+
+  const { queryText, triggerSuggestion } = textState;
 
   useEffect(() => {
     setQuerySuggestion(false);
     let timer = undefined;
-    if (queryText) {
+    if (queryText && triggerSuggestion) {
       timer = setTimeout(() => {
         setQuerySuggestion(true);
       }, 500);
@@ -46,17 +53,17 @@ const SimpleSearchBar = (props) => {
         clearTimeout(timer);
       }
     };
-  }, [setQuerySuggestion, queryText]);
+  }, [setQuerySuggestion, queryText, triggerSuggestion]);
 
   useEffect(() => {
-    setQueryText(query.elements);
+    setTextState({ queryText: query.elements, triggerSuggestion: false });
   }, [query]);
 
   const handleChange = useCallback(
     (event) => {
-      setQueryText(event.target.value);
+      setTextState({ queryText: event.target.value, triggerSuggestion: true });
     },
-    [setQueryText]
+    [setTextState]
   );
 
   const search = (event) => {
@@ -68,7 +75,14 @@ const SimpleSearchBar = (props) => {
   };
 
   const handleSuggestSelect = (suggestion) => {
-    setQueryText(suggestion);
+    queryDispatch({
+      type: SET_ELEMENTS,
+      elements: suggestion,
+    });
+  };
+
+  const handleClear = () => {
+    setTextState({ queryText: '', triggerSuggestion: false });
   };
 
   return (
@@ -81,17 +95,25 @@ const SimpleSearchBar = (props) => {
         }}
       >
         <FormControl fullWidth variant="filled" margin="dense">
-          <InputLabel htmlFor="datafari-search-input">Search</InputLabel>
+          {/* <InputLabel htmlFor="datafari-search-input">Search</InputLabel> */}
           <FilledInput
             id="datafari-search-input"
             type="text"
             value={queryText}
             onChange={handleChange}
-            onBlur={() => setQuerySuggestion(false)}
             startAdornment={
               <InputAdornment position="start">
                 <SearchIcon />
               </InputAdornment>
+            }
+            endAdornment={
+              queryText && (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClear}>
+                    <ClearIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
             }
             labelWidth={50}
             className={props.className}
@@ -100,16 +122,20 @@ const SimpleSearchBar = (props) => {
       </form>
       <div
         className={classes.autocomplete}
-        style={{ visibility: querySuggestion ? 'visible' : 'hidden' }}
+        style={{
+          visibility: querySuggestion ? 'visible' : 'hidden',
+        }}
       >
-        <MenuList>
-          <BasicAutocomplete
-            active={querySuggestion}
-            onSelect={handleSuggestSelect}
-            queryText={queryText}
-            op={query.op}
-          />
-        </MenuList>
+        <ClickAwayListener onClickAway={() => setQuerySuggestion(false)}>
+          <MenuList>
+            <BasicAutocomplete
+              active={querySuggestion}
+              onSelect={handleSuggestSelect}
+              queryText={queryText}
+              op={query.op}
+            />
+          </MenuList>
+        </ClickAwayListener>
       </div>
     </div>
   );

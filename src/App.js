@@ -9,7 +9,22 @@ import ResultsContextProvider from './Contexts/results-context';
 import SearchPage from './Pages/Search/Search';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 
+import 'fontsource-montserrat/300.css';
+import 'fontsource-montserrat';
+import 'fontsource-montserrat/500.css';
+import 'fontsource-montserrat/700.css';
+
 const defaultTheme = createMuiTheme({
+  overrides: {
+    MuiFilledInput: {
+      root: {
+        backgroundColor: '#fafafa',
+      },
+    },
+  },
+  typography: {
+    fontFamily: 'montserrat, Helvetica, Arial, sans-serif',
+  },
   palette: {
     primary: {
       light: '#ffffff',

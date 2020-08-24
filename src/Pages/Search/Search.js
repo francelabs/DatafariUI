@@ -28,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     overflowX: 'hidden',
   },
+
+  pagerContainer: {
+    margin: theme.spacing(2),
+    float: 'right',
+  },
 }));
 
 const Search = (props) => {
@@ -61,7 +66,9 @@ const Search = (props) => {
         </Grid>
         <Grid item xs={8}>
           <ResultsList />
-          <Pager />
+          <div className={classes.pagerContainer}>
+            <Pager />
+          </div>
         </Grid>
         <Grid item xs />
       </Grid>

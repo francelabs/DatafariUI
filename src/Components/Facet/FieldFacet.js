@@ -2,14 +2,19 @@ import React, { useContext, useEffect, useState } from 'react';
 import { QueryContext, SET_FIELD_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
-import { Divider, IconButton, makeStyles, List } from '@material-ui/core';
+import {
+  Divider,
+  IconButton,
+  makeStyles,
+  List,
+  Typography,
+} from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
-    color: theme.palette.secondary.main,
     flexGrow: 1,
   },
   facetHeader: {
@@ -84,7 +89,9 @@ const FieldFacet = (props) => {
         <IconButton>
           <MoreVertIcon />
         </IconButton>
-        <span className={classes.facetTitleText}>{props.title}</span>
+        <Typography color="secondary" className={classes.facetTitleText}>
+          {props.title}
+        </Typography>
         <IconButton onClick={handleExpandClick}>
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
