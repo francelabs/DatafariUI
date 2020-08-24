@@ -8,6 +8,7 @@ import {
   SvgIcon,
   ListItemSecondaryAction,
   Link,
+  Typography,
 } from '@material-ui/core';
 
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
@@ -52,11 +53,56 @@ const useStyles = makeStyles((theme) => ({
   moreLikeThis: {
     float: 'right',
   },
+
+  highlight: {
+    fontWeight: 'bold',
+  },
 }));
 
 const ResultEntry = (props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const decode = (text) => {
+    return text.replace(/&#x?([\dA-F]+);/g, function (match, dec) {
+      return String.fromCharCode(dec);
+    });
+  };
+
+  const prepareSnippet = () => {
+    let snippet = t('Document content not indexed');
+    if (!props.emptied) {
+      snippet = Object.keys(props.highlighting).reduce((accumulator, hlKey) => {
+        return (
+          accumulator +
+          props.highlighting[hlKey].reduce((innerAccu, value) => {
+            return innerAccu + value;
+          }, '')
+        );
+      }, '');
+
+      if (snippet === '') {
+        snippet = props.preview_content[0].substring(0, 200);
+      } else {
+        const highlightExtract = /<span class="em">(.*?)<\/span>/gm;
+        let match;
+        let lastIndex = 0;
+        const results = [];
+        while ((match = highlightExtract.exec(snippet)) !== null) {
+          if (match.index !== lastIndex) {
+            results.push(decode(snippet.substring(lastIndex, match.index)));
+          }
+          results.push(
+            <em className={classes.highlight}>{decode(match[1])}</em>
+          );
+          lastIndex = highlightExtract.lastIndex;
+        }
+        results.push(decode(snippet.substring(lastIndex, snippet.length)));
+        snippet = <span>{results}</span>;
+      }
+    }
+    return snippet;
+  };
 
   const selectFileIcon = (extension) => {
     switch (extension) {
@@ -79,7 +125,7 @@ const ResultEntry = (props) => {
     }
   };
 
-  let fileIcon = selectFileIcon(props.extension);
+  const fileIcon = selectFileIcon(props.extension);
 
   return (
     <ListItem
@@ -106,7 +152,7 @@ const ResultEntry = (props) => {
         secondary={
           <>
             <div>
-              <span>{props.preview_content[0]}</span>
+              <span>{prepareSnippet()}</span>
             </div>
             <div className={classes.urlContainer}>
               <span className={classes.url}>{props.url}</span>

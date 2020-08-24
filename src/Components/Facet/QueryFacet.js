@@ -114,7 +114,7 @@ const QueryFacet = (props) => {
       </div>
       {expanded && <List dense>{facetValues}</List>}
       {props.children}
-      <Divider />
+      {!props.last && <Divider />}
     </>
   ) : null;
 };

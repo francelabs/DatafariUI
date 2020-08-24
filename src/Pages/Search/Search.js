@@ -61,6 +61,7 @@ const Search = (props) => {
                 t('less than five years'),
               ]}
               id="date_facet"
+              last={true}
             />
           </div>
         </Grid>

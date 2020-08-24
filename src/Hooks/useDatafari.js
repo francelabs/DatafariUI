@@ -210,7 +210,18 @@ const useDatafari = () => {
     if (!isLoading && !error && data) {
       newResults = { ...newResults, ...DEFAULT_RESULT };
       if (data.response.docs && data.response.docs.length > 0) {
-        newResults.results = data.response.docs;
+        if (data.response.docs && data.response.docs.map) {
+          newResults.results = data.response.docs.map((result) => {
+            result.highlighting = {};
+            if (data.highlighting && data.highlighting[result.id]) {
+              result.highlighting = data.highlighting[result.id];
+            }
+            return result;
+          });
+        } else {
+          newResults.results = [];
+        }
+
         if (data.facet_counts) {
           newResults.fieldFacets = data.facet_counts.facet_fields;
           prepareAndSetQueryFacets(data.facet_counts.facet_queries, newResults);
