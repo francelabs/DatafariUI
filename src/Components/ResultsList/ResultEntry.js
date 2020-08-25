@@ -8,7 +8,7 @@ import {
   SvgIcon,
   ListItemSecondaryAction,
   Link,
-  Typography,
+  Tooltip,
 } from '@material-ui/core';
 
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
@@ -63,6 +63,10 @@ const ResultEntry = (props) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
+  /*
+   * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
+   * Used to decode html entities from the highlighted content returned by Solr.
+   */
   const decode = (text) => {
     return text.replace(/&#x?([\dA-F]+);/g, function (match, dec) {
       return String.fromCharCode(dec);
@@ -102,6 +106,58 @@ const ResultEntry = (props) => {
       }
     }
     return snippet;
+  };
+
+  const prepareTitle = () => {
+    let title = '';
+    if (Array.isArray(props.title)) {
+      try {
+        title = decodeURIComponent(props.title[0]);
+      } catch (e) {
+        title = props.title[0];
+      }
+    } else if (props.title !== undefined && props.title !== null) {
+      try {
+        title = decodeURIComponent(props.title);
+      } catch (e) {
+        title = props.title;
+      }
+    }
+    if (title.length > 50) {
+      title = (
+        <Tooltip title={title} placement="right" aria-label={title}>
+          <span>
+            {title.substring(0, 15) +
+              '...' +
+              title.substring(title.length - 15)}
+          </span>
+        </Tooltip>
+      );
+    }
+    return title;
+  };
+
+  const prepareUrl = () => {
+    var maxSize = 70;
+    let result = props.url;
+    if (props.url.length > maxSize) {
+      const fileName = props.url.substring(props.url.lastIndexOf('/') + 1);
+      if (fileName.length > maxSize - 15) {
+        result =
+          props.url.substring(0, 15) +
+          '...' +
+          fileName.substring(fileName.length - 1 - (maxSize - 15));
+      } else {
+        result =
+          props.url.substring(
+            0,
+            props.url.lastIndexOf('/') - props.url.length + maxSize
+          ) +
+          '...' +
+          props.url.substring(props.url.lastIndexOf('/'));
+      }
+    }
+    return result;
   };
 
   const selectFileIcon = (extension) => {
@@ -148,14 +204,14 @@ const ResultEntry = (props) => {
         </IconButton>
       </ListItemIcon>
       <ListItemText
-        primary={props.title[0]}
+        primary={prepareTitle()}
         secondary={
           <>
             <div>
               <span>{prepareSnippet()}</span>
             </div>
             <div className={classes.urlContainer}>
-              <span className={classes.url}>{props.url}</span>
+              <span className={classes.url}>{prepareUrl()}</span>
             </div>
             <div>
               <span>Source: {props['repo_source']}</span>
@@ -171,6 +227,7 @@ const ResultEntry = (props) => {
             </div>
           </>
         }
+        secondaryTypographyProps={{ component: 'div' }}
       />
       <ListItemSecondaryAction className={classes.bookmarkAction}>
         <IconButton edge="end" aria-label="bookmark">

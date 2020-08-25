@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import './Pager.css';
 import { QueryContext, SET_PAGE } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
@@ -64,7 +64,7 @@ const Pager = (props) => {
       for (let i = 1; (query.page === 3 && i <= 4) || i <= 3; i++) {
         pages.push(
           <Button
-            className={query.page === i && classes.currentPage}
+            className={query.page === i ? classes.currentPage : ''}
             onClick={onClickHandler(i)}
           >
             {i}

@@ -3,14 +3,14 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { QueryContext, SET_ELEMENTS } from '../../Contexts/query-context';
 
 import './SimpleSearchBar.css';
-import { makeStyles } from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import {
   FormControl,
-  FilledInput,
   InputAdornment,
   MenuList,
   IconButton,
   ClickAwayListener,
+  InputBase,
 } from '@material-ui/core';
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
@@ -24,6 +24,38 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer,
     border: 'solid 1px',
     borderRadius: '5px',
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.primary.dark,
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.black, 0.05),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+  },
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+  },
+  inputFocused: {
+    backgroundColor: fade(theme.palette.common.black, 0.05),
   },
 }));
 
@@ -94,15 +126,22 @@ const SimpleSearchBar = (props) => {
           search(e);
         }}
       >
-        <FormControl fullWidth variant="filled" margin="dense">
-          {/* <InputLabel htmlFor="datafari-search-input">Search</InputLabel> */}
-          <FilledInput
+        <FormControl fullWidth className={classes.search}>
+          <InputBase
+            fullWidth
+            placeholder="Search…"
+            classes={{
+              root: classes.inputRoot,
+              input: classes.inputInput,
+              focused: classes.inputFocused,
+            }}
+            inputProps={{ 'aria-label': 'search' }}
             id="datafari-search-input"
             type="text"
             value={queryText}
             onChange={handleChange}
             startAdornment={
-              <InputAdornment position="start">
+              <InputAdornment className={classes.searchIcon}>
                 <SearchIcon />
               </InputAdornment>
             }
@@ -115,8 +154,6 @@ const SimpleSearchBar = (props) => {
                 </InputAdornment>
               )
             }
-            labelWidth={50}
-            className={props.className}
           />
         </FormControl>
       </form>

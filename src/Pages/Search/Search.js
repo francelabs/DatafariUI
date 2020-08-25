@@ -11,7 +11,7 @@ import QueryFacet from '../../Components/Facet/QueryFacet';
 import Pager from '../../Components/Pager/Pager';
 import SearchTopMenu from '../../Components/SearchTopMenu/SearchTopMenu';
 import useDatafari from '../../Hooks/useDatafari';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles, Hidden } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
@@ -23,10 +23,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '5px',
     margin: theme.spacing(2),
     padding: theme.spacing(2),
-    maxHeight: `calc(100vh - ${theme.spacing(24)}px)`, //192px
-    minHeight: theme.spacing(32),
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    minWidth: '280px',
   },
 
   pagerContainer: {
@@ -44,34 +41,36 @@ const Search = (props) => {
     <Fragment>
       <SearchTopMenu />
       <Grid container className={classes.searchGrid}>
-        <Grid item xs>
-          <div className={classes.facetsSection}>
-            <FieldFacet title={t('Extension')} field="extension" op="OR" />
-            <FieldFacet title={t('Language')} field="language" op="OR" />
-            <QueryFacet
-              title={t('Date')}
-              queries={[
-                'last_modified:[NOW-1MONTH TO NOW]',
-                'last_modified:[NOW-1YEAR TO NOW]',
-                'last_modified:[NOW-5YEARS TO NOW]',
-              ]}
-              labels={[
-                t('less than a month'),
-                t('less than a year'),
-                t('less than five years'),
-              ]}
-              id="date_facet"
-              last={true}
-            />
-          </div>
+        <Grid item md={4} lg>
+          <Hidden smDown>
+            <div className={classes.facetsSection}>
+              <FieldFacet title={t('Extension')} field="extension" op="OR" />
+              <FieldFacet title={t('Language')} field="language" op="OR" />
+              <QueryFacet
+                title={t('Date')}
+                queries={[
+                  'last_modified:[NOW-1MONTH TO NOW]',
+                  'last_modified:[NOW-1YEAR TO NOW]',
+                  'last_modified:[NOW-5YEARS TO NOW]',
+                ]}
+                labels={[
+                  t('less than a month'),
+                  t('less than a year'),
+                  t('less than five years'),
+                ]}
+                id="date_facet"
+                last={true}
+              />
+            </div>
+          </Hidden>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item sm={12} md={8}>
           <ResultsList />
           <div className={classes.pagerContainer}>
             <Pager />
           </div>
         </Grid>
-        <Grid item xs />
+        <Grid item lg={1} />
       </Grid>
       <Switch>
         <Route path={`${path}/alerts`}>

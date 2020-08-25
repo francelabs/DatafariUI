@@ -86,7 +86,7 @@ const QueryFacet = (props) => {
               query.queryFacets[id].selected &&
               query.queryFacets[id].selected.indexOf(labels[index]) !== -1
             }
-            id={`facet-${id}-${index}`}
+            key={`facet-${id}-${index}`}
           />
         );
       }

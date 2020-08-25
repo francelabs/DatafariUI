@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  MenuList,
   MenuItem,
-  useTheme,
   ListSubheader,
   Typography,
   Divider,
@@ -23,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 
 const SimpleAutocomplete = (props) => {
   const baseURL = '/Datafari/SearchAggregator';
-  const theme = useTheme();
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +85,7 @@ const SimpleAutocomplete = (props) => {
             </MenuItem>
           ))}
         {(!suggestions || suggestions.length === 0) && (
-          <Typography>No suggestions</Typography>
+          <MenuItem>No suggestions</MenuItem>
         )}
       </>
     ))

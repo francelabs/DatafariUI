@@ -7,7 +7,7 @@ import QueryContextProvider from './Contexts/query-context';
 import ResultsContextProvider from './Contexts/results-context';
 
 import SearchPage from './Pages/Search/Search';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider, CssBaseline } from '@material-ui/core';
 
 import 'fontsource-montserrat/300.css';
 import 'fontsource-montserrat';
@@ -42,6 +42,7 @@ const defaultTheme = createMuiTheme({
 function Main() {
   return (
     <ThemeProvider theme={defaultTheme}>
+      <CssBaseline />
       <QueryContextProvider>
         <ResultsContextProvider>
           <BrowserRouter basename={process.env.PUBLIC_URL}>
