@@ -30,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(2),
     float: 'right',
   },
+
+  facetDivider: {
+    '&:last-of-type': {
+      display: 'none',
+    },
+  },
 }));
 
 const Search = (props) => {
@@ -44,8 +50,18 @@ const Search = (props) => {
         <Grid item md={4} lg>
           <Hidden smDown>
             <div className={classes.facetsSection}>
-              <FieldFacet title={t('Extension')} field="extension" op="OR" />
-              <FieldFacet title={t('Language')} field="language" op="OR" />
+              <FieldFacet
+                title={t('Extension')}
+                field="extension"
+                op="OR"
+                dividerClassName={classes.facetDivider}
+              />
+              <FieldFacet
+                title={t('Language')}
+                field="language"
+                op="OR"
+                dividerClassName={classes.facetDivider}
+              />
               <QueryFacet
                 title={t('Date')}
                 queries={[
@@ -59,7 +75,7 @@ const Search = (props) => {
                   t('less than five years'),
                 ]}
                 id="date_facet"
-                last={true}
+                dividerClassName={classes.facetDivider}
               />
             </div>
           </Hidden>

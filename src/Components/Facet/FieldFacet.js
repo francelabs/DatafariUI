@@ -97,7 +97,7 @@ const FieldFacet = (props) => {
         </IconButton>
       </div>
       {expanded && <List dense>{facetValues}</List>}
-      <Divider />
+      <Divider className={props.dividerClassName} />
     </>
   ) : null;
 };
