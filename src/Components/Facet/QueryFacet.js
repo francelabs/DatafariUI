@@ -68,7 +68,6 @@ const QueryFacet = (props) => {
         }
       }
       queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
-      // makeRequest();
     };
   };
 

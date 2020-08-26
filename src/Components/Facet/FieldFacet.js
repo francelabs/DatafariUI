@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { QueryContext, SET_FIELD_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
@@ -8,10 +8,13 @@ import {
   makeStyles,
   List,
   Typography,
+  Menu,
+  MenuItem,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -29,6 +32,9 @@ const FieldFacet = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
   const { field, op } = props;
+  const { t } = useTranslation();
+  const menuAnchorRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!query.fieldFacets[field]) {
@@ -73,7 +79,7 @@ const FieldFacet = (props) => {
               results.fieldFacets[field][i]
             ) !== -1
           }
-          id={`facet-${props.field}-${i}`}
+          key={`facet-${props.field}-${i}`}
         />
       );
     }
@@ -83,12 +89,45 @@ const FieldFacet = (props) => {
     setExpanded((previous) => !previous);
   };
 
+  const handleOpenMenu = (event) => {
+    setMenuOpen(true);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuOpen(false);
+  };
+
+  const handleClearFilterClick = () => {
+    const newQueryFieldFacets = { ...query.fieldFacets };
+    newQueryFieldFacets[field].selected = undefined;
+
+    queryDispatch({
+      type: SET_FIELD_FACETS,
+      fieldFacets: newQueryFieldFacets,
+    });
+    setMenuOpen(false);
+  };
+
   return facetValues.length > 0 ? (
     <>
       <div className={classes.facetHeader}>
-        <IconButton>
-          <MoreVertIcon />
+        <IconButton onClick={handleOpenMenu}>
+          <MoreVertIcon
+            aria-controls={`${field}-facet-menu`}
+            aria-haspopup="true"
+            ref={menuAnchorRef}
+          />
         </IconButton>
+        <Menu
+          id={`${field}-facet-menu`}
+          anchorEl={menuAnchorRef.current}
+          open={menuOpen}
+          onClose={handleCloseMenu}
+        >
+          <MenuItem onClick={handleClearFilterClick}>
+            {t('Clear Filter')}
+          </MenuItem>
+        </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
           {props.title}
         </Typography>

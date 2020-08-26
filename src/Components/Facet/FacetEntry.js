@@ -6,7 +6,9 @@ import {
   Checkbox,
   makeStyles,
   Tooltip,
+  FormControlLabel,
 } from '@material-ui/core';
+import { useState, useEffect } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   facetTextContainer: {
@@ -16,10 +18,24 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     paddingRight: theme.spacing(1),
   },
+
+  facetControlInputRoot: {
+    width: '100%',
+    margin: '0',
+  },
+
+  facetControlInputLabel: {
+    width: '100%',
+  },
 }));
 
 const FacetEntry = (props) => {
   const classes = useStyles();
+  const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    setIsChecked(props.selected);
+  }, [props.selected]);
 
   const prepareValue = () => {
     let value = '';
@@ -51,28 +67,40 @@ const FacetEntry = (props) => {
   };
 
   return (
-    <ListItem onClick={props.onClick}>
-      <ListItemIcon>
-        <Checkbox
-          edge="start"
-          checked={props.selected}
-          tabIndex={-1}
-          disableRipple
-          inputProps={{ 'aria-labelledby': props.id }}
+    <>
+      <ListItem>
+        <FormControlLabel
+          control={
+            <ListItemIcon>
+              <Checkbox
+                checked={isChecked}
+                onChange={props.onClick}
+                edge="start"
+              />
+            </ListItemIcon>
+          }
+          label={
+            <ListItemText
+              id={props.id}
+              primary={
+                <>
+                  <span className={classes.facetTextLabel}>
+                    {prepareValue()}
+                  </span>
+                  <span>{props.count}</span>
+                </>
+              }
+              primaryTypographyProps={{ className: classes.facetTextContainer }}
+            />
+          }
+          classes={{
+            root: classes.facetControlInputRoot,
+            label: classes.facetControlInputLabel,
+          }}
+          margin="none"
         />
-      </ListItemIcon>
-      <ListItemText
-        id={props.id}
-        primary={
-          <>
-            <span className={classes.facetTextLabel}>{prepareValue()}</span>
-            <span>{props.count}</span>
-          </>
-        }
-        primaryTypographyProps={{ className: classes.facetTextContainer }}
-      />
-      {/* <ListItemSecondaryAction>{props.count}</ListItemSecondaryAction> */}
-    </ListItem>
+      </ListItem>
+    </>
   );
 };
 
