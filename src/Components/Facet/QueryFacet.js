@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { QueryContext, SET_QUERY_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
@@ -8,10 +8,13 @@ import {
   makeStyles,
   List,
   Typography,
+  Menu,
+  MenuItem,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -30,6 +33,10 @@ const QueryFacet = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
   const { id, labels, queries } = props;
+  const menuAnchorRef = useRef(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
+
   const multipleSelect =
     props.multipleSelect !== undefined && props.multipleSelect !== null
       ? props.multipleSelect
@@ -96,14 +103,64 @@ const QueryFacet = (props) => {
     setExpanded((previous) => !previous);
   };
 
+  const handleClearFilterClick = () => {
+    const newQueryFacets = { ...query.queryFacets };
+    newQueryFacets[id].selected = undefined;
+
+    queryDispatch({
+      type: SET_QUERY_FACETS,
+      queryFacets: newQueryFacets,
+    });
+    setMenuOpen(false);
+  };
+
+  const handleSelectAllClick = () => {
+    const newQueryFacets = { ...query.queryFacets };
+    newQueryFacets[id].selected = [...labels];
+
+    queryDispatch({
+      type: SET_QUERY_FACETS,
+      queryFacets: newQueryFacets,
+    });
+    setMenuOpen(false);
+  };
+
+  const handleOpenMenu = (event) => {
+    setMenuOpen(true);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuOpen(false);
+  };
+
   // The insertion of children allow the addition of element with specific behavior
   // such as a date picker for a date query facet, range picker for weight facet etc.
   return facetValues.length > 0 ? (
     <>
       <div className={classes.facetHeader}>
-        <IconButton>
+        <IconButton
+          onClick={handleOpenMenu}
+          aria-controls={`${id}-facet-menu`}
+          aria-haspopup="true"
+          ref={menuAnchorRef}
+        >
           <MoreVertIcon />
         </IconButton>
+        <Menu
+          id={`${id}-facet-menu`}
+          anchorEl={menuAnchorRef.current}
+          open={menuOpen}
+          onClose={handleCloseMenu}
+        >
+          {multipleSelect && (
+            <MenuItem onClick={handleSelectAllClick}>
+              {t('Select All')}
+            </MenuItem>
+          )}
+          <MenuItem onClick={handleClearFilterClick}>
+            {t('Clear Filter')}
+          </MenuItem>
+        </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
           {props.title}
         </Typography>

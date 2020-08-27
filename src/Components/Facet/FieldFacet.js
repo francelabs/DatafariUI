@@ -108,6 +108,17 @@ const FieldFacet = (props) => {
     setMenuOpen(false);
   };
 
+  const handleSelectAllClick = () => {
+    const newQueryFieldFacets = { ...query.fieldFacets };
+    newQueryFieldFacets[field].selected = [...results.fieldFacets[field]];
+
+    queryDispatch({
+      type: SET_FIELD_FACETS,
+      fieldFacets: newQueryFieldFacets,
+    });
+    setMenuOpen(false);
+  };
+
   return facetValues.length > 0 ? (
     <>
       <div className={classes.facetHeader}>
@@ -124,6 +135,7 @@ const FieldFacet = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
+          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>
             {t('Clear Filter')}
           </MenuItem>
