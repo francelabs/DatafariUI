@@ -10,11 +10,14 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Link,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useTranslation } from 'react-i18next';
+
+const DISPLAY_ENTRIES = [10, 100];
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -24,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
   facetHeader: {
     display: 'flex',
     alignItems: 'center',
+  },
+  showMore: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -36,6 +43,12 @@ const QueryFacet = (props) => {
   const menuAnchorRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const [showMore, setShowMore] = useState(false);
+
+  const minShow = props.minShow ? props.minShow : DISPLAY_ENTRIES[0];
+  const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
+
+  const numShowed = showMore ? maxShow : minShow;
 
   const multipleSelect =
     props.multipleSelect !== undefined && props.multipleSelect !== null
@@ -80,7 +93,11 @@ const QueryFacet = (props) => {
 
   let facetValues = [];
   if (results.queryFacets[id]) {
-    for (let index = 0; index < labels.length; index++) {
+    for (
+      let index = 0;
+      index < labels.length && facetValues.length < numShowed;
+      index++
+    ) {
       if (results.queryFacets[id][index]) {
         facetValues.push(
           <FacetEntry
@@ -133,6 +150,13 @@ const QueryFacet = (props) => {
     setMenuOpen(false);
   };
 
+  const handleShowMoreClick = (event) => {
+    event.preventDefault();
+    setShowMore((oldShowMore) => {
+      return !oldShowMore;
+    });
+  };
+
   // The insertion of children allow the addition of element with specific behavior
   // such as a date picker for a date query facet, range picker for weight facet etc.
   return facetValues.length > 0 ? (
@@ -168,7 +192,33 @@ const QueryFacet = (props) => {
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
-      {expanded && <List dense>{facetValues}</List>}
+      {expanded && (
+        <>
+          <List dense>{facetValues}</List>
+          {!showMore && numShowed < labels.length && (
+            <Link
+              component="button"
+              color="secondary"
+              onClick={handleShowMoreClick}
+              align="right"
+              className={classes.showMore}
+            >
+              {t('Show More')} &gt;&gt;
+            </Link>
+          )}
+          {showMore && (
+            <Link
+              component="button"
+              color="secondary"
+              onClick={handleShowMoreClick}
+              align="right"
+              className={classes.showMore}
+            >
+              {t('Show Less')} &lt;&lt;
+            </Link>
+          )}
+        </>
+      )}
       {props.children}
       <Divider className={props.dividerClassName} />
     </>

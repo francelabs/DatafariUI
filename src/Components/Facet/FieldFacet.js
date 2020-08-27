@@ -10,11 +10,14 @@ import {
   Typography,
   Menu,
   MenuItem,
+  Link,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useTranslation } from 'react-i18next';
+
+const DISPLAY_ENTRIES = [10, 100];
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -23,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
   facetHeader: {
     display: 'flex',
     alignItems: 'center',
+  },
+  showMore: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -35,6 +42,12 @@ const FieldFacet = (props) => {
   const { t } = useTranslation();
   const menuAnchorRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  const minShow = props.minShow ? props.minShow : DISPLAY_ENTRIES[0];
+  const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
+
+  const numShowed = showMore ? maxShow : minShow;
 
   useEffect(() => {
     if (!query.fieldFacets[field]) {
@@ -66,7 +79,11 @@ const FieldFacet = (props) => {
 
   let facetValues = [];
   if (results.fieldFacets[field]) {
-    for (let i = 0; i < results.fieldFacets[field].length; i += 2) {
+    for (
+      let i = 0;
+      i < results.fieldFacets[field].length && i / 2 < numShowed;
+      i += 2
+    ) {
       facetValues.push(
         <FacetEntry
           onClick={onClick(results.fieldFacets[field][i])}
@@ -119,6 +136,13 @@ const FieldFacet = (props) => {
     setMenuOpen(false);
   };
 
+  const handleShowMoreClick = (event) => {
+    event.preventDefault();
+    setShowMore((oldShowMore) => {
+      return !oldShowMore;
+    });
+  };
+
   return facetValues.length > 0 ? (
     <>
       <div className={classes.facetHeader}>
@@ -147,7 +171,33 @@ const FieldFacet = (props) => {
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
-      {expanded && <List dense>{facetValues}</List>}
+      {expanded && (
+        <>
+          <List dense>{facetValues}</List>
+          {!showMore && numShowed < results.fieldFacets[field].length / 2 && (
+            <Link
+              component="button"
+              color="secondary"
+              onClick={handleShowMoreClick}
+              align="right"
+              className={classes.showMore}
+            >
+              {t('Show More')} &gt;&gt;
+            </Link>
+          )}
+          {showMore && (
+            <Link
+              component="button"
+              color="secondary"
+              onClick={handleShowMoreClick}
+              align="right"
+              className={classes.showMore}
+            >
+              {t('Show Less')} &lt;&lt;
+            </Link>
+          )}
+        </>
+      )}
       <Divider className={props.dividerClassName} />
     </>
   ) : null;
