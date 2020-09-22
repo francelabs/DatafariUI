@@ -158,7 +158,7 @@ const useDatafari = () => {
         'emptied',
         'repo_source',
       ].join(','),
-      sort: 'score desc',
+      sort: query.sort.value,
       'q.op': 'AND',
       rows: query.rows,
       start: (query.page - 1) * query.rows,
@@ -173,6 +173,7 @@ const useDatafari = () => {
   }, [
     query.page,
     query.elements,
+    query.sort.value,
     query.rows,
     buildQueryString,
     sendRequest,
@@ -227,7 +228,7 @@ const useDatafari = () => {
           prepareAndSetQueryFacets(data.facet_counts.facet_queries, newResults);
         }
         newResults.numFound = data.response.numFound;
-        newResults.rows = data.responseHeader.rows;
+        newResults.rows = parseInt(data.responseHeader.params.rows, 10);
         newResults.start = data.response.start;
       }
     }

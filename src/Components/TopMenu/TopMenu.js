@@ -58,16 +58,28 @@ const useStyles = makeStyles((theme) => ({
   inputRoot: {
     color: 'inherit',
   },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
+  inputInput:
+    theme.direction === 'ltr'
+      ? {
+          padding: theme.spacing(1, 1, 1, 0),
+          // vertical padding + font size from searchIcon
+          paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+          transition: theme.transitions.create('width'),
+          width: '100%',
+          [theme.breakpoints.up('md')]: {
+            width: '20ch',
+          },
+        }
+      : {
+          padding: theme.spacing(1, 0, 1, 1),
+          // vertical padding + font size from searchIcon
+          paddingRight: `calc(1em + ${theme.spacing(4)}px)`,
+          transition: theme.transitions.create('width'),
+          width: '100%',
+          [theme.breakpoints.up('md')]: {
+            width: '20ch',
+          },
+        },
   sectionDesktop: {
     display: 'none',
     [theme.breakpoints.up('md')]: {

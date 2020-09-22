@@ -34,7 +34,7 @@ const SimpleAutocomplete = (props) => {
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       sendRequest(
-        `${baseURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam=${props.op}`,
+        `${baseURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
         'GET',
         null,
         newQueryID
@@ -44,7 +44,7 @@ const SimpleAutocomplete = (props) => {
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (data.spellcheck.collations) {
+      if (!data.error && data.spellcheck.collations) {
         const newSuggestions = data.spellcheck.collations
           .filter((element) => {
             return element && element !== 'collation' && element.collationQuery;
@@ -53,8 +53,8 @@ const SimpleAutocomplete = (props) => {
             return element.collationQuery;
           });
         setSuggestions(newSuggestions);
-        setLoading(false);
       }
+      setLoading(false);
     }
   }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID]);
 

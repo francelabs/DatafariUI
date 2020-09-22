@@ -58,7 +58,11 @@ const QueryFacet = (props) => {
   useEffect(() => {
     if (!query.queryFacets[id]) {
       const newQueryFacets = { ...query.queryFacets };
-      newQueryFacets[id] = { labels: labels, queries: queries };
+      newQueryFacets[id] = {
+        labels: labels,
+        queries: queries,
+        title: props.title,
+      };
       queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
     }
   }, [id, query, queryDispatch, labels, queries]);

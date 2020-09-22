@@ -127,7 +127,11 @@ const FieldFacet = (props) => {
 
   const handleSelectAllClick = () => {
     const newQueryFieldFacets = { ...query.fieldFacets };
-    newQueryFieldFacets[field].selected = [...results.fieldFacets[field]];
+    newQueryFieldFacets[field].selected = [
+      ...results.fieldFacets[field].filter((value, index) => {
+        return index % 2 === 0;
+      }),
+    ];
 
     queryDispatch({
       type: SET_FIELD_FACETS,

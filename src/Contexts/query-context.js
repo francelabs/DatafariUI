@@ -5,6 +5,7 @@ export const SET_QUERY_FACETS = 'SET_QUERY_FACETS';
 export const SET_ROWS = 'SET_ROWS';
 export const SET_PAGE = 'SET_PAGE';
 export const SET_ELEMENTS = 'SET_ELEMENTS';
+export const SET_SORT = 'SET_SORT';
 export const RESET_FACETS_SELECTION = 'RESET_FACET_SELECTION';
 
 const resetFacetSelection = (fieldFacets, queryFacets) => {
@@ -31,6 +32,8 @@ const queryReducer = (query, action) => {
       return { ...query, page: action.page };
     case SET_ELEMENTS:
       return { ...query, page: 1, elements: action.elements };
+    case SET_SORT:
+      return { ...query, page: 1, sort: action.sort };
     case RESET_FACETS_SELECTION:
       const [newFieldFacets, newQueryFacets] = resetFacetSelection(
         query.fieldFacets,
@@ -77,6 +80,7 @@ export const QueryContext = React.createContext({
     rows: 10,
     page: 1,
     op: 'AND',
+    sort: { label: 'Relevance', value: 'score desc' },
   },
   dispatch: () => {},
 });
@@ -89,6 +93,7 @@ const QueryContextProvider = (props) => {
     rows: 10,
     page: 1,
     op: 'AND',
+    sort: { label: 'Relevance', value: 'score desc' },
   });
 
   return (

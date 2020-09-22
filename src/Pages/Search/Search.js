@@ -12,6 +12,7 @@ import Pager from '../../Components/Pager/Pager';
 import SearchTopMenu from '../../Components/SearchTopMenu/SearchTopMenu';
 import useDatafari from '../../Hooks/useDatafari';
 import { Grid, makeStyles, Hidden } from '@material-ui/core';
+import SearchInformation from '../../Components/SearchInformation/SearchInformation';
 
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
@@ -55,6 +56,7 @@ const Search = (props) => {
                 field="extension"
                 op="OR"
                 dividerClassName={classes.facetDivider}
+                minShow={2}
               />
               <FieldFacet
                 title={t('Language')}
@@ -76,11 +78,13 @@ const Search = (props) => {
                 ]}
                 id="date_facet"
                 dividerClassName={classes.facetDivider}
+                minShow={1}
               />
             </div>
           </Hidden>
         </Grid>
         <Grid item sm={12} md={8}>
+          <SearchInformation />
           <ResultsList />
           <div className={classes.pagerContainer}>
             <Pager />
