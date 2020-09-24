@@ -13,6 +13,7 @@ import SearchTopMenu from '../../Components/SearchTopMenu/SearchTopMenu';
 import useDatafari from '../../Hooks/useDatafari';
 import { Grid, makeStyles, Hidden } from '@material-ui/core';
 import SearchInformation from '../../Components/SearchInformation/SearchInformation';
+import DateFacetCustom from '../../Components/DateFacetCustom/DateFacetCustom';
 
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
@@ -44,6 +45,7 @@ const Search = (props) => {
   const classes = useStyles();
   const { path } = useRouteMatch();
   const { t } = useTranslation();
+
   return (
     <Fragment>
       <SearchTopMenu />
@@ -79,7 +81,9 @@ const Search = (props) => {
                 id="date_facet"
                 dividerClassName={classes.facetDivider}
                 minShow={1}
-              />
+              >
+                <DateFacetCustom />
+              </QueryFacet>
             </div>
           </Hidden>
         </Grid>

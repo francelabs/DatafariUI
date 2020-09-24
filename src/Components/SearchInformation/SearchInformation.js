@@ -13,6 +13,7 @@ import { ResultsContext } from '../../Contexts/results-context';
 import {
   QueryContext,
   SET_FIELD_FACETS,
+  SET_FILTERS,
   SET_QUERY_FACETS,
   SET_SORT,
 } from '../../Contexts/query-context';
@@ -79,6 +80,17 @@ const SearchInformation = (props) => {
     };
   };
 
+  const handleClearFilter = (key) => {
+    return () => {
+      const newFilters = { ...query.filters };
+      delete newFilters[key];
+      queryDispatch({
+        type: SET_FILTERS,
+        filters: newFilters,
+      });
+    };
+  };
+
   const handleSelectRelevanceSort = () => {
     queryDispatch({
       type: SET_SORT,
@@ -142,6 +154,22 @@ const SearchInformation = (props) => {
         </Typography>
       );
     }
+  }
+
+  if (Object.keys(query.filters).length > 0) {
+    filters.push(
+      <Typography component="span">
+        <Typography component="span" color="secondary">
+          Other filters:&nbsp;
+        </Typography>
+        {Object.keys(query.filters).map((key) => (
+          <FilterEntry
+            value={query.filters[key].value}
+            onClick={handleClearFilter(key)}
+          />
+        ))}
+      </Typography>
+    );
   }
 
   return (

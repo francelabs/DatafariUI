@@ -111,8 +111,20 @@ const useDatafari = () => {
     return [queryFacetsParams, selectedQueryFacets];
   }, [query.queryFacets]);
 
+  const prepareOtherFilters = useCallback(() => {
+    let otherFilters = [];
+    for (const key in query.filters) {
+      if (query.filters[key].value) {
+        otherFilters.push(query.filters[key].value);
+      }
+    }
+    return otherFilters;
+  }, [query.filters]);
+
   const prepareFacetsParams = useCallback(() => {
     const facetParams = {};
+
+    // Field facets gathering
     const [fieldFacetsParams, selectedFieldFacets] = prepareFieldFacets();
     if (fieldFacetsParams.length > 0) {
       facetParams.facet = true;
@@ -122,6 +134,7 @@ const useDatafari = () => {
       }
     }
 
+    // Query facets gathering
     const [queryFacetsParams, selectedQueryFacets] = prepareQueryFacets();
     if (queryFacetsParams.length > 0) {
       facetParams.facet = true;
@@ -135,8 +148,18 @@ const useDatafari = () => {
       }
     }
 
+    // Other filters gathering
+    const otherFilters = prepareOtherFilters();
+    if (otherFilters.length > 0) {
+      if (facetParams.fq) {
+        facetParams.fq = facetParams.fq.concat(otherFilters);
+      } else {
+        facetParams.fq = otherFilters;
+      }
+    }
+
     return facetParams;
-  }, [prepareFieldFacets, prepareQueryFacets]);
+  }, [prepareFieldFacets, prepareQueryFacets, prepareOtherFilters]);
 
   const makeRequest = useCallback(() => {
     const facetsParams = prepareFacetsParams();
