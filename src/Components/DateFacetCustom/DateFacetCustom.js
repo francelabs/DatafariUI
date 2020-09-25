@@ -98,7 +98,7 @@ const DateFacetCustom = (props) => {
         }
       >
         <div>
-          {t('from')}
+          {t('From')}
           <KeyboardDatePicker
             autoOk={true}
             variant="inline"
@@ -114,7 +114,7 @@ const DateFacetCustom = (props) => {
             size="small"
             className={classes.dateSelectors}
           />
-          {t('to')}
+          {t('To')}
           <KeyboardDatePicker
             autoOk={true}
             variant="inline"

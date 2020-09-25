@@ -65,7 +65,7 @@ const QueryFacet = (props) => {
       };
       queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
     }
-  }, [id, query, queryDispatch, labels, queries]);
+  }, [id, query, queryDispatch, labels, queries, props.title]);
 
   const onClick = (value) => {
     return () => {
@@ -97,11 +97,7 @@ const QueryFacet = (props) => {
 
   let facetValues = [];
   if (results.queryFacets[id]) {
-    for (
-      let index = 0;
-      index < labels.length && facetValues.length < numShowed;
-      index++
-    ) {
+    for (let index = 0; index < labels.length; index++) {
       if (results.queryFacets[id][index]) {
         facetValues.push(
           <FacetEntry
@@ -163,7 +159,7 @@ const QueryFacet = (props) => {
 
   // The insertion of children allow the addition of element with specific behavior
   // such as a date picker for a date query facet, range picker for weight facet etc.
-  return facetValues.length > 0 ? (
+  return facetValues.length > 0 || props.children ? (
     <>
       <div className={classes.facetHeader}>
         <IconButton
@@ -198,8 +194,8 @@ const QueryFacet = (props) => {
       </div>
       {expanded && (
         <>
-          <List dense>{facetValues}</List>
-          {!showMore && numShowed < labels.length && (
+          <List dense>{facetValues.slice(0, numShowed)}</List>
+          {!showMore && numShowed < facetValues.length && (
             <Link
               component="button"
               color="secondary"
