@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   makeStyles,
   ListItem,
@@ -21,6 +21,7 @@ import { ReactComponent as ZipIcon } from '../../Icons/icon_zip_file_orange-24px
 import { ReactComponent as DefaultFileIcon } from '../../Icons/icon_pdf_file_black-24px.svg';
 import { ReactComponent as PreviewIcon } from '../../Icons/preview-black-18dp.svg';
 import { useTranslation } from 'react-i18next';
+import { UserContext } from '../../Contexts/user-context';
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -62,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 const ResultEntry = (props) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { state: userState } = useContext(UserContext);
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -229,11 +231,17 @@ const ResultEntry = (props) => {
         }
         secondaryTypographyProps={{ component: 'div' }}
       />
-      <ListItemSecondaryAction className={classes.bookmarkAction}>
-        <IconButton edge="end" aria-label="bookmark">
-          {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-        </IconButton>
-      </ListItemSecondaryAction>
+      {userState.user && (
+        <ListItemSecondaryAction className={classes.bookmarkAction}>
+          <IconButton
+            edge="end"
+            aria-label="bookmark"
+            onClick={props.bookmarkClickCallback}
+          >
+            {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   );
 };

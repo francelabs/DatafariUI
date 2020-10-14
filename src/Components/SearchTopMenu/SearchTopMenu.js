@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   AppBar,
   Divider,
@@ -11,11 +11,15 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
+import FavortiesModal from '../../Pages/FavoritesModal/FavoritesModal';
+import { UserContext } from '../../Contexts/user-context';
 
 const SearchTopMenu = () => {
   const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { t } = useTranslation();
+  const [open, setOpen] = useState(undefined);
+  const { state: userState } = useContext(UserContext);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -27,6 +31,13 @@ const SearchTopMenu = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpen = (modalName) => {
+    return () => {
+      handleClose();
+      setOpen(modalName);
+    };
   };
 
   return (
@@ -58,7 +69,9 @@ const SearchTopMenu = () => {
             horizontal: 'center',
           }}
         >
-          <AdvancedSearch />
+          <MenuItem onClick={handleOpen('advanceSearch')}>
+            {t('Advanced Search')}
+          </MenuItem>
           {/* <MenuItem onClick={handleClose}>{t('Advanced Search')}</MenuItem> */}
           <Divider />
           <MenuItem onClick={handleClose}>{t('Manage Saved Queries')}</MenuItem>
@@ -67,13 +80,31 @@ const SearchTopMenu = () => {
           <MenuItem onClick={handleClose}>{t('Manage Alerts')}</MenuItem>
           <MenuItem onClick={handleClose}>{t('Save Query As Alert')}</MenuItem>
           <Divider />
-          <MenuItem onClick={handleClose}>{t('Manage Favorites')}</MenuItem>
-          <Divider />
+          {userState.user && (
+            <>
+              <MenuItem onClick={handleOpen('favorites')}>
+                {t('Manage Favorites')}
+              </MenuItem>
+              <Divider />
+            </>
+          )}
           <MenuItem onClick={handleClose}>
             {t('Export Current Results')}
           </MenuItem>
         </Menu>
       </Toolbar>
+      <AdvancedSearch
+        open={open === 'advanceSearch'}
+        handleClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <FavortiesModal
+        open={open === 'favorites'}
+        handleClose={() => {
+          setOpen(undefined);
+        }}
+      />
     </AppBar>
   );
 };

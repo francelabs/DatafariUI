@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  containerSpacing: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
 const DateFacetCustom = (props) => {
@@ -55,6 +58,8 @@ const DateFacetCustom = (props) => {
         type: SET_FILTERS,
         filters: { ...newFilters },
       });
+    } else {
+      handleResetClick();
     }
   };
 
@@ -97,14 +102,13 @@ const DateFacetCustom = (props) => {
           })
         }
       >
-        <div>
-          {t('From')}
+        <div className={classes.containerSpacing}>
           <KeyboardDatePicker
             autoOk={true}
             variant="inline"
             margin="dense"
             id="from-date-picker-dialog"
-            label={t('Start date')}
+            label={t('From')}
             format="MM/dd/yyyy"
             value={selectedFromDate}
             onChange={handleFromDateChange}
@@ -114,13 +118,12 @@ const DateFacetCustom = (props) => {
             size="small"
             className={classes.dateSelectors}
           />
-          {t('To')}
           <KeyboardDatePicker
             autoOk={true}
             variant="inline"
             margin="dense"
             id="to-date-picker-dialog"
-            label={t('End date')}
+            label={t('To')}
             format="MM/dd/yyyy"
             value={selectedToDate}
             onChange={handleToDateChange}
@@ -130,13 +133,8 @@ const DateFacetCustom = (props) => {
             size="small"
             className={classes.dateSelectors}
           />
-        </div>
-        <div>
           <Button size="small" color="primary" onClick={handleGoClick}>
             {t('Go')}
-          </Button>
-          <Button size="small" color="primary" onClick={handleResetClick}>
-            {t('Reset')}
           </Button>
         </div>
       </ThemeProvider>

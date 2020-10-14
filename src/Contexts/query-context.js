@@ -8,6 +8,7 @@ export const SET_ELEMENTS = 'SET_ELEMENTS';
 export const SET_SORT = 'SET_SORT';
 export const RESET_FACETS_SELECTION = 'RESET_FACET_SELECTION';
 export const SET_FILTERS = 'SET_FILTERS';
+export const SET_ELEMENTS_NO_RESET = 'SET_ELEMENTS_NO_RESET';
 
 const resetFacetSelection = (fieldFacets, queryFacets) => {
   const newFieldFacets = { ...fieldFacets };
@@ -48,6 +49,12 @@ const queryReducer = (query, action) => {
         fieldFacets: newFieldFacets,
         filters: {},
       };
+    case SET_ELEMENTS_NO_RESET:
+      return {
+        ...query,
+        page: 1,
+        elements: action.elements,
+      };
     case SET_SORT:
       return { ...query, page: 1, sort: action.sort };
     case RESET_FACETS_SELECTION:
@@ -81,7 +88,7 @@ const queryReducer = (query, action) => {
        selected: ['Less than a month'],
      }
    }
-   elements: ['strategy', '2020'],
+   elements: "some query here",
    rows: 10,
    page: 1,
  }

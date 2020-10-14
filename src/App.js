@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useContext, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -8,6 +8,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import TopMenu from './Components/TopMenu/TopMenu';
 import QueryContextProvider from './Contexts/query-context';
 import ResultsContextProvider from './Contexts/results-context';
+import UserContextProvider, { UserContext } from './Contexts/user-context';
 import { create } from 'jss';
 import rtl from 'jss-rtl';
 
@@ -52,6 +53,12 @@ const defaultTheme = createMuiTheme({
 });
 
 function Main() {
+  const { actions: userActions } = useContext(UserContext);
+
+  useEffect(() => {
+    userActions.autoConnect();
+  }, [userActions]);
+
   return (
     <StylesProvider jss={jss}>
       <ThemeProvider theme={defaultTheme}>
@@ -80,7 +87,9 @@ function Main() {
 function App() {
   return (
     <Suspense fallback="loading">
-      <Main />
+      <UserContextProvider>
+        <Main />
+      </UserContextProvider>
     </Suspense>
   );
 }

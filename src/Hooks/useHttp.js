@@ -45,50 +45,55 @@ const useHttp = () => {
 
   const clear = useCallback(() => dispatchHttp({ type: 'CLEAR' }), []);
 
-  const sendRequest = useCallback((url, method, body, reqIdentifier) => {
-    const currentID = reqIdentifier;
-    dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
-    fetch(url, {
-      method: method,
-      body: body,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (currentID === reqIdentifier) {
-          if (response.ok) {
-            return response.json();
-          } else {
+  const sendRequest = useCallback(
+    (url, method, body, reqIdentifier, headers) => {
+      const currentID = reqIdentifier;
+      dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
+      fetch(url, {
+        method: method,
+        body: body,
+        headers: headers
+          ? headers
+          : {
+              'Content-Type': 'application/json',
+            },
+      })
+        .then((response) => {
+          if (currentID === reqIdentifier) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              dispatchHttp({
+                type: 'ERROR',
+                errorCode: response.status,
+                errorMessage: response.statusText,
+                identifier: reqIdentifier,
+              });
+            }
+          }
+        })
+        .then((responseData) => {
+          if (currentID === reqIdentifier) {
             dispatchHttp({
-              type: 'ERROR',
-              errorCode: response.status,
-              errorMessage: response.statusText,
+              type: 'RESPONSE',
+              responseData: responseData,
               identifier: reqIdentifier,
             });
           }
-        }
-      })
-      .then((responseData) => {
-        if (currentID === reqIdentifier) {
-          dispatchHttp({
-            type: 'RESPONSE',
-            responseData: responseData,
-            identifier: reqIdentifier,
-          });
-        }
-      })
-      .catch((error) => {
-        if (currentID === reqIdentifier) {
-          dispatchHttp({
-            type: 'ERROR',
-            errorMessage: error.message,
-            errorCode: -1,
-            identifier: reqIdentifier,
-          });
-        }
-      });
-  }, []);
+        })
+        .catch((error) => {
+          if (currentID === reqIdentifier) {
+            dispatchHttp({
+              type: 'ERROR',
+              errorMessage: error.message,
+              errorCode: -1,
+              identifier: reqIdentifier,
+            });
+          }
+        });
+    },
+    []
+  );
 
   return {
     isLoading: httpState.loading,

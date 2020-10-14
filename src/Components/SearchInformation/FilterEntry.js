@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Typography,
-  Link,
-  Icon,
-  makeStyles,
-  IconButton,
-} from '@material-ui/core';
+import { Typography, makeStyles, IconButton } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
