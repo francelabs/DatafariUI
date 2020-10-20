@@ -54,5 +54,5 @@
     "@babel/preset-react": "^7.10.1",
     "babel-plugin-i18next-extract": "^0.7.2"
   },
-  "proxy": "https://datafari2"
+  "license": "MIT"
 }
