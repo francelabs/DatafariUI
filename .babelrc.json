@@ -5,7 +5,8 @@
       "i18next-extract",
       {
         "outputPath": "public/locales/{{locale}}/{{ns}}.json",
-        "locales": ["ar", "de", "en", "es", "fr", "it", "pt_br", "ru"]
+        "locales": ["ar", "de", "en", "es", "fr", "it", "pt_br", "ru"],
+        "discardOldKeys" : true
       }
     ]
   ]
