@@ -25,6 +25,7 @@ import 'fontsource-montserrat/300.css';
 import 'fontsource-montserrat';
 import 'fontsource-montserrat/500.css';
 import 'fontsource-montserrat/700.css';
+import Preview from './Pages/Preview/Preview';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 const defaultTheme = createMuiTheme({
@@ -73,6 +74,7 @@ function Main() {
                   <Switch>
                     <Route path="/" component={SearchPage} exact />
                     <Route path="/search" component={SearchPage} />
+                    <Route path="/preview" component={Preview} />
                   </Switch>
                 </div>
               </BrowserRouter>

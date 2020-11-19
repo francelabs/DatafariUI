@@ -14,8 +14,7 @@
     "@testing-library/user-event": "^7.2.1",
     "date-fns": "^2.16.1",
     "fontsource-montserrat": "^3.0.5",
-    "i18next": "^19.5.1",
-    "i18next-browser-languagedetector": "^5.0.0",
+   "i18next": "^19.5.1",    "i18next-browser-languagedetector": "^5.0.0",
     "i18next-http-backend": "^1.0.15",
     "jss-rtl": "^0.3.0",
     "lucene": "git+https://github.com/machuga/lucene.git",
@@ -54,5 +53,5 @@
     "@babel/preset-react": "^7.10.1",
     "babel-plugin-i18next-extract": "^0.7.2"
   },
-  "license": "MIT"
+  "license": "APACHE"
 }
