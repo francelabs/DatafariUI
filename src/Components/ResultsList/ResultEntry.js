@@ -162,6 +162,15 @@ const ResultEntry = (props) => {
     return result;
   };
 
+  const prepareDocURL = () => {
+    return `URL?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
+  };
+
+  const preparePreviewURL = () => {
+    let request = `q=${props.q}`;
+    return `Preview?docPos=${props.position}&docId=${props.id}&${request}&action=OPEN_PREVIEW`;
+  };
+
   const selectFileIcon = (extension) => {
     switch (extension) {
       case 'pdf':
@@ -206,7 +215,11 @@ const ResultEntry = (props) => {
         </IconButton>
       </ListItemIcon>
       <ListItemText
-        primary={prepareTitle()}
+        primary={
+          <Link color="secondary" href={prepareDocURL()}>
+            {prepareTitle()}
+          </Link>
+        }
         secondary={
           <>
             <div>
@@ -220,7 +233,7 @@ const ResultEntry = (props) => {
               <span className={classes.moreLikeThis}>
                 <Link
                   color="secondary"
-                  href="#"
+                  href={preparePreviewURL()}
                   onClick={(event) => event.preventDefault()}
                 >
                   {t('More Like This')}&gt;&gt;
