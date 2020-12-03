@@ -5,6 +5,7 @@ import ResultError from './ResultError';
 import Spinner from '../Spinner/Spinner';
 import { makeStyles, Divider, List } from '@material-ui/core';
 import useFavorites from '../../Hooks/useFavorites';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
@@ -16,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ResultsList = (porps) => {
+  const { t } = useTranslation();
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
   // const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
@@ -119,8 +121,8 @@ const ResultsList = (porps) => {
         <Spinner />
       ) : results.error ? (
         <ResultError error={results.error.message} />
-      ) : results.length === 0 ? (
-        <div>No results</div>
+      ) : results.results.length === 0 ? (
+        <div>{t('No results')}</div>
       ) : (
         results.results.map((result) => (
           <React.Fragment>
