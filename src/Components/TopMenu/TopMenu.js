@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -21,6 +21,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import LanguageIcon from '@material-ui/icons/Language';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
+import LangSelectionMenu from '../LangSelectionMenu/LangSelectionMenu';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -96,8 +97,9 @@ const useStyles = makeStyles((theme) => ({
 
 const TopMenu = () => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { t } = useTranslation();
 
   const isMenuOpen = Boolean(anchorEl);
@@ -118,6 +120,16 @@ const TopMenu = () => {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseLangMenu = () => {
+    // setLangMenuOpen(false);
+    setLangMenuAnchorEl(null);
+  };
+
+  const handleOpenLangMenu = (event) => {
+    // setLangMenuOpen(true);
+    setLangMenuAnchorEl(event.currentTarget);
   };
 
   const menuId = 'primary-search-account-menu';
@@ -198,9 +210,20 @@ const TopMenu = () => {
           </div>
           <div />
           <div className={classes.sectionDesktop}>
-            <IconButton aria-label={t('Language selection')} color="inherit">
+            <IconButton
+              aria-label={t('Language selection')}
+              color="inherit"
+              // ref={langMenuAnchorRef}
+              onClick={handleOpenLangMenu}
+            >
               <LanguageIcon fontSize="large" />
             </IconButton>
+            <LangSelectionMenu
+              open={Boolean(langMenuAnchorEl)}
+              anchorEl={langMenuAnchorEl}
+              onClose={handleCloseLangMenu}
+              id="lang-menu"
+            />
             <IconButton aria-label={t('Feedbacks')} color="inherit">
               <FeedbackOutlinedIcon fontSize="large" />
             </IconButton>
