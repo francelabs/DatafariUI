@@ -9,7 +9,8 @@ import {
 import useHttp from './useHttp';
 
 const useDatafari = () => {
-  const baseURL = '/Datafari/SearchAggregator';
+  //const baseURL = '/Datafari/SearchAggregator';
+  const baseURL = '/Datafari/rest/v1.0/search';
   const { query } = useContext(QueryContext);
   const { dispatch: resultsDispatch } = useContext(ResultsContext);
 
