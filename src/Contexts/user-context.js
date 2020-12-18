@@ -40,7 +40,7 @@ const UserContextProvider = (props) => {
   const autoConnect = useCallback(() => {
     let newQueryID = Math.random().toString(36).substring(2, 15);
     setQueryID(newQueryID);
-    sendRequest(`${baseURL}/GetFavorites`, 'GET', null, newQueryID);
+    sendRequest(`${baseURL}/rest/v1.0/users/current`, 'GET', null, newQueryID);
   }, [sendRequest]);
 
   const actions = useMemo(() => {
@@ -53,14 +53,17 @@ const UserContextProvider = (props) => {
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (data.code === -2) {
+      if (data.status !== 'OK') {
         userDispatcher({ type: 'SET_GUEST' });
       } else {
+        let userData = data.content;
         userDispatcher({
           type: 'SET_AUTHENTICATED_USER',
-          user: { name: 'Cédric Ulmer', favorites: [] },
+          user: { name: userData.name, favorites: [] },
         });
       }
+    } else if (!isLoading && error) {
+      userDispatcher({ type: 'SET_GUEST' });
     }
   }, [data, error, isLoading, queryID, reqIdentifier, userDispatcher]);
 

@@ -8,6 +8,8 @@ import * as serviceWorker from './serviceWorker';
 
 import './i18n';
 
+window.datafariBaseURL = new URL('/Datafari', window.location.href);
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,6 +22,10 @@ import LanguageIcon from '@material-ui/icons/Language';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import LangSelectionMenu from '../LangSelectionMenu/LangSelectionMenu';
+import { UserContext } from '../../Contexts/user-context';
+import Spinner from '../Spinner/Spinner';
+import { ReactComponent as LoginIcon } from '../../Icons/login-24px.svg';
+import SvgIcon from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -100,6 +104,7 @@ const TopMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+  const { state: userState } = useContext(UserContext);
   const { t } = useTranslation();
 
   const isMenuOpen = Boolean(anchorEl);
@@ -131,6 +136,11 @@ const TopMenu = () => {
     // setLangMenuOpen(true);
     setLangMenuAnchorEl(event.currentTarget);
   };
+
+  const loginURL =
+    window.datafariBaseURL +
+    '/rest/v1.0/auth?callback=' +
+    new URL(process.env.PUBLIC_URL, window.location.href);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -233,16 +243,32 @@ const TopMenu = () => {
             <IconButton aria-label={t('Search tools')} color="inherit">
               <SettingsIcon fontSize="large" />
             </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <Avatar fontSize="small">CU</Avatar>
-            </IconButton>
+            {userState.isLoading ? (
+              <Spinner />
+            ) : userState.user === null ? (
+              <IconButton
+                edge="end"
+                aria-label="Login"
+                aria-haspopup="true"
+                href={loginURL}
+                color="inherit"
+              >
+                <SvgIcon component={LoginIcon} alt="Login" />
+              </IconButton>
+            ) : (
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <Avatar fontSize="small">
+                  {userState.user.name.substring(0, 2)}
+                </Avatar>
+              </IconButton>
+            )}
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
