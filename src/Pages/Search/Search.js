@@ -58,13 +58,14 @@ const Search = (props) => {
                 field="extension"
                 op="OR"
                 dividerClassName={classes.facetDivider}
-                minShow={2}
+                minShow={5}
               />
               <FieldFacet
                 title={t('Language')}
                 field="language"
                 op="OR"
                 dividerClassName={classes.facetDivider}
+                minShow={5}
               />
               <QueryFacet
                 title={t('Date')}
@@ -80,7 +81,7 @@ const Search = (props) => {
                 ]}
                 id="date_facet"
                 dividerClassName={classes.facetDivider}
-                minShow={1}
+                minShow={5}
               >
                 <DateFacetCustom />
               </QueryFacet>
