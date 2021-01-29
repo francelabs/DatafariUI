@@ -26,6 +26,7 @@ import 'fontsource-montserrat';
 import 'fontsource-montserrat/500.css';
 import 'fontsource-montserrat/700.css';
 import Preview from './Pages/Preview/Preview';
+import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 const defaultTheme = createMuiTheme({
@@ -89,9 +90,11 @@ function Main() {
 function App() {
   return (
     <Suspense fallback="loading">
-      <UserContextProvider>
-        <Main />
-      </UserContextProvider>
+      <APIEndpointsContextProvider>
+        <UserContextProvider>
+          <Main />
+        </UserContextProvider>
+      </APIEndpointsContextProvider>
     </Suspense>
   );
 }

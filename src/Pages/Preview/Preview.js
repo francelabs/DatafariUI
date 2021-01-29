@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 
 import { Grid, makeStyles } from '@material-ui/core';
 import PreviewTopBar from '../../Components/Preview/PreviewTopBar/PreviewTopBar';
@@ -9,6 +9,7 @@ import PreviewRightMenu from '../../Components/Preview/PreviewRightMenu/PreviewR
 import useHttp from '../../Hooks/useHttp';
 
 import { useLocation } from 'react-router-dom';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,7 +68,8 @@ const highlightingReducer = (currentHighlighting, action) => {
 };
 
 const Preview = (props) => {
-  const baseURL = '/Datafari/SearchAggregator';
+  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const baseURL = apiEndpointsContext.searchURL;
   const classes = useStyles();
   const { isLoading, error, data, sendRequest } = useHttp();
   const location = useLocation();
@@ -82,7 +84,7 @@ const Preview = (props) => {
   useEffect(() => {
     // Prepare and send the request to get the document data
     const queryParams = new URLSearchParams(location.search);
-    const docPos = queryParams.get('docPos');
+    const docPos = parseInt(queryParams.get('docPos'));
     const docId = queryParams.get('docId');
     queryParams.delete('docPos');
     queryParams.delete('docId');
@@ -90,7 +92,7 @@ const Preview = (props) => {
     if (docId) {
       // Build the URL path (same whatever the situation)
       const url = new URL(`${baseURL}/select`, window.location.href);
-      if (docPos !== undefined && docPos !== null) {
+      if (!isNaN(docPos)) {
         // Opened from a search page: set proper URL params
         queryParams.set('rows', 3);
         queryParams.set('start', docPos - 1);
@@ -127,9 +129,9 @@ const Preview = (props) => {
         });
         setDocuments(initDocuments);
         const queryParams = new URLSearchParams(location.search);
-        const docPos = queryParams.get('docPos');
+        const docPos = parseInt(queryParams.get('docPos'));
         let currentDoc = initDocuments[0];
-        if (currentDoc > 0) {
+        if (!isNaN(docPos) && docPos > 0) {
           currentDoc = initDocuments[1];
         }
         // const currentDoc = initDocuments.reduce((accu, doc) => {
@@ -237,7 +239,7 @@ const Preview = (props) => {
   let previousDocument = null;
   let document = null;
   if (documents && documents.length > 1) {
-    const docPos = urlParams.get('docPos');
+    const docPos = parseInt(urlParams.get('docPos'));
     if (docPos === 0) {
       document = documents[0];
       nextDocument = documents[1];

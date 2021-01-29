@@ -1,10 +1,11 @@
 import { Button, Grid, Link, makeStyles, Paper } from '@material-ui/core';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { APIEndpointsContext } from '../../../Contexts/api-endpoints-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PreviewNavigation = (props) => {
-  const baseURL = '/Datafari';
+  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const baseURL = apiEndpointsContext.datafariBaseURL;
   const classes = useStyles();
   const { t } = useTranslation();
   const location = useLocation();

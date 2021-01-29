@@ -124,10 +124,11 @@ const ResultsList = (porps) => {
       ) : results.results.length === 0 ? (
         <div>{t('No results')}</div>
       ) : (
-        results.results.map((result) => (
+        results.results.map((result, index) => (
           <React.Fragment>
             <ResultEntry
               {...result}
+              position={results.start + index}
               bookmarked={favorites.indexOf(result.id) !== -1}
               bookmarkClickCallback={
                 favorites.indexOf(result.id) !== -1

@@ -1,14 +1,15 @@
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
+import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
 const useFavorites = () => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
-  const baseURL = '/Datafari';
+  const apiEndpointsContext = useContext(APIEndpointsContext);
 
   const getFavorites = useCallback(
     (queryID, docIDs) => {
       const url = new URL(
-        `${baseURL}/GetFavorites`,
+        `${apiEndpointsContext.getFavoritesURL}`,
         new URL(document.location.href)
       );
       if (docIDs) {
@@ -16,7 +17,7 @@ const useFavorites = () => {
       }
       sendRequest(url, 'GET', null, queryID);
     },
-    [sendRequest]
+    [apiEndpointsContext.getFavoritesURL, sendRequest]
   );
 
   const addFavorite = useCallback(
@@ -25,11 +26,17 @@ const useFavorites = () => {
       formData.append('idDocument', docID);
       formData.append('titleDocument', docTitle);
       const body = new URLSearchParams(formData);
-      sendRequest(`${baseURL}/addFavorite`, 'POST', body, queryID, {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      });
+      sendRequest(
+        `${apiEndpointsContext.addFavoriteURL}`,
+        'POST',
+        body,
+        queryID,
+        {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        }
+      );
     },
-    [sendRequest]
+    [apiEndpointsContext.addFavoriteURL, sendRequest]
   );
 
   const removeFavorite = useCallback(
@@ -37,11 +44,17 @@ const useFavorites = () => {
       const formData = new FormData();
       formData.append('idDocument', docID);
       const body = new URLSearchParams(formData);
-      sendRequest(`${baseURL}/deleteFavorite`, 'POST', body, queryID, {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      });
+      sendRequest(
+        `${apiEndpointsContext.deleteFavoriteURL}`,
+        'POST',
+        body,
+        queryID,
+        {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        }
+      );
     },
-    [sendRequest]
+    [apiEndpointsContext.deleteFavoriteURL, sendRequest]
   );
 
   return {

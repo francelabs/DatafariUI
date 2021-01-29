@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 
 export const SET_FIELD_FACETS = 'SET_FIELD_FACETS';
 export const SET_QUERY_FACETS = 'SET_QUERY_FACETS';
@@ -120,11 +120,198 @@ const QueryContextProvider = (props) => {
     sort: { label: 'Relevance', value: 'score desc' },
   });
 
+  const buildQueryStringFromParams = useCallback((queryParams) => {
+    let result = '';
+    for (const key in queryParams) {
+      if (result !== '') {
+        result += '&';
+      }
+      switch (key) {
+        case 'facet.query':
+        case 'facet.field':
+        case 'fq':
+          let currentParamString = queryParams[key].reduce(
+            (accu, element, index, array) => {
+              let next = accu + key + '=' + encodeURIComponent(element);
+              if (index < array.length - 1) {
+                next += '&';
+              }
+              return next;
+            },
+            ''
+          );
+          result += currentParamString;
+          break;
+        default:
+          result += key + '=' + encodeURIComponent(queryParams[key]);
+      }
+    }
+    return result;
+  }, []);
+
+  const prepareFieldFacets = useCallback(() => {
+    const fieldFacetsParams = [];
+    const selectedFieldFacets = [];
+    for (const key in query.fieldFacets) {
+      fieldFacetsParams.push(
+        `{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`
+      );
+      if (
+        query.fieldFacets[key].selected &&
+        query.fieldFacets[key].selected.length > 0
+      ) {
+        selectedFieldFacets.push(
+          query.fieldFacets[key].selected.reduce(
+            (accu, element, index, array) => {
+              let next = accu + `${query.fieldFacets[key].field}:${element}`;
+              if (index < array.length - 1) {
+                next += ` ${query.fieldFacets[key].op} `;
+              } else {
+                next += ')';
+              }
+              return next;
+            },
+            `{!tag=${query.fieldFacets[key].tag}}(`
+          )
+        );
+      }
+    }
+    return [fieldFacetsParams, selectedFieldFacets];
+  }, [query.fieldFacets]);
+
+  const prepareQueryFacets = useCallback(() => {
+    let queryFacetsParams = [];
+    let selectedQueryFacets = [];
+    for (const key in query.queryFacets) {
+      if (
+        query.queryFacets[key].queries &&
+        query.queryFacets[key].labels &&
+        query.queryFacets[key].queries.length ===
+          query.queryFacets[key].labels.length
+      ) {
+        const currentQueryFacetParams = query.queryFacets[key].queries.map(
+          (query, index) => {
+            return `{!key=${key}_${index}}${query}`;
+          }
+        );
+        queryFacetsParams = queryFacetsParams.concat(currentQueryFacetParams);
+        if (
+          query.queryFacets[key].selected &&
+          query.queryFacets[key].selected.length > 0
+        ) {
+          const currentSelectedQueries = query.queryFacets[key].selected
+            .filter(
+              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
+            )
+            .map((label) => {
+              const index = query.queryFacets[key].labels.indexOf(label);
+              return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
+            });
+          selectedQueryFacets = selectedQueryFacets.concat(
+            currentSelectedQueries
+          );
+        }
+      }
+    }
+    return [queryFacetsParams, selectedQueryFacets];
+  }, [query.queryFacets]);
+
+  const prepareOtherFilters = useCallback(() => {
+    let otherFilters = [];
+    for (const key in query.filters) {
+      if (query.filters[key].value) {
+        otherFilters.push(query.filters[key].value);
+      }
+    }
+    return otherFilters;
+  }, [query.filters]);
+
+  const prepareFacetsParams = useCallback(() => {
+    const facetParams = {};
+
+    // Field facets gathering
+    const [fieldFacetsParams, selectedFieldFacets] = prepareFieldFacets();
+    if (fieldFacetsParams.length > 0) {
+      facetParams.facet = true;
+      facetParams['facet.field'] = fieldFacetsParams;
+      if (selectedFieldFacets.length > 0) {
+        facetParams.fq = selectedFieldFacets;
+      }
+    }
+
+    // Query facets gathering
+    const [queryFacetsParams, selectedQueryFacets] = prepareQueryFacets();
+    if (queryFacetsParams.length > 0) {
+      facetParams.facet = true;
+      facetParams['facet.query'] = queryFacetsParams;
+      if (selectedQueryFacets.length > 0) {
+        if (facetParams.fq) {
+          facetParams.fq = facetParams.fq.concat(selectedQueryFacets);
+        } else {
+          facetParams.fq = selectedQueryFacets;
+        }
+      }
+    }
+
+    // Other filters gathering
+    const otherFilters = prepareOtherFilters();
+    if (otherFilters.length > 0) {
+      if (facetParams.fq) {
+        facetParams.fq = facetParams.fq.concat(otherFilters);
+      } else {
+        facetParams.fq = otherFilters;
+      }
+    }
+
+    return facetParams;
+  }, [prepareFieldFacets, prepareQueryFacets, prepareOtherFilters]);
+
+  const buildSearchQueryString = useCallback(() => {
+    const facetsParams = prepareFacetsParams();
+    const queryParameters = {
+      q: query.elements,
+      // .map((element) => element.text.trim())
+      // .join(' ')
+      // .trim(),
+      fl: [
+        'title',
+        'url',
+        'id',
+        'extension',
+        'preview_content',
+        'last_modified',
+        'crawl_date',
+        'author',
+        'original_file_size',
+        'emptied',
+        'repo_source',
+      ].join(','),
+      sort: query.sort.value,
+      'q.op': 'AND',
+      rows: query.rows,
+      start: (query.page - 1) * query.rows,
+      ...facetsParams,
+    };
+    if (queryParameters.q === '') {
+      queryParameters.q = '*:*';
+    }
+
+    return buildQueryStringFromParams(queryParameters);
+  }, [
+    buildQueryStringFromParams,
+    prepareFacetsParams,
+    query.elements,
+    query.page,
+    query.rows,
+    query.sort.value,
+  ]);
+
   return (
     <QueryContext.Provider
       value={{
         query: query,
         dispatch: queryDispatcher,
+        buildSearchQueryString: buildSearchQueryString,
       }}
     >
       {props.children}

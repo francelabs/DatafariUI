@@ -1,11 +1,13 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useReducer,
   useState,
 } from 'react';
 import useHttp from '../Hooks/useHttp';
+import { APIEndpointsContext } from './api-endpoints-context';
 
 const userReducer = (user, action) => {
   switch (action.type) {
@@ -32,7 +34,7 @@ export const UserContext = React.createContext({
 });
 
 const UserContextProvider = (props) => {
-  const baseURL = '/Datafari';
+  const apiEndpointsContext = useContext(APIEndpointsContext);
   const [queryID, setQueryID] = useState(null);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [user, userDispatcher] = useReducer(userReducer, null);
@@ -40,8 +42,13 @@ const UserContextProvider = (props) => {
   const autoConnect = useCallback(() => {
     let newQueryID = Math.random().toString(36).substring(2, 15);
     setQueryID(newQueryID);
-    sendRequest(`${baseURL}/rest/v1.0/users/current`, 'GET', null, newQueryID);
-  }, [sendRequest]);
+    sendRequest(
+      `${apiEndpointsContext.currentUserURL}`,
+      'GET',
+      null,
+      newQueryID
+    );
+  }, [apiEndpointsContext.currentUserURL, sendRequest]);
 
   const actions = useMemo(() => {
     return {

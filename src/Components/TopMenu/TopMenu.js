@@ -26,6 +26,7 @@ import { UserContext } from '../../Contexts/user-context';
 import Spinner from '../Spinner/Spinner';
 import { ReactComponent as LoginIcon } from '../../Icons/login-24px.svg';
 import SvgIcon from '@material-ui/icons/AccountCircle';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -100,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TopMenu = () => {
+  const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
@@ -137,10 +139,9 @@ const TopMenu = () => {
     setLangMenuAnchorEl(event.currentTarget);
   };
 
-  const loginURL =
-    window.datafariBaseURL +
-    '/rest/v1.0/auth?callback=' +
-    new URL(process.env.PUBLIC_URL, window.location.href);
+  const loginURL = new URL(apiEndpointsContext.authURL);
+  loginURL.search =
+    '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -250,7 +251,7 @@ const TopMenu = () => {
                 edge="end"
                 aria-label="Login"
                 aria-haspopup="true"
-                href={loginURL}
+                href={`${loginURL}`}
                 color="inherit"
               >
                 <SvgIcon component={LoginIcon} alt="Login" />

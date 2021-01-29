@@ -194,7 +194,7 @@ const SearchInformation = (props) => {
             <Typography component="span" color="secondary">
               {query.elements ? query.elements : '*:*'}
             </Typography>{' '}
-            - {t('Search for')}{' '}
+            - {t('You may have more results with ')}{' '}
             <Typography component="span" color="secondary">
               {query.elements ? query.elements : t('anything')}
             </Typography>
@@ -221,12 +221,14 @@ const SearchInformation = (props) => {
             </MenuItem>
             <MenuItem onClick={handleSelectDateSort}>{t('Date')}</MenuItem>
           </Menu>
+          {/* 
           <IconButton>
             <ViewListIcon />
           </IconButton>
           <IconButton>
             <ViewModuleIcon />
           </IconButton>
+           */}
         </Grid>
       </Grid>
     </div>

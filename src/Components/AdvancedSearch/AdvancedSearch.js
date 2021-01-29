@@ -28,6 +28,7 @@ import useHttp from '../../Hooks/useHttp';
 import AdvancedSearchTextField from './AdvancedSearchTextField';
 import AdvancedSearchDateField from './AdvancedSearchDateField';
 import AdvancedSearchNumField from './AdvancedSearchNumField';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 
 const OPERATOR = 'OPERATOR';
 const FIELD = 'FIELD';
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdvancedSearch = (props) => {
+  const apiEndpointsContext = useContext(APIEndpointsContext);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { t } = useTranslation();
   const classes = useStyles();
@@ -923,27 +925,44 @@ const AdvancedSearch = (props) => {
 
   // Should be run only when component mount as sendRequest should be constant
   useEffect(() => {
-    sendRequest('/Datafari/GetFieldsInfo', 'GET', null, 'GetFieldsInfo');
-    sendRequest('/Datafari/GetExactFields', 'GET', null, 'GetExactFields');
     sendRequest(
-      '/Datafari/GetAutocompleteAdvancedFields',
+      apiEndpointsContext.getFieldsInfoURL,
+      'GET',
+      null,
+      'GetFieldsInfo'
+    );
+    sendRequest(
+      apiEndpointsContext.getExactFieldsURL,
+      'GET',
+      null,
+      'GetExactFields'
+    );
+    sendRequest(
+      apiEndpointsContext.getAutocompleteAdvancedFieldsURL,
       'GET',
       null,
       'GetAutocompleteAdvancedFields'
     );
     sendRequest(
-      '/Datafari/GetFixedValuesAdvancedFields',
+      apiEndpointsContext.getFixedValuesAdvancedFieldsURL,
       'GET',
       null,
       'GetFixedValuesAdvancedFields'
     );
     sendRequest(
-      '/Datafari/GetLabeledAdvancedFields',
+      apiEndpointsContext.getLabeledAdvancedFieldsURL,
       'GET',
       null,
       'GetLabeledAdvancedFields'
     );
-  }, [sendRequest]);
+  }, [
+    apiEndpointsContext.getAutocompleteAdvancedFieldsURL,
+    apiEndpointsContext.getExactFieldsURL,
+    apiEndpointsContext.getFieldsInfoURL,
+    apiEndpointsContext.getFixedValuesAdvancedFieldsURL,
+    apiEndpointsContext.getLabeledAdvancedFieldsURL,
+    sendRequest,
+  ]);
 
   useEffect(() => {
     if (reqIdentifier === 'GetFieldsInfo') {

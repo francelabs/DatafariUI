@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import {
   makeStyles,
   ListItem,
@@ -9,19 +10,16 @@ import {
   ListItemSecondaryAction,
   Link,
   Tooltip,
+  Avatar,
 } from '@material-ui/core';
 
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import { ReactComponent as ExcelIcon } from '../../Icons/icon_excel_file_green-24px.svg';
-import { ReactComponent as PdfIcon } from '../../Icons/icon_pdf_file_red-24px.svg';
-import { ReactComponent as WordIcon } from '../../Icons/icon_word_file_blue-24px.svg';
-import { ReactComponent as PowerPointIcon } from '../../Icons/icon_powerpointl_file_orange-24px.svg';
-import { ReactComponent as ZipIcon } from '../../Icons/icon_zip_file_orange-24px.svg';
-import { ReactComponent as DefaultFileIcon } from '../../Icons/icon_pdf_file_black-24px.svg';
 import { ReactComponent as PreviewIcon } from '../../Icons/preview-black-18dp.svg';
 import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../Contexts/user-context';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import { QueryContext } from '../../Contexts/query-context';
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -33,10 +31,11 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     position: 'absolute',
     top: '3.75rem',
-    left: theme.spacing(1),
+    left: theme.spacing(0),
   },
-  fileIconSvg: {
-    fontSize: '2.5rem',
+  fileIcon: {
+    height: '24px',
+    width: '24px',
   },
   previewIconSvg: {
     fontSize: '2rem',
@@ -60,10 +59,76 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const extension_list = [
+  'ai',
+  'asf',
+  'avi',
+  'bib',
+  'bin',
+  'csv',
+  'deb',
+  'default',
+  'djvu',
+  'dmg',
+  'doc',
+  'docx',
+  'dwf',
+  'dwg',
+  'flac',
+  'flv',
+  'gif',
+  'gz',
+  'html',
+  'indd',
+  'iso',
+  'jpg',
+  'log',
+  'm4v',
+  'midi',
+  'mkv',
+  'mov',
+  'mp4',
+  'mpeg',
+  'mpg',
+  'odp',
+  'ods',
+  'odt',
+  'oga',
+  'ogg',
+  'ogv',
+  'pdf',
+  'pds',
+  'png',
+  'ppt',
+  'pptx',
+  'ram',
+  'ra',
+  'rm',
+  'rpm',
+  'rv',
+  'skp',
+  'spx',
+  'sql',
+  'tar',
+  'tex',
+  'tgz',
+  'txt',
+  'vob',
+  'wmv',
+  'xls',
+  'xml',
+  'xpi',
+  'xsl',
+  'xslx',
+  'zip',
+];
+
 const ResultEntry = (props) => {
+  const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
   const { t } = useTranslation();
   const { state: userState } = useContext(UserContext);
+  const { buildSearchQueryString } = useContext(QueryContext);
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -163,32 +228,19 @@ const ResultEntry = (props) => {
   };
 
   const prepareDocURL = () => {
-    return `URL?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
+    return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
   };
 
   const preparePreviewURL = () => {
-    let request = `q=${props.q}`;
-    return `Preview?docPos=${props.position}&docId=${props.id}&${request}&action=OPEN_PREVIEW`;
+    let request = buildSearchQueryString();
+    return `/preview?docPos=${props.position}&docId=${props.id}&${request}&action=OPEN_PREVIEW`;
   };
 
   const selectFileIcon = (extension) => {
-    switch (extension) {
-      case 'pdf':
-        return PdfIcon;
-      case 'doc':
-      case 'docx':
-      case 'docm':
-        return WordIcon;
-      case 'xls':
-      case 'xlsx':
-        return ExcelIcon;
-      case 'zip':
-        return ZipIcon;
-      case 'ppt':
-      case 'pptx':
-        return PowerPointIcon;
-      default:
-        return DefaultFileIcon;
+    if (extension_list.indexOf(extension) !== -1) {
+      return `${process.env.PUBLIC_URL}/images/file_icons/icon_square_${extension}_v01-24px.png`;
+    } else {
+      return `${process.env.PUBLIC_URL}/images/file_icons/icon_square_default_v01-24px.png`;
     }
   };
 
@@ -201,22 +253,25 @@ const ResultEntry = (props) => {
       className={classes.resultContainer}
     >
       <ListItemIcon>
-        <SvgIcon
-          className={classes.fileIconSvg}
-          component={fileIcon}
+        <Avatar
+          className={classes.fileIcon}
+          variant="square"
+          src={fileIcon}
           alt={`${props.extension} icon`}
         />
-        <IconButton aria-label="preview" className={classes.previewIcon}>
-          <SvgIcon
-            className={classes.previewIconSvg}
-            component={PreviewIcon}
-            alt="preview icon"
-          />
-        </IconButton>
+        <Link component={RouterLink} to={preparePreviewURL()} target="new">
+          <IconButton aria-label="preview" className={classes.previewIcon}>
+            <SvgIcon
+              className={classes.previewIconSvg}
+              component={PreviewIcon}
+              alt="preview icon"
+            />
+          </IconButton>
+        </Link>
       </ListItemIcon>
       <ListItemText
         primary={
-          <Link color="secondary" href={prepareDocURL()}>
+          <Link color="secondary" href={prepareDocURL()} target="new">
             {prepareTitle()}
           </Link>
         }
@@ -230,15 +285,16 @@ const ResultEntry = (props) => {
             </div>
             <div>
               <span>Source: {props['repo_source']}</span>
+              {/*               
               <span className={classes.moreLikeThis}>
                 <Link
                   color="secondary"
-                  href={preparePreviewURL()}
-                  onClick={(event) => event.preventDefault()}
+                  component={RouterLink}
+                  to={preparePreviewURL()}
                 >
                   {t('More Like This')}&gt;&gt;
                 </Link>
-              </span>
+              </span> */}
             </div>
           </>
         }

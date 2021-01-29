@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   MenuItem,
   ListSubheader,
@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import useHttp from '../../../../Hooks/useHttp';
 import Spinner from '../../../Spinner/Spinner';
+import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
 
 const useStyles = makeStyles((theme) => ({
   autocompleteTitleContainer: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SimpleAutocomplete = (props) => {
-  const baseURL = '/Datafari/SearchAggregator';
+  const apiEndpointsContext = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,13 +35,13 @@ const SimpleAutocomplete = (props) => {
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       sendRequest(
-        `${baseURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
+        `${apiEndpointsContext.searchURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
         'GET',
         null,
         newQueryID
       );
     }
-  }, [props, sendRequest, setSuggestions]);
+  }, [apiEndpointsContext.searchURL, props, sendRequest, setSuggestions]);
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
