@@ -11,6 +11,7 @@ export const DEFAULT_RESULT = {
   fieldFacets: {},
   queryFacets: {},
   elements: [],
+  spellcheck: undefined,
   numFound: 0,
   rows: 10,
   start: 0,

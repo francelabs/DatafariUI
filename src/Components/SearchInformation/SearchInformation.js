@@ -21,6 +21,7 @@ import FilterEntry from './FilterEntry';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import SortIcon from '@material-ui/icons/Sort';
+import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {
@@ -189,16 +190,7 @@ const SearchInformation = (props) => {
               </>
             )}
           </Typography>
-          <Typography>
-            {t('Showing results for')}{' '}
-            <Typography component="span" color="secondary">
-              {query.elements ? query.elements : '*:*'}
-            </Typography>{' '}
-            - {t('You may have more results with ')}{' '}
-            <Typography component="span" color="secondary">
-              {query.elements ? query.elements : t('anything')}
-            </Typography>
-          </Typography>
+          <CurrentSearchAndSpellcheck />
         </Grid>
         <Grid item xs className={classes.rightMenu}>
           <Button

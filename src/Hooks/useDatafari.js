@@ -73,6 +73,15 @@ const useDatafari = () => {
         newResults.rows = parseInt(data.responseHeader.params.rows, 10);
         newResults.start = data.response.start;
       }
+      if (
+        data.spellcheck &&
+        data.spellcheck.collations &&
+        data.spellcheck.collations.length > 0
+      ) {
+        const spellcheck = {};
+        spellcheck.collation = data.spellcheck.collations[1];
+        newResults.spellcheck = spellcheck;
+      }
     }
     resultsDispatch({ type: SET_RESULTS, results: newResults });
   }, [isLoading, data, error, prepareAndSetQueryFacets, resultsDispatch]);
