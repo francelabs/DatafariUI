@@ -24,6 +24,10 @@ const LangSelectionMenu = (props) => {
         vertical: 'bottom',
         horizontal: 'center',
       }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
     >
       <MenuItem onClick={handleChangeLanguage('en')}>{t('English')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('fr')}>{t('French')}</MenuItem>

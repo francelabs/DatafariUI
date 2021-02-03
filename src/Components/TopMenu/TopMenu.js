@@ -241,7 +241,7 @@ const TopMenu = () => {
             <IconButton aria-label={t('Help')} color="inherit">
               <HelpOutlineIcon fontSize="large" />
             </IconButton>
-            <IconButton aria-label={t('Search tools')} color="inherit">
+            <IconButton aria-label={t('Settings')} color="inherit">
               <SettingsIcon fontSize="large" />
             </IconButton>
             {userState.isLoading ? (
