@@ -18,6 +18,12 @@ const LangSelectionMenu = (props) => {
       anchorEl={props.anchorEl}
       open={props.open}
       onClose={props.onClose}
+      keepMounted
+      getContentAnchorEl={null}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
     >
       <MenuItem onClick={handleChangeLanguage('en')}>{t('English')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('fr')}>{t('French')}</MenuItem>
