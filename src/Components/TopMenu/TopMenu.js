@@ -27,6 +27,9 @@ import Spinner from '../Spinner/Spinner';
 import { ReactComponent as LoginIcon } from '../../Icons/login-24px.svg';
 import SvgIcon from '@material-ui/icons/AccountCircle';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
+import HelpMenu from '../HelpMenu/HelpMenu';
+import SettingsMenu from '../SettingsMenu/SettingsMenu';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -105,6 +108,9 @@ const TopMenu = () => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
+  const [feedbacksMenuAnchorEl, setFeedbacksMenuAnchorEl] = useState(null);
+  const [helpMenuAnchorEl, setHelpMenuAnchorEl] = useState(null);
+  const [settingsMenuAnchorEl, setSettingsMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { state: userState } = useContext(UserContext);
   const { t } = useTranslation();
@@ -139,6 +145,36 @@ const TopMenu = () => {
     setLangMenuAnchorEl(event.currentTarget);
   };
 
+  const handleCloseFeedbacksMenu = () => {
+    // setFeedbacksMenuOpen(false);
+    setFeedbacksMenuAnchorEl(null);
+  };
+
+  const handleOpenFeedbacksMenu = (event) => {
+    // setFeedbacksMenuOpen(true);
+    setFeedbacksMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseHelpMenu = () => {
+    // setHelpMenuOpen(false);
+    setHelpMenuAnchorEl(null);
+  };
+
+  const handleOpenHelpMenu = (event) => {
+    // setHelpMenuOpen(true);
+    setHelpMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseSettingsMenu = () => {
+    // setSettingsMenuOpen(false);
+    setSettingsMenuAnchorEl(null);
+  };
+
+  const handleOpenSettingsMenu = (event) => {
+    // setSettingsMenuOpen(true);
+    setSettingsMenuAnchorEl(event.currentTarget);
+  };
+
   const loginURL = new URL(apiEndpointsContext.authURL);
   loginURL.search =
     '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
@@ -147,15 +183,21 @@ const TopMenu = () => {
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       id={menuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      getContentAnchorEl={null}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>{t('Logout')}</MenuItem>
     </Menu>
   );
 
@@ -229,19 +271,26 @@ const TopMenu = () => {
             >
               <LanguageIcon fontSize="large" />
             </IconButton>
-            <LangSelectionMenu
-              open={Boolean(langMenuAnchorEl)}
-              anchorEl={langMenuAnchorEl}
-              onClose={handleCloseLangMenu}
-              id="lang-menu"
-            />
-            <IconButton aria-label={t('Feedbacks')} color="inherit">
+
+            <IconButton
+              aria-label={t('Feedbacks')}
+              color="inherit"
+              onClick={handleOpenFeedbacksMenu}
+            >
               <FeedbackOutlinedIcon fontSize="large" />
             </IconButton>
-            <IconButton aria-label={t('Help')} color="inherit">
+            <IconButton
+              aria-label={t('Help')}
+              color="inherit"
+              onClick={handleOpenHelpMenu}
+            >
               <HelpOutlineIcon fontSize="large" />
             </IconButton>
-            <IconButton aria-label={t('Settings')} color="inherit">
+            <IconButton
+              aria-label={t('Settings')}
+              color="inherit"
+              onClick={handleOpenSettingsMenu}
+            >
               <SettingsIcon fontSize="large" />
             </IconButton>
             {userState.isLoading ? (
@@ -286,6 +335,30 @@ const TopMenu = () => {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <LangSelectionMenu
+        open={Boolean(langMenuAnchorEl)}
+        anchorEl={langMenuAnchorEl}
+        onClose={handleCloseLangMenu}
+        id="lang-menu"
+      />
+      <FeedbacksMenu
+        open={Boolean(feedbacksMenuAnchorEl)}
+        anchorEl={feedbacksMenuAnchorEl}
+        onClose={handleCloseFeedbacksMenu}
+        id="feedbacks-menu"
+      />
+      <HelpMenu
+        open={Boolean(helpMenuAnchorEl)}
+        anchorEl={helpMenuAnchorEl}
+        onClose={handleCloseHelpMenu}
+        id="help-menu"
+      />
+      <SettingsMenu
+        open={Boolean(settingsMenuAnchorEl)}
+        anchorEl={settingsMenuAnchorEl}
+        onClose={handleCloseSettingsMenu}
+        id="settings-menu"
+      />
     </>
   );
 };
