@@ -10,9 +10,14 @@ import {
   Toolbar,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import AdvancedSearch from '../AdvancedSearch/AdvancedSearch';
 import FavortiesModal from '../../Pages/FavoritesModal/FavoritesModal';
 import { UserContext } from '../../Contexts/user-context';
+import AdvancedSearchModal from '../../Pages/AdvancedSearchModal/AdvancedSearchModal';
+import ManageAlertsModal from '../../Pages/ManageAlertsModal/ManageAlertsModal';
+import ManageSavedQueriesModal from '../../Pages/ManageSavedQueriesModal/ManageSavedQueriesModal';
+import ModifyAlertModal from '../../Pages/ModifyAlertModal/ModifyAlertModal';
+import ExportResultsModal from '../../Pages/ExportResultsModal/ExportResultsModal';
+import ModifySavedQueryModal from '../../Pages/ModifySavedQueryModal/ModifySavedQueryModal';
 
 const SearchTopMenu = () => {
   const [value, setValue] = useState(0);
@@ -74,34 +79,73 @@ const SearchTopMenu = () => {
           </MenuItem>
           {/* <MenuItem onClick={handleClose}>{t('Advanced Search')}</MenuItem> */}
           <Divider />
-          <MenuItem onClick={handleClose}>{t('Manage Saved Queries')}</MenuItem>
-          <MenuItem onClick={handleClose}>{t('Save Current Query')}</MenuItem>
-          <Divider />
-          <MenuItem onClick={handleClose}>{t('Manage Alerts')}</MenuItem>
-          <MenuItem onClick={handleClose}>{t('Save Query As Alert')}</MenuItem>
-          <Divider />
           {userState.user && (
             <>
+              <MenuItem onClick={handleOpen('manageSavedQeuries')}>
+                {t('Manage Saved Queries')}
+              </MenuItem>
+              <MenuItem onClick={handleOpen('saveQuery')}>
+                {t('Save Current Query')}
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleOpen('manageAlerts')}>
+                {t('Manage Alerts')}
+              </MenuItem>
+              <MenuItem onClick={handleOpen('createAlert')}>
+                {t('Save Query As Alert')}
+              </MenuItem>
+              <Divider />
+
               <MenuItem onClick={handleOpen('favorites')}>
                 {t('Manage Favorites')}
               </MenuItem>
               <Divider />
             </>
           )}
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleOpen('exportResults')}>
             {t('Export Current Results')}
           </MenuItem>
         </Menu>
       </Toolbar>
-      <AdvancedSearch
+      <AdvancedSearchModal
         open={open === 'advanceSearch'}
-        handleClose={() => {
+        onClose={() => {
           setOpen(undefined);
         }}
       />
       <FavortiesModal
         open={open === 'favorites'}
-        handleClose={() => {
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <ManageAlertsModal
+        open={open === 'manageAlerts'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <ManageSavedQueriesModal
+        open={open === 'manageSavedQeuries'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <ModifyAlertModal
+        open={open === 'createAlert'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <ExportResultsModal
+        open={open === 'exportResults'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <ModifySavedQueryModal
+        open={open === 'saveQuery'}
+        onClose={() => {
           setOpen(undefined);
         }}
       />

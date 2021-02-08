@@ -41,7 +41,7 @@ const FavortiesModal = (props) => {
       type: SET_RESULTS,
       results: { results: [...results.results] },
     });
-    props.handleClose();
+    props.onClose();
   };
 
   const columns = [
@@ -230,7 +230,12 @@ const FavortiesModal = (props) => {
         </TableContainer>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleRemoveSelectedClick}>
+        <Button
+          onClick={handleRemoveSelectedClick}
+          color="secondary"
+          variant="contained"
+          size="small"
+        >
           {t('Delete Selected')}
         </Button>
       </DialogActions>

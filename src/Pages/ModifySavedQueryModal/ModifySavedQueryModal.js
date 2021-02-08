@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,6 +9,11 @@ import {
   TextField,
   Grid,
   makeStyles,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import { QueryContext } from '../../Contexts/query-context';
@@ -19,10 +24,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FeedbackDocumentNotFoundModal = (props) => {
+const ModifySavedQueryModal = (props) => {
   const { t } = useTranslation();
   const { query } = useContext(QueryContext);
   const classes = useStyles();
+  const [keepFacets, setKeepFacets] = useState(false);
+
+  const keepFacetsChange = () => {
+    setKeepFacets((value) => !value);
+  };
 
   const sendFeedback = useCallback(() => {
     props.onClose();
@@ -30,18 +40,16 @@ const FeedbackDocumentNotFoundModal = (props) => {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DialogTitle onClose={props.onClose}>
-        {t('Give us your feedback')}
-      </DialogTitle>
+      <DialogTitle onClose={props.onClose}>{t('Save Query')}</DialogTitle>
       <DialogContent>
         <Grid container justify="space-between">
           <Grid item xs={1} />
           <Grid item xs={10}>
             <TextField
-              id="datafari-feedback-query"
-              label={t('Using my current query')}
+              id="datafari-query-name"
+              label={t('Query Name')}
               defaultValue={query.elements}
-              helperText={t('This is the query you are currently running')}
+              helperText={t('Type here the name used to store your query')}
               variant="filled"
               color="secondary"
               fullWidth={true}
@@ -51,20 +59,25 @@ const FeedbackDocumentNotFoundModal = (props) => {
           <Grid item xs={1} />
           <Grid item xs={1} />
           <Grid item xs={10}>
-            <TextField
-              id="datafari-feedback-document"
-              label={t('I cannot find the following document')}
-              placeholder={`${t('file name')}: abc.docx
-${t('title')}: abc report
-${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`}
-              helperText={t('Give us as much details as possible')}
-              multiline={true}
-              rows={4}
-              variant="filled"
-              color="secondary"
-              fullWidth={true}
-              className={classes.fieldsPadding}
-            />
+            <FormControl component="fieldset">
+              <FormLabel variant="filled" color="secondary" component="legend">
+                {t('Keep facets')}
+              </FormLabel>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={keepFacets}
+                      onChange={keepFacetsChange}
+                      name="keep-facets"
+                    />
+                  }
+                  label={t(
+                    'Check this box if you want to save the current facets'
+                  )}
+                />
+              </FormGroup>
+            </FormControl>
           </Grid>
           <Grid item xs={1} />
         </Grid>
@@ -76,11 +89,11 @@ ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`}
           variant="contained"
           size="small"
         >
-          {t('Send us this feedback')}
+          {t('Activate this alert')}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default FeedbackDocumentNotFoundModal;
+export default ModifySavedQueryModal;

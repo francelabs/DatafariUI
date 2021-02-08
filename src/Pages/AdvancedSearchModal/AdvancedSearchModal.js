@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AdvancedSearch = (props) => {
+const AdvancedSearchModal = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { t } = useTranslation();
@@ -1103,7 +1103,7 @@ const AdvancedSearch = (props) => {
       type: SET_ELEMENTS_NO_RESET,
       elements: newQuery,
     });
-    props.handleClose();
+    props.onClose();
   };
 
   const handleBaseSearchChange = useCallback((baseSearchField) => {
@@ -1124,15 +1124,8 @@ const AdvancedSearch = (props) => {
   }, []);
 
   return (
-    <Dialog
-      open={props.open}
-      onClose={props.handleClose}
-      fullWidth
-      maxWidth="lg"
-    >
-      <DialogTitle onClose={props.handleClose}>
-        {t('Advanced Search')}
-      </DialogTitle>
+    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="lg">
+      <DialogTitle onClose={props.onClose}>{t('Advanced Search')}</DialogTitle>
       <DialogContent>
         <Grid container>
           <Grid item xs={10}>
@@ -1226,7 +1219,7 @@ const AdvancedSearch = (props) => {
           variant="contained"
           size="small"
         >
-          Search
+          {t('Search')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -1391,4 +1384,4 @@ const AdvancedSearchField = (props) => {
   );
 };
 
-export default AdvancedSearch;
+export default AdvancedSearchModal;
