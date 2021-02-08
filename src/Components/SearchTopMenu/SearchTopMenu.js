@@ -77,7 +77,6 @@ const SearchTopMenu = () => {
           <MenuItem onClick={handleOpen('advanceSearch')}>
             {t('Advanced Search')}
           </MenuItem>
-          {/* <MenuItem onClick={handleClose}>{t('Advanced Search')}</MenuItem> */}
           <Divider />
           {userState.user && (
             <>
