@@ -116,7 +116,7 @@ const Preview = (props) => {
     } else {
       // Cannot do anything without a docId, go back to the search page or show an error ?
     }
-  }, [location, sendRequest]);
+  }, [baseURL, location, sendRequest]);
 
   useEffect(() => {
     // Treat the response with the document data and possible errors

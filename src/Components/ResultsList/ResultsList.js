@@ -14,6 +14,11 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     borderRadius: '5px',
   },
+  spinnerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
 }));
 
 const ResultsList = (porps) => {
@@ -116,36 +121,42 @@ const ResultsList = (porps) => {
   ]);
 
   return (
-    <List className={classes.resultsContainer}>
+    <>
       {results.isLoading ? (
-        <Spinner />
+        <div className={classes.spinnerContainer}>
+          <div>
+            <Spinner />
+          </div>
+        </div>
       ) : results.error ? (
         <ResultError error={results.error.message} />
       ) : results.results.length === 0 ? (
         <div>{t('No results')}</div>
       ) : (
-        results.results.map((result, index) => (
-          <React.Fragment>
-            <ResultEntry
-              {...result}
-              position={results.start + index}
-              bookmarked={favorites.indexOf(result.id) !== -1}
-              bookmarkClickCallback={
-                favorites.indexOf(result.id) !== -1
-                  ? removeFavoriteCallback(result.id)
-                  : addFavoriteCallback(
-                      result.id,
-                      Array.isArray(result.title)
-                        ? result.title[0]
-                        : result.title
-                    )
-              }
-            />
-            <Divider variant="inset" component="li" />
-          </React.Fragment>
-        ))
+        <List className={classes.resultsContainer}>
+          {results.results.map((result, index) => (
+            <React.Fragment>
+              <ResultEntry
+                {...result}
+                position={results.start + index}
+                bookmarked={favorites.indexOf(result.id) !== -1}
+                bookmarkClickCallback={
+                  favorites.indexOf(result.id) !== -1
+                    ? removeFavoriteCallback(result.id)
+                    : addFavoriteCallback(
+                        result.id,
+                        Array.isArray(result.title)
+                          ? result.title[0]
+                          : result.title
+                      )
+                }
+              />
+              <Divider variant="inset" component="li" />
+            </React.Fragment>
+          ))}
+        </List>
       )}
-    </List>
+    </>
   );
 };
 

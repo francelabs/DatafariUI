@@ -14,6 +14,7 @@ import {
   MenuItem,
   FormHelperText,
   InputLabel,
+  Divider,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 
@@ -39,6 +40,7 @@ const ExportResultsModal = (props) => {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
       <DialogTitle onClose={props.onClose}>{t('Export Results')}</DialogTitle>
+      <Divider />
       <DialogContent>
         <Grid container justify="space-between">
           <Grid item xs={1} />
@@ -59,7 +61,7 @@ const ExportResultsModal = (props) => {
           <Grid item xs={10}>
             <FormControl>
               <InputLabel id="datafari-export-format-label" color="secondary">
-                {t('Update Frequency')}
+                {t('Export as')}
               </InputLabel>
               <Select
                 id="datafari-export-format"
@@ -72,9 +74,7 @@ const ExportResultsModal = (props) => {
                 <MenuItem value="TXT">{t('Text')}</MenuItem>
               </Select>
               <FormHelperText>
-                {t(
-                  'Pick how frequently you wish to receive email notifications'
-                )}
+                {t('Select a format that suits your needs')}
               </FormHelperText>
             </FormControl>
           </Grid>

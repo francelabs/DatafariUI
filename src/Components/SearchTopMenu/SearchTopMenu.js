@@ -101,9 +101,9 @@ const SearchTopMenu = () => {
               <Divider />
             </>
           )}
-          <MenuItem onClick={handleOpen('exportResults')}>
+          {/* <MenuItem onClick={handleOpen('exportResults')}>
             {t('Export Current Results')}
-          </MenuItem>
+          </MenuItem> */}
         </Menu>
       </Toolbar>
       <AdvancedSearchModal

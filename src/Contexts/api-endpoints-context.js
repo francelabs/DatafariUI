@@ -5,6 +5,8 @@ const DEFAULT_ENDPOINTS = {
   restAPIBaseURL: '',
   authURL: '',
   currentUserURL: '',
+  currentUserAlertsURL: '',
+  currentUserSavedSearchesURL: '',
   searchURL: '',
   getAutocompleteAdvancedFieldsURL: '',
   getFixedValuesAdvancedFieldsURL: '',
@@ -48,6 +50,14 @@ const APIEndpointsContextProvider = (props) => {
       restAPIBaseURL
     ),
     searchURL: new URL(`${restAPIBaseURL.pathname}/search`, restAPIBaseURL),
+    currentUserAlertsURL: new URL(
+      `${restAPIBaseURL.pathname}/users/current/alerts`,
+      restAPIBaseURL
+    ),
+    currentUserSavedSearchesURL: new URL(
+      `${restAPIBaseURL.pathname}/users/current/savedsearches`,
+      restAPIBaseURL
+    ),
     getAutocompleteAdvancedFieldsURL: new URL(
       `${datafariBaseURL.pathname}/GetAutocompleteAdvancedFields`,
       datafariBaseURL

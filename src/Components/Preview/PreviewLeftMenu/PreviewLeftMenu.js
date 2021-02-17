@@ -1,4 +1,4 @@
-import { Divider, makeStyles, Paper } from '@material-ui/core';
+import { makeStyles, Paper } from '@material-ui/core';
 import React from 'react';
 import PreviewProperties from '../Properties/PreviewProperties';
 

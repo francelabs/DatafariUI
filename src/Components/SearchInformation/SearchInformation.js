@@ -3,7 +3,6 @@ import {
   Typography,
   makeStyles,
   Grid,
-  IconButton,
   Button,
   Menu,
   MenuItem,
@@ -18,8 +17,6 @@ import {
   SET_SORT,
 } from '../../Contexts/query-context';
 import FilterEntry from './FilterEntry';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import ViewListIcon from '@material-ui/icons/ViewList';
 import SortIcon from '@material-ui/icons/Sort';
 import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
 
@@ -174,46 +171,48 @@ const SearchInformation = (props) => {
   }
 
   return (
-    <div className={classes.informationContainer}>
-      <Grid container>
-        <Grid item xs={8}>
-          <Typography>
-            {t('Results {{ start }} - {{ end }} of {{ total }}', {
-              start: results.start + 1,
-              end: results.start + results.rows,
-              total: results.numFound,
-            })}{' '}
-            {filters.length > 0 && (
-              <>
-                - [{t('FILTERS')}]:&nbsp;
-                {filters}
-              </>
-            )}
-          </Typography>
-          <CurrentSearchAndSpellcheck />
-        </Grid>
-        <Grid item xs className={classes.rightMenu}>
-          <Button
-            onClick={handleOpenSortMenu}
-            aria-controls={`sort-menu`}
-            aria-haspopup="true"
-            ref={sortMenuAnchorRef}
-          >
-            <SortIcon />
-            {t(query.sort.label)}
-          </Button>
-          <Menu
-            id={`sort-menu`}
-            anchorEl={sortMenuAnchorRef.current}
-            open={sortMenuOpen}
-            onClose={handleCloseSortMenu}
-          >
-            <MenuItem onClick={handleSelectRelevanceSort}>
-              {t('Relevance')}
-            </MenuItem>
-            <MenuItem onClick={handleSelectDateSort}>{t('Date')}</MenuItem>
-          </Menu>
-          {/* 
+    !results.isLoading &&
+    !results.error && (
+      <div className={classes.informationContainer}>
+        <Grid container>
+          <Grid item xs={8}>
+            <Typography>
+              {t('Results {{ start }} - {{ end }} of {{ total }}', {
+                start: results.start + 1,
+                end: results.start + results.rows,
+                total: results.numFound,
+              })}{' '}
+              {filters.length > 0 && (
+                <>
+                  - [{t('FILTERS')}]:&nbsp;
+                  {filters}
+                </>
+              )}
+            </Typography>
+            <CurrentSearchAndSpellcheck />
+          </Grid>
+          <Grid item xs className={classes.rightMenu}>
+            <Button
+              onClick={handleOpenSortMenu}
+              aria-controls={`sort-menu`}
+              aria-haspopup="true"
+              ref={sortMenuAnchorRef}
+            >
+              <SortIcon />
+              {t(query.sort.label)}
+            </Button>
+            <Menu
+              id={`sort-menu`}
+              anchorEl={sortMenuAnchorRef.current}
+              open={sortMenuOpen}
+              onClose={handleCloseSortMenu}
+            >
+              <MenuItem onClick={handleSelectRelevanceSort}>
+                {t('Relevance')}
+              </MenuItem>
+              <MenuItem onClick={handleSelectDateSort}>{t('Date')}</MenuItem>
+            </Menu>
+            {/* 
           <IconButton>
             <ViewListIcon />
           </IconButton>
@@ -221,9 +220,10 @@ const SearchInformation = (props) => {
             <ViewModuleIcon />
           </IconButton>
            */}
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    )
   );
 };
 

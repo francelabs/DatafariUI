@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { useState, useContext, useCallback, useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -1126,6 +1127,7 @@ const AdvancedSearchModal = (props) => {
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="lg">
       <DialogTitle onClose={props.onClose}>{t('Advanced Search')}</DialogTitle>
+      <Divider />
       <DialogContent>
         <Grid container>
           <Grid item xs={10}>

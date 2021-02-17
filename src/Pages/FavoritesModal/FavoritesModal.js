@@ -13,14 +13,28 @@ import {
   DialogContent,
   Checkbox,
   Button,
+  Divider,
+  Tooltip,
+  makeStyles,
+  Link,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import useFavorites from '../../Hooks/useFavorites';
 import { ResultsContext, SET_RESULTS } from '../../Contexts/results-context';
+import Spinner from '../../Components/Spinner/Spinner';
 
 const fetchQueryID = 'FETCH_FAVORITES';
 
+const useStyles = makeStyles((theme) => ({
+  spinnerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+}));
+
 const FavortiesModal = (props) => {
+  const classes = useStyles();
   const {
     isLoading,
     data,
@@ -44,10 +58,36 @@ const FavortiesModal = (props) => {
     props.onClose();
   };
 
-  const columns = [
-    { id: 'title', label: t('Favorite Document Title'), minWidth: 350 },
-    { id: 'id', label: t('Favorite Document Path'), minWidth: 350 },
-  ];
+  const prepareString = (string, maxlen) => {
+    let result = '';
+    if (Array.isArray(string)) {
+      try {
+        result = decodeURIComponent(string[0]);
+      } catch (e) {
+        result = string[0];
+      }
+    } else if (string !== undefined && string !== null) {
+      try {
+        result = decodeURIComponent(string);
+      } catch (e) {
+        result = string;
+      }
+    }
+    if (result.length > maxlen) {
+      result = (
+        <Tooltip title={result} placement="right" aria-label={result}>
+          <span>
+            {result.substring(0, Math.floor((maxlen - 3) / 2)) +
+              '...' +
+              result.substring(
+                result.length - (maxlen - 3 - Math.floor((maxlen - 3) / 2))
+              )}
+          </span>
+        </Tooltip>
+      );
+    }
+    return result;
+  };
 
   useEffect(() => {
     if (props.open) {
@@ -171,74 +211,96 @@ const FavortiesModal = (props) => {
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="lg">
       <DialogTitle onClose={handleClose}>{t('My Favorites')}</DialogTitle>
-      <DialogContent>
-        <TableContainer>
-          <Table size="small" stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell key="checkbox" padding="checkbox">
-                  <Checkbox
-                    onChange={handleSelectAllClick}
-                    checked={allSelected || selected.length > 0}
-                    indeterminate={
-                      selected.length > 0 &&
-                      selected.length !== favorites.length
-                    }
-                  />
-                </TableCell>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
+      <Divider />
+      {isLoading && (
+        <DialogContent className={classes.spinnerContainer}>
+          <div>
+            <Spinner />
+          </div>
+        </DialogContent>
+      )}
+      {!isLoading && (
+        <DialogContent>
+          <TableContainer>
+            <Table size="small" stickyHeader aria-label="favorites table">
+              <TableHead>
+                <TableRow>
+                  <TableCell key="checkbox" padding="checkbox">
+                    <Checkbox
+                      onChange={handleSelectAllClick}
+                      checked={allSelected || selected.length > 0}
+                      indeterminate={
+                        selected.length > 0 &&
+                        selected.length !== favorites.length
+                      }
+                    />
                   </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {favorites.map((row) => {
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.id}
-                    onClick={handleCheckboxClick(row.id)}
-                  >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={allSelected || selected.indexOf(row.id) !== -1}
-                      />
+                  <TableCell style={{ minWidth: 350 }}>{t('Title')}</TableCell>
+                  <TableCell style={{ minWidth: 350 }}>{t('URL')}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {error && (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      {t(
+                        'An error occured while retrieving the data, if this error persists contact an administrator'
+                      )}
                     </TableCell>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleRemoveSelectedClick}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
-          {t('Delete Selected')}
-        </Button>
-      </DialogActions>
+                )}
+                {!error &&
+                  favorites.map((row) => {
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.id}
+                        onClick={handleCheckboxClick(row.id)}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={
+                              allSelected || selected.indexOf(row.id) !== -1
+                            }
+                          />
+                        </TableCell>
+                        <TableCell style={{ minWidth: 350 }}>
+                          <Link
+                            color="secondary"
+                            href={row.id}
+                            target="new"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            {prepareString(row.title, 50)}
+                          </Link>
+                        </TableCell>
+                        <TableCell style={{ minWidth: 350 }}>
+                          {prepareString(row.id, 50)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+      )}
+      {!isLoading && (
+        <DialogActions>
+          <Button
+            onClick={handleRemoveSelectedClick}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            {t('Delete Selected Shortcuts')}
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 };

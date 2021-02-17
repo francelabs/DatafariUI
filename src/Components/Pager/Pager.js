@@ -117,18 +117,21 @@ const Pager = (props) => {
   }
 
   return (
-    <Grid container alignItems="center" className={classes.pagerContainer}>
-      {pages.map((element, index) => {
-        return (
-          <>
-            {element}
-            {index < pages.length - 1 && (
-              <Divider orientation="vertical" flexItem />
-            )}
-          </>
-        );
-      })}
-    </Grid>
+    !results.isLoading &&
+    !results.error && (
+      <Grid container alignItems="center" className={classes.pagerContainer}>
+        {pages.map((element, index) => {
+          return (
+            <>
+              {element}
+              {index < pages.length - 1 && (
+                <Divider orientation="vertical" flexItem />
+              )}
+            </>
+          );
+        })}
+      </Grid>
+    )
   );
 };
 

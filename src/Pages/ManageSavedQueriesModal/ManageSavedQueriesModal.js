@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -6,36 +6,54 @@ import {
   DialogActions,
   DialogContent,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   IconButton,
-  ListItemSecondaryAction,
   Radio,
-  ListItemIcon,
+  Divider,
+  makeStyles,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+// eslint-disable-next-line no-unused-vars
 import EditIcon from '@material-ui/icons/Edit';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
-import useFavorites from '../../Hooks/useFavorites';
+import useSavedSearches from '../../Hooks/useSavedSearches';
+import Spinner from '../../Components/Spinner/Spinner';
+import { QueryContext } from '../../Contexts/query-context';
 
-const fetchQueryID = 'FETCH_FAVORITES';
+const fetchQueryID = 'FETCH_SAVED_SEARCHES';
+
+const useStyles = makeStyles((theme) => ({
+  spinnerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+}));
 
 const ManageSavedQueriesModal = (props) => {
+  const classes = useStyles();
   const {
     isLoading,
     data,
     error,
     reqIdentifier,
-    getFavorites,
-  } = useFavorites();
+    getSavedSearches,
+    removeSavedSearch,
+  } = useSavedSearches();
+  const { runQueryFromSavedSearch } = useContext(QueryContext);
   const { t } = useTranslation();
-  const [favorites, setFavorites] = useState([]);
+  const [savedSearches, setSavedSearches] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
+    setSelectedValue(null);
     props.onClose();
-  };
+  }, [props]);
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
@@ -43,18 +61,16 @@ const ManageSavedQueriesModal = (props) => {
 
   useEffect(() => {
     if (props.open) {
-      getFavorites(fetchQueryID);
+      getSavedSearches(fetchQueryID);
     }
-  }, [getFavorites, props.open]);
+  }, [getSavedSearches, props.open]);
 
   useEffect(() => {
-    // Effect for fetching favorites query
+    // Effect for fetching savedsearches query
     if (reqIdentifier === fetchQueryID) {
       if (!isLoading && !error && data) {
-        if (data.code === 0) {
-          setFavorites(
-            data.favoritesList.map((element) => JSON.parse(element))
-          );
+        if (data.status === 'OK') {
+          setSavedSearches(data.content.savedsearches);
         } else {
           // Servlet returns error code handling (not connected or other...)
         }
@@ -62,26 +78,29 @@ const ManageSavedQueriesModal = (props) => {
         // Network / parsing error handling
       }
     }
-  }, [reqIdentifier, data, isLoading, error, setFavorites]);
+  }, [reqIdentifier, data, isLoading, error, setSavedSearches]);
 
   useEffect(() => {
-    // Effect for removing favorites query
+    // Effect for removing savedsearch query
     if (reqIdentifier !== fetchQueryID) {
       if (!isLoading && !error && data) {
-        if (data.code === 0) {
-          setFavorites((currentFavorites) => {
-            const favoritesIDs = currentFavorites.map(
-              (favorite) => favorite.id
+        if (data.status === 'OK') {
+          setSavedSearches((currentSavedSearches) => {
+            const savedSearchNames = currentSavedSearches.map(
+              (savedSearch) => savedSearch.name
             );
-            if (favoritesIDs.indexOf(reqIdentifier) !== -1) {
-              const newFavorites = currentFavorites.slice(
+            if (savedSearchNames.indexOf(reqIdentifier) !== -1) {
+              const newSavedSearches = currentSavedSearches.slice(
                 0,
-                currentFavorites.length
+                currentSavedSearches.length
               );
-              newFavorites.splice(favoritesIDs.indexOf(reqIdentifier), 1);
-              return newFavorites;
+              newSavedSearches.splice(
+                savedSearchNames.indexOf(reqIdentifier),
+                1
+              );
+              return newSavedSearches;
             } else {
-              return currentFavorites;
+              return currentSavedSearches;
             }
           });
         } else {
@@ -91,49 +110,112 @@ const ManageSavedQueriesModal = (props) => {
         // Network / parsing error handling
       }
     }
-  }, [reqIdentifier, data, isLoading, error, setFavorites]);
+  }, [reqIdentifier, data, isLoading, error, setSavedSearches]);
+
+  const executeSelectedSearch = useCallback(() => {
+    const selectedQuery = savedSearches.filter(
+      (query) => query.name === selectedValue
+    );
+    if (selectedQuery && selectedQuery.length > 0) {
+      runQueryFromSavedSearch(selectedQuery[0].search);
+      handleClose();
+    }
+  }, [handleClose, runQueryFromSavedSearch, savedSearches, selectedValue]);
+
+  const handleDeleteSavedSearch = useCallback(
+    (savedSearch) => {
+      removeSavedSearch(savedSearch.name, savedSearch);
+    },
+    [removeSavedSearch]
+  );
 
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle onClose={handleClose}>{t('My Saved Queries')}</DialogTitle>
-      <DialogContent>
-        <List dense={true}>
-          {favorites.map((row) => {
-            return (
-              <ListItem key={row.id}>
-                <ListItemIcon>
-                  <Radio
-                    checked={selectedValue === row.title}
-                    onChange={handleChange}
-                    value={row.title}
-                    name="radio-button-saved-queries"
-                    inputProps={{ 'aria-label': row.title }}
-                  />
-                </ListItemIcon>
-                <ListItemText primary={row.title} />
-                <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="delete">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })}
-        </List>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleClose}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
-          {t('Run This Query')}
-        </Button>
-      </DialogActions>
+      <Divider />
+      {isLoading && (
+        <DialogContent className={classes.spinnerContainer}>
+          <div>
+            <Spinner />
+          </div>
+        </DialogContent>
+      )}
+      {!isLoading && (
+        <DialogContent>
+          <TableContainer>
+            <Table size="small" stickyHeader aria-label="saved searches table">
+              <TableHead>
+                <TableRow>
+                  <TableCell key="radio" padding="checkbox"></TableCell>
+                  <TableCell>{t('Name')}</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {error && (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      {t(
+                        'An error occured while retrieving the data, if this error persists contact an administrator'
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!error &&
+                  savedSearches.map((row) => {
+                    return (
+                      <TableRow
+                        hover
+                        tabIndex={-1}
+                        key={row.id}
+                        onClick={() => setSelectedValue(row.name)}
+                      >
+                        <TableCell padding="checkbox">
+                          <Radio
+                            checked={selectedValue === row.name}
+                            onChange={handleChange}
+                            value={row.name}
+                            name="radio-button-saved-queries"
+                            inputProps={{ 'aria-label': row.name }}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>
+                          {/* <IconButton edge="end" aria-label="edit" size='small'>
+                          <EditIcon />
+                        </IconButton> */}
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => {
+                              handleDeleteSavedSearch(row);
+                            }}
+                            size="small"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+      )}
+      {!isLoading && (
+        <DialogActions>
+          <Button
+            onClick={executeSelectedSearch}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            {t('Run This Query')}
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 };

@@ -9,6 +9,7 @@ import {
   TextField,
   Grid,
   makeStyles,
+  Divider,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 
@@ -31,6 +32,7 @@ const FeedbackSuggestionModal = (props) => {
       <DialogTitle onClose={props.onClose}>
         {t('Give us your feedback')}
       </DialogTitle>
+      <Divider />
       <DialogContent>
         <Grid container justify="space-between">
           <Grid item xs={1} />
