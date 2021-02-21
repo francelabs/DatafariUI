@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,6 +9,7 @@ import {
   TextField,
   Grid,
   makeStyles,
+  Link,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import { QueryContext } from '../../Contexts/query-context';
@@ -23,14 +24,40 @@ const FeedbackDocumentNotFoundModal = (props) => {
   const { t } = useTranslation();
   const { query } = useContext(QueryContext);
   const classes = useStyles();
+  const MAIL_SUBJECT = 'Datafari document not found';
+  const DEFAULT_DOCUMENT_TEXT = `${t('file name')}: abc.docx
+${t('title')}: abc report
+${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
+  const [documentText, setDocumentText] = useState(DEFAULT_DOCUMENT_TEXT);
+  const [queryText, setQueryText] = useState('');
+
+  useEffect(() => {
+    setQueryText(query.elements);
+  }, [query.elements]);
 
   const sendFeedback = useCallback(() => {
+    setDocumentText(DEFAULT_DOCUMENT_TEXT);
+    setQueryText(query.elements);
     props.onClose();
-  }, [props]);
+  }, [DEFAULT_DOCUMENT_TEXT, props, query.elements]);
+
+  const handleClose = useCallback(() => {
+    setDocumentText(DEFAULT_DOCUMENT_TEXT);
+    setQueryText(query.elements);
+    props.onClose();
+  }, [DEFAULT_DOCUMENT_TEXT, props, query.elements]);
+
+  const queryTextChange = useCallback((event) => {
+    setQueryText(event.target.value);
+  }, []);
+
+  const documentTextChange = useCallback((event) => {
+    setDocumentText(event.target.value);
+  }, []);
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DialogTitle onClose={props.onClose}>
+    <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
+      <DialogTitle onClose={handleClose}>
         {t('Give us your feedback')}
       </DialogTitle>
       <DialogContent>
@@ -40,7 +67,8 @@ const FeedbackDocumentNotFoundModal = (props) => {
             <TextField
               id="datafari-feedback-query"
               label={t('Using my current query')}
-              defaultValue={query.elements}
+              value={queryText}
+              onChange={queryTextChange}
               helperText={t('This is the query you are currently running')}
               variant="filled"
               color="secondary"
@@ -54,9 +82,8 @@ const FeedbackDocumentNotFoundModal = (props) => {
             <TextField
               id="datafari-feedback-document"
               label={t('I cannot find the following document')}
-              placeholder={`${t('file name')}: abc.docx
-${t('title')}: abc report
-${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`}
+              value={documentText}
+              onChange={documentTextChange}
               helperText={t('Give us as much details as possible')}
               multiline={true}
               rows={4}
@@ -70,14 +97,20 @@ ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`}
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={sendFeedback}
-          color="secondary"
-          variant="contained"
-          size="small"
+        <Link
+          href={`mailto:?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
+            queryText
+          )}%0A%0A${encodeURIComponent(documentText)}`}
         >
-          {t('Send us this feedback')}
-        </Button>
+          <Button
+            onClick={sendFeedback}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            {t('Send us this feedback')}
+          </Button>
+        </Link>
       </DialogActions>
     </Dialog>
   );

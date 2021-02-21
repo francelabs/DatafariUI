@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,6 +10,7 @@ import {
   Grid,
   makeStyles,
   Divider,
+  Link,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 
@@ -22,14 +23,37 @@ const useStyles = makeStyles((theme) => ({
 const FeedbackCommentModal = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const MAIL_SUBJECT = 'Datafari comment';
+  const DEFAULT_COMMENT_TEXT = t('I think it would be much easier to ...');
+  const DEFAULT_CONTACT_TEXT = `${t('Email')}: my.email@work
+  ${t('Phone')}: 123456789
+  ${t('or any means')}`;
+  const [commentText, setCommentText] = useState(DEFAULT_COMMENT_TEXT);
+  const [contactText, setContactText] = useState(DEFAULT_CONTACT_TEXT);
+
+  const commentTextChange = useCallback((event) => {
+    setCommentText(event.target.value);
+  }, []);
+
+  const contactTextChange = useCallback((event) => {
+    setContactText(event.target.value);
+  }, []);
 
   const sendFeedback = useCallback(() => {
+    setCommentText(DEFAULT_COMMENT_TEXT);
+    setContactText(DEFAULT_CONTACT_TEXT);
     props.onClose();
-  }, [props]);
+  }, [DEFAULT_COMMENT_TEXT, DEFAULT_CONTACT_TEXT, props]);
+
+  const handleClose = useCallback(() => {
+    setCommentText(DEFAULT_COMMENT_TEXT);
+    setContactText(DEFAULT_CONTACT_TEXT);
+    props.onClose();
+  }, [DEFAULT_COMMENT_TEXT, DEFAULT_CONTACT_TEXT, props]);
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DialogTitle onClose={props.onClose}>
+    <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
+      <DialogTitle onClose={handleClose}>
         {t('Give us your feedback')}
       </DialogTitle>
       <Divider />
@@ -40,7 +64,8 @@ const FeedbackCommentModal = (props) => {
             <TextField
               id="datafari-feedback-comment"
               label={t('Your comment')}
-              placeholder={t('I think it would be much easier to ...')}
+              value={commentText}
+              onChange={commentTextChange}
               helperText={t('Put your comment')}
               multiline={true}
               rows={4}
@@ -56,9 +81,8 @@ const FeedbackCommentModal = (props) => {
             <TextField
               id="datafari-feedback-contact-back-comment"
               label={t('How do you want us to contact you back')}
-              placeholder={`${t('Email')}: my.email@work
-${t('Phone')}: 123456789
-${t('or any means')}`}
+              value={contactText}
+              onChange={contactTextChange}
               helperText={t('Tell us how to contact you (optional)')}
               multiline={true}
               rows={4}
@@ -72,14 +96,20 @@ ${t('or any means')}`}
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={sendFeedback}
-          color="secondary"
-          variant="contained"
-          size="small"
+        <Link
+          href={`mailto:?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
+            commentText
+          )}%0A%0A${encodeURIComponent(contactText)}`}
         >
-          {t('Send us this comment')}
-        </Button>
+          <Button
+            onClick={sendFeedback}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            {t('Send us this comment')}
+          </Button>
+        </Link>
       </DialogActions>
     </Dialog>
   );

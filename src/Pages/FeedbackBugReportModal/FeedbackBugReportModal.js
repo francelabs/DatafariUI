@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,6 +10,7 @@ import {
   Grid,
   makeStyles,
   Divider,
+  Link,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 
@@ -22,14 +23,45 @@ const useStyles = makeStyles((theme) => ({
 const FeedbackBugReportModal = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const DEFAULT_ACTION_TEXT = `${t('Browser')}: Firefox 85
+${t('Operating System')}: Windows 10
+${t('I was clicking advanced search after doing a first search...')}
+${t('Or any other details')}`;
+  const DEFAULT_BUG_TEXT = `${t('Date and time')}: 25/12/2020 at 23:59 GMT+1
+${t('The advanced search interface did not show up...')}
+${t('Or any other details')}`;
+  const MAIL_SUBJECT = 'Datafari%20Bug%20Report';
+  const [actionText, setActionText] = useState(DEFAULT_ACTION_TEXT);
+  const [bugText, setBugText] = useState(DEFAULT_BUG_TEXT);
 
   const sendFeedback = useCallback(() => {
+    setActionText(DEFAULT_ACTION_TEXT);
+    setBugText(DEFAULT_BUG_TEXT);
     props.onClose();
-  }, [props]);
+  }, [DEFAULT_ACTION_TEXT, DEFAULT_BUG_TEXT, props]);
+
+  const actionTextChange = useCallback((event) => {
+    const newValue = event.target.value;
+    setActionText(newValue);
+  }, []);
+
+  const bugTextChange = useCallback(
+    (event) => {
+      const newValue = event.target.value;
+      setBugText(newValue);
+    },
+    [setBugText]
+  );
+
+  const handleClose = useCallback(() => {
+    setActionText(DEFAULT_ACTION_TEXT);
+    setBugText(DEFAULT_BUG_TEXT);
+    props.onClose();
+  }, [DEFAULT_ACTION_TEXT, DEFAULT_BUG_TEXT, props]);
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
-      <DialogTitle onClose={props.onClose}>
+    <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
+      <DialogTitle onClose={handleClose}>
         {t('Give us your feedback')}
       </DialogTitle>
       <Divider />
@@ -40,13 +72,11 @@ const FeedbackBugReportModal = (props) => {
             <TextField
               id="datafari-feedback-bug-action"
               label={t('While doing this')}
-              placeholder={`${t('Browser')}: Firefox 85
-${t('Operating System')}: Windows 10
-${t('I was clicking advanced search after doing a first search...')}
-${t('Or any other details')}`}
+              value={actionText}
               helperText={t(
                 'Describe what you were doing when the bug happened'
               )}
+              onChange={actionTextChange}
               multiline={true}
               rows={4}
               variant="filled"
@@ -61,9 +91,8 @@ ${t('Or any other details')}`}
             <TextField
               id="datafari-feedback-bug-result"
               label={t('I encountered the following bug')}
-              placeholder={`${t('Date and time')}: 25/12/2020 at 23:59 GMT+1
-${t('The advanced search interface did not show up...')}
-${t('Or any other details')}`}
+              value={bugText}
+              onChange={bugTextChange}
               helperText={t('Give us as much details as possible')}
               multiline={true}
               rows={4}
@@ -77,14 +106,20 @@ ${t('Or any other details')}`}
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={sendFeedback}
-          color="secondary"
-          variant="contained"
-          size="small"
+        <Link
+          href={`mailto:?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
+            actionText
+          )}%0A%0A${encodeURIComponent(bugText)}`}
         >
-          {t('Send us this feedback')}
-        </Button>
+          <Button
+            onClick={sendFeedback}
+            color="secondary"
+            variant="contained"
+            size="small"
+          >
+            {t('Send us this feedback')}
+          </Button>
+        </Link>
       </DialogActions>
     </Dialog>
   );
