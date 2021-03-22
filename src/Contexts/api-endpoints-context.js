@@ -17,6 +17,7 @@ const DEFAULT_ENDPOINTS = {
   addFavoriteURL: '',
   deleteFavoriteURL: '',
   docRedirectURL: '',
+  getHelpURL: '',
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
@@ -91,6 +92,10 @@ const APIEndpointsContextProvider = (props) => {
       datafariBaseURL
     ),
     docRedirectURL: new URL(`${datafariBaseURL.pathname}/URL`, datafariBaseURL),
+    getHelpURL: new URL(
+      `${datafariBaseURL.pathname}/resources/helpAssets/helpContent.jsp`,
+      datafariBaseURL
+    ),
   });
   return (
     <APIEndpointsContext.Provider value={value}>

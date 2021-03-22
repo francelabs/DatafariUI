@@ -61,7 +61,13 @@ const useHttp = () => {
         .then((response) => {
           if (currentID === reqIdentifier) {
             if (response.ok) {
-              return response.json();
+              if (
+                response.headers.get('content-type').indexOf('text/html') !== -1
+              ) {
+                return response.text();
+              } else {
+                return response.json();
+              }
             } else {
               dispatchHttp({
                 type: 'ERROR',
