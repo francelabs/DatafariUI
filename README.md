@@ -236,6 +236,4 @@ The file to change is `src/Icons/top_left_logo.svg`.
 
 ## License 📗
 
-[Apache-2.0](https://github.com/elastic/search-ui/blob/master/LICENSE.txt) © [Elastic](https://github.com/elastic)
-
-Thank you to all the [contributors](https://github.com/elastic/search-ui/graphs/contributors)!
+[Apache-2.0](https://github.com/elastic/search-ui/blob/master/LICENSE.txt) © [France Labs](https://www.francelabs.com/)
