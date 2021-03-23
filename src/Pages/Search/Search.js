@@ -70,14 +70,18 @@ const Search = (props) => {
               <QueryFacet
                 title={t('Date')}
                 queries={[
-                  'last_modified:[NOW-1MONTH TO NOW]',
-                  'last_modified:[NOW-1YEAR TO NOW]',
-                  'last_modified:[NOW-5YEARS TO NOW]',
+                  'creation_date:[NOW/DAY TO NOW]',
+                  'creation_date:[NOW/DAY-7DAY TO NOW/DAY]',
+                  'creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]',
+                  'creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
+                  'creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
                 ]}
                 labels={[
-                  t('less than a month'),
-                  t('less than a year'),
-                  t('less than five years'),
+                  t('Today'),
+                  t('From Yesterday Up To 7 days'),
+                  t('From 8 Days Up To 30 days'),
+                  t('Older than 31 days'),
+                  t('No date'),
                 ]}
                 id="date_facet"
                 dividerClassName={classes.facetDivider}
