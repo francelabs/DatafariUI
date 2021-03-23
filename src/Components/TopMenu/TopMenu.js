@@ -30,6 +30,7 @@ import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
 import HelpMenu from '../HelpMenu/HelpMenu';
 import SettingsMenu from '../SettingsMenu/SettingsMenu';
+import { Link } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -198,6 +199,40 @@ const TopMenu = () => {
       }}
     >
       <MenuItem onClick={handleMenuClose}>{t('Logout')}</MenuItem>
+      {userState.user &&
+        userState.user.roles &&
+        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
+          userState.user.roles.indexOf('SearchExpert') !== -1) && (
+          <MenuItem
+            onClick={handleMenuClose}
+            component={Link}
+            href={apiEndpointsContext.adminURL}
+            target="_blank"
+          >
+            {t('Admin')}
+          </MenuItem>
+        )}
+      {/* {userState.user &&
+        userState.user.roles &&
+        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
+          userState.user.roles.indexOf('SearchExpert') !== -1) && (
+          <MenuItem
+            onClick={handleMenuClose}
+            component={Link}
+            href={apiEndpointsContext.adminURL}
+            target="_blank"
+          >
+            {t('Admin')}
+          </MenuItem>
+        )} */}
+      <MenuItem
+        onClick={handleMenuClose}
+        component={Link}
+        href={apiEndpointsContext.datafariBaseURL}
+        target="_blank"
+      >
+        {t('Go to the legacy Datafari UI')}
+      </MenuItem>
     </Menu>
   );
 

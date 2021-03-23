@@ -66,7 +66,7 @@ const UserContextProvider = (props) => {
         let userData = data.content;
         userDispatcher({
           type: 'SET_AUTHENTICATED_USER',
-          user: { name: userData.name, favorites: [] },
+          user: { ...userData },
         });
       }
     } else if (!isLoading && error) {

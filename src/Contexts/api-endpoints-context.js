@@ -4,6 +4,7 @@ const DEFAULT_ENDPOINTS = {
   datafariBaseURL: '',
   restAPIBaseURL: '',
   authURL: '',
+  adminURL: '',
   currentUserURL: '',
   currentUserAlertsURL: '',
   currentUserSavedSearchesURL: '',
@@ -46,6 +47,7 @@ const APIEndpointsContextProvider = (props) => {
     datafariBaseURL: datafariBaseURL,
     restAPIBaseURL: restAPIBaseURL,
     authURL: new URL(`${restAPIBaseURL.pathname}/auth`, restAPIBaseURL),
+    adminURL: new URL(`${datafariBaseURL.pathname}/admin/`, datafariBaseURL),
     currentUserURL: new URL(
       `${restAPIBaseURL.pathname}/users/current`,
       restAPIBaseURL
