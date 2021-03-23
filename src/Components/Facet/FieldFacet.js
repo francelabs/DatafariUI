@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
+import produce from 'immer';
 import { QueryContext, SET_FIELD_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
@@ -59,17 +60,25 @@ const FieldFacet = (props) => {
 
   const onClick = (value) => {
     return () => {
-      const newQueryFieldFacets = { ...query.fieldFacets };
-      if (!newQueryFieldFacets[field].selected) {
-        newQueryFieldFacets[field].selected = [];
-      }
-      const selected = newQueryFieldFacets[field].selected;
-      const selectedIndex = selected.indexOf(value);
-      if (selectedIndex === -1) {
-        selected.push(value);
-      } else {
-        selected.splice(selectedIndex, 1);
-      }
+      const newQueryFieldFacets = produce(
+        query.fieldFacets,
+        (fieldFacetsDraft) => {
+          if (!fieldFacetsDraft[field].selected) {
+            fieldFacetsDraft[field].selected = [];
+          } else {
+            fieldFacetsDraft[field].selected = [
+              ...fieldFacetsDraft[field].selected,
+            ];
+          }
+          const selected = fieldFacetsDraft[field].selected;
+          const selectedIndex = selected.indexOf(value);
+          if (selectedIndex === -1) {
+            selected.push(value);
+          } else {
+            selected.splice(selectedIndex, 1);
+          }
+        }
+      );
       queryDispatch({
         type: SET_FIELD_FACETS,
         fieldFacets: newQueryFieldFacets,

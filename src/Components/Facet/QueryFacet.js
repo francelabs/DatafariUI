@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
+import produce from 'immer';
 import { QueryContext, SET_QUERY_FACETS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
@@ -69,28 +70,29 @@ const QueryFacet = (props) => {
 
   const onClick = (value) => {
     return () => {
-      const newQueryFacets = { ...query.queryFacets };
-      if (multipleSelect) {
-        if (!newQueryFacets[id].selected) {
-          newQueryFacets[id].selected = [];
-        }
-        const selected = newQueryFacets[id].selected;
-        const selectedIndex = selected.indexOf(value);
-        if (selectedIndex === -1) {
-          selected.push(value);
+      const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
+        if (multipleSelect) {
+          if (!queryFacetsDraft[id].selected) {
+            queryFacetsDraft[id].selected = [];
+          }
+          const selected = queryFacetsDraft[id].selected;
+          const selectedIndex = selected.indexOf(value);
+          if (selectedIndex === -1) {
+            selected.push(value);
+          } else {
+            selected.splice(selectedIndex, 1);
+          }
         } else {
-          selected.splice(selectedIndex, 1);
+          if (
+            queryFacetsDraft[id].selected &&
+            queryFacetsDraft[id].selected[0] === value
+          ) {
+            queryFacetsDraft[id].selected = [];
+          } else {
+            queryFacetsDraft[id].selected = [value];
+          }
         }
-      } else {
-        if (
-          newQueryFacets[id].selected &&
-          newQueryFacets[id].selected[0] === value
-        ) {
-          newQueryFacets[id].selected = [];
-        } else {
-          newQueryFacets[id].selected = [value];
-        }
-      }
+      });
       queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
     };
   };
