@@ -57,10 +57,23 @@ const useFavorites = () => {
     [apiEndpointsContext.deleteFavoriteURL, sendRequest]
   );
 
+  const getFavoritesStatus = useCallback(
+    (queryID) => {
+      sendRequest(
+        `${apiEndpointsContext.favoritesStatusURL}`,
+        'GET',
+        null,
+        queryID
+      );
+    },
+    [apiEndpointsContext.favoritesStatusURL, sendRequest]
+  );
+
   return {
     getFavorites: getFavorites,
     addFavorite: addFavorite,
     removeFavorite: removeFavorite,
+    getFavoritesStatus: getFavoritesStatus,
     isLoading: isLoading,
     data: data,
     error: error,

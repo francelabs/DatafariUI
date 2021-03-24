@@ -300,7 +300,7 @@ const ResultEntry = (props) => {
         }
         secondaryTypographyProps={{ component: 'div' }}
       />
-      {userState.user && (
+      {props.bookmarkEnabled && userState.user && (
         <ListItemSecondaryAction className={classes.bookmarkAction}>
           <IconButton
             edge="end"

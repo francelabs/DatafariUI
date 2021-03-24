@@ -14,6 +14,7 @@ const DEFAULT_ENDPOINTS = {
   getLabeledAdvancedFieldsURL: '',
   getFieldsInfoURL: '',
   getExactFieldsURL: '',
+  favoritesStatusURL: '',
   getFavoritesURL: '',
   addFavoriteURL: '',
   deleteFavoriteURL: '',
@@ -81,6 +82,10 @@ const APIEndpointsContextProvider = (props) => {
     ),
     getExactFieldsURL: new URL(
       `${datafariBaseURL.pathname}/GetExactFields`,
+      datafariBaseURL
+    ),
+    favoritesStatusURL: new URL(
+      `${restAPIBaseURL.pathname}/status/features/favorites`,
       datafariBaseURL
     ),
     getFavoritesURL: new URL(

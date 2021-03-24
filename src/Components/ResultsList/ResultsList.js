@@ -34,13 +34,35 @@ const ResultsList = (porps) => {
     getFavorites,
     addFavorite,
     removeFavorite,
+    getFavoritesStatus,
   } = useFavorites();
   const [fetchQueryID, setFetchQueryID] = useState(null);
   const [modifQueries, setModifQueries] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [favoritesEnabled, setFavoritesEnabled] = useState(false);
 
   useEffect(() => {
-    if (results.results) {
+    getFavoritesStatus('FETCH_FAVORITES_STATUS');
+  }, [getFavoritesStatus]);
+
+  useEffect(() => {
+    if (reqIdentifier === 'FETCH_FAVORITES_STATUS') {
+      if (!isLoading && !error && data) {
+        if (data.status === 'OK') {
+          let enabled = false;
+          if (data.content.activated === 'true') {
+            enabled = true;
+          }
+          if (enabled !== favoritesEnabled) {
+            setFavoritesEnabled(enabled);
+          }
+        }
+      }
+    }
+  }, [data, error, favoritesEnabled, isLoading, reqIdentifier]);
+
+  useEffect(() => {
+    if (results.results && favoritesEnabled) {
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setFetchQueryID(newQueryID);
       getFavorites(
@@ -48,7 +70,7 @@ const ResultsList = (porps) => {
         results.results.map((result) => result.id)
       );
     }
-  }, [results.results, getFavorites, setFetchQueryID]);
+  }, [results.results, getFavorites, setFetchQueryID, favoritesEnabled]);
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
@@ -139,6 +161,7 @@ const ResultsList = (porps) => {
               <ResultEntry
                 {...result}
                 position={results.start + index}
+                bookmarkEnabled={favoritesEnabled}
                 bookmarked={favorites.indexOf(result.id) !== -1}
                 bookmarkClickCallback={
                   favorites.indexOf(result.id) !== -1

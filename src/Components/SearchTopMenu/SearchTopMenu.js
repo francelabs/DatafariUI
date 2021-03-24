@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   AppBar,
   Divider,
@@ -18,6 +18,7 @@ import ManageSavedQueriesModal from '../../Pages/ManageSavedQueriesModal/ManageS
 import ModifyAlertModal from '../../Pages/ModifyAlertModal/ModifyAlertModal';
 import ExportResultsModal from '../../Pages/ExportResultsModal/ExportResultsModal';
 import ModifySavedQueryModal from '../../Pages/ModifySavedQueryModal/ModifySavedQueryModal';
+import useFavorites from '../../Hooks/useFavorites';
 
 const SearchTopMenu = () => {
   const [value, setValue] = useState(0);
@@ -25,6 +26,34 @@ const SearchTopMenu = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(undefined);
   const { state: userState } = useContext(UserContext);
+  const {
+    isLoading,
+    data,
+    error,
+    reqIdentifier,
+    getFavoritesStatus,
+  } = useFavorites();
+  const [favoritesEnabled, setFavoritesEnabled] = useState(false);
+
+  useEffect(() => {
+    getFavoritesStatus('FETCH_FAVORITES_STATUS');
+  }, [getFavoritesStatus]);
+
+  useEffect(() => {
+    if (reqIdentifier === 'FETCH_FAVORITES_STATUS') {
+      if (!isLoading && !error && data) {
+        if (data.status === 'OK') {
+          let enabled = false;
+          if (data.content.activated === 'true') {
+            enabled = true;
+          }
+          if (enabled !== favoritesEnabled) {
+            setFavoritesEnabled(enabled);
+          }
+        }
+      }
+    }
+  }, [data, error, favoritesEnabled, isLoading, reqIdentifier]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -94,11 +123,14 @@ const SearchTopMenu = () => {
                 {t('Save Query As Alert')}
               </MenuItem>
               <Divider />
-
-              <MenuItem onClick={handleOpen('favorites')}>
-                {t('Manage Favorites')}
-              </MenuItem>
-              <Divider />
+              {favoritesEnabled && (
+                <>
+                  <MenuItem onClick={handleOpen('favorites')}>
+                    {t('Manage Favorites')}
+                  </MenuItem>
+                  <Divider />
+                </>
+              )}
             </>
           )}
           {/* <MenuItem onClick={handleOpen('exportResults')}>
