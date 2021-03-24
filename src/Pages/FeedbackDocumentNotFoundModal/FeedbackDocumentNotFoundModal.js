@@ -13,6 +13,9 @@ import {
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import { QueryContext } from '../../Contexts/query-context';
+import useEmailsAdmin from '../../Hooks/useEmailsAdmin';
+
+const fetchQueryID = 'FETCH_EMAILS_DOC_NOT_FOUND';
 
 const useStyles = makeStyles((theme) => ({
   fieldsPadding: {
@@ -30,6 +33,39 @@ ${t('title')}: abc report
 ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
   const [documentText, setDocumentText] = useState(DEFAULT_DOCUMENT_TEXT);
   const [queryText, setQueryText] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
+  const {
+    isLoading,
+    data,
+    error,
+    reqIdentifier,
+    getEmailsAdmin,
+  } = useEmailsAdmin();
+
+  useEffect(() => {
+    if (props.open) {
+      getEmailsAdmin(fetchQueryID);
+    }
+  }, [getEmailsAdmin, props.open]);
+
+  useEffect(() => {
+    if (reqIdentifier === fetchQueryID) {
+      if (!isLoading && !error && data) {
+        if (data.status === 'OK' && data.content.emails) {
+          let emails = data.content.emails;
+          if (emails.feedbacks && emails.feedbacks !== '') {
+            setEmailAddress(emails.feedbacks);
+          } else if (emails.bugs && emails.bugs !== '') {
+            setEmailAddress(emails.bugs);
+          }
+        } else {
+          // Servlet returns error code handling (not connected or other...)
+        }
+      } else if (!isLoading && error) {
+        // Network / parsing error handling
+      }
+    }
+  }, [data, error, isLoading, reqIdentifier]);
 
   useEffect(() => {
     setQueryText(query.elements);
@@ -98,7 +134,7 @@ ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
       </DialogContent>
       <DialogActions>
         <Link
-          href={`mailto:?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
+          href={`mailto:${emailAddress}?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
             queryText
           )}%0A%0A${encodeURIComponent(documentText)}`}
         >

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,6 +13,9 @@ import {
   Link,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
+import useEmailsAdmin from '../../Hooks/useEmailsAdmin';
+
+const fetchQueryID = 'FETCH_EMAILs_COMMENTS';
 
 const useStyles = makeStyles((theme) => ({
   fieldsPadding: {
@@ -30,6 +33,39 @@ const FeedbackCommentModal = (props) => {
   ${t('or any means')}`;
   const [commentText, setCommentText] = useState(DEFAULT_COMMENT_TEXT);
   const [contactText, setContactText] = useState(DEFAULT_CONTACT_TEXT);
+  const [emailAddress, setEmailAddress] = useState('');
+  const {
+    isLoading,
+    data,
+    error,
+    reqIdentifier,
+    getEmailsAdmin,
+  } = useEmailsAdmin();
+
+  useEffect(() => {
+    if (props.open) {
+      getEmailsAdmin(fetchQueryID);
+    }
+  }, [getEmailsAdmin, props.open]);
+
+  useEffect(() => {
+    if (reqIdentifier === fetchQueryID) {
+      if (!isLoading && !error && data) {
+        if (data.status === 'OK' && data.content.emails) {
+          let emails = data.content.emails;
+          if (emails.feedbacks && emails.feedbacks !== '') {
+            setEmailAddress(emails.feedbacks);
+          } else if (emails.bugs && emails.bugs !== '') {
+            setEmailAddress(emails.bugs);
+          }
+        } else {
+          // Servlet returns error code handling (not connected or other...)
+        }
+      } else if (!isLoading && error) {
+        // Network / parsing error handling
+      }
+    }
+  }, [data, error, isLoading, reqIdentifier]);
 
   const commentTextChange = useCallback((event) => {
     setCommentText(event.target.value);
@@ -97,7 +133,7 @@ const FeedbackCommentModal = (props) => {
       </DialogContent>
       <DialogActions>
         <Link
-          href={`mailto:?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
+          href={`mailto:${emailAddress}?subject=${MAIL_SUBJECT}&body=${encodeURIComponent(
             commentText
           )}%0A%0A${encodeURIComponent(contactText)}`}
         >

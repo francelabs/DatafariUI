@@ -19,6 +19,8 @@ const DEFAULT_ENDPOINTS = {
   deleteFavoriteURL: '',
   docRedirectURL: '',
   getHelpURL: '',
+  getPrivacyPolicyURL: '',
+  getEmailsAdminURL: '',
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
@@ -97,6 +99,14 @@ const APIEndpointsContextProvider = (props) => {
     getHelpURL: new URL(
       `${datafariBaseURL.pathname}/resources/helpAssets/helpContent.jsp`,
       datafariBaseURL
+    ),
+    getPrivacyPolicyURL: new URL(
+      `${datafariBaseURL.pathname}/resources/privacyPolicyAssets/privacyPolicyContent.jsp`,
+      datafariBaseURL
+    ),
+    getEmailsAdminURL: new URL(
+      `${restAPIBaseURL.pathname}/emails/admin`,
+      restAPIBaseURL
     ),
   });
   return (
