@@ -1,5 +1,5 @@
 import { makeStyles, Typography } from '@material-ui/core';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QueryContext, SET_ELEMENTS } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
@@ -22,6 +22,12 @@ const CurrentSearchAndSpellcheck = (props) => {
       elements: results.spellcheck.collation,
     });
   }, [results.spellcheck, queryDispatch]);
+
+  useEffect(() => {
+    if (results.numFound === 0 && results.spellcheck) {
+      spellcheckClick();
+    }
+  }, [results.numFound, results.spellcheck, spellcheckClick]);
 
   return (
     <>
