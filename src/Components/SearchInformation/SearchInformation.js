@@ -19,6 +19,7 @@ import {
 import FilterEntry from './FilterEntry';
 import SortIcon from '@material-ui/icons/Sort';
 import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
+import ResultCountInformation from './ResultCountInformation';
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {
@@ -176,12 +177,14 @@ const SearchInformation = (props) => {
       <div className={classes.informationContainer}>
         <Grid container>
           <Grid item xs={8}>
-            <Typography>
-              {t('Results {{ start }} - {{ end }} of {{ total }}', {
-                start: results.start + 1,
-                end: results.start + results.rows,
-                total: results.numFound,
-              })}{' '}
+            <Typography component="span">
+              <ResultCountInformation
+                start={results.start}
+                rows={results.rows}
+                numFound={results.numFound}
+              />
+            </Typography>
+            <Typography component="span">
               {filters.length > 0 && (
                 <>
                   - [{t('FILTERS')}]:&nbsp;
