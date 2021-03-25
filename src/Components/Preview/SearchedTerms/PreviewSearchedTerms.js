@@ -126,12 +126,11 @@ const PreviewSearchedTerms = (props) => {
                       <ListItemText
                         primary={
                           <>
-                            <span className={classes.textLabel}>
+                            <span className={`${classes.highlighted}`}>
                               {highlightTerm}
                             </span>
-                            <span className={classes.highlighted}>
-                              {highlightObject.numOccurence}
-                            </span>
+                            <span className={classes.textLabel}></span>
+                            <span>{highlightObject.numOccurence}</span>
                             <IconButton
                               size="small"
                               className={classes.navButtons}
