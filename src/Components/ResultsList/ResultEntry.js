@@ -210,18 +210,28 @@ const ResultEntry = (props) => {
     if (props.url.length > maxSize) {
       const fileName = props.url.substring(props.url.lastIndexOf('/') + 1);
       if (fileName.length > maxSize - 15) {
-        result =
-          props.url.substring(0, 15) +
-          '...' +
-          fileName.substring(fileName.length - 1 - (maxSize - 15));
+        result = (
+          <Tooltip title={props.url} placement="right" aria-label={props.url}>
+            <span>
+              {props.url.substring(0, 15) +
+                '...' +
+                fileName.substring(fileName.length - 1 - (maxSize - 15))}
+            </span>
+          </Tooltip>
+        );
       } else {
-        result =
-          props.url.substring(
-            0,
-            props.url.lastIndexOf('/') - props.url.length + maxSize
-          ) +
-          '...' +
-          props.url.substring(props.url.lastIndexOf('/'));
+        result = (
+          <Tooltip title={props.url} placement="right" aria-label={props.url}>
+            <span>
+              {props.url.substring(
+                0,
+                props.url.lastIndexOf('/') - props.url.length + maxSize
+              ) +
+                '...' +
+                props.url.substring(props.url.lastIndexOf('/'))}
+            </span>
+          </Tooltip>
+        );
       }
     }
     return result;
