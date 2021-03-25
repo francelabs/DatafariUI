@@ -15,6 +15,7 @@ import {
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -70,6 +71,7 @@ const SimpleSearchBar = (props) => {
   });
 
   const { queryText, triggerSuggestion } = textState;
+  const history = useHistory();
 
   useEffect(() => {
     setQuerySuggestion(false);
@@ -104,6 +106,7 @@ const SimpleSearchBar = (props) => {
       type: SET_ELEMENTS,
       elements: queryText,
     });
+    history.push('/');
   };
 
   const handleSuggestSelect = (suggestion) => {
