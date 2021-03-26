@@ -44,9 +44,13 @@ const HelpModal = (props) => {
   useEffect(() => {
     // Effect for fetching help content
     if (reqIdentifier === fetchQueryID) {
-      if (!isLoading && !error && data) {
-        setHelpContent(data);
-        clear();
+      if (!isLoading && !error && data && data.status) {
+        if (data.status === 'OK') {
+          setHelpContent(data.content.htmlHelpContent);
+          clear();
+        } else {
+          //servlet generated error response
+        }
       } else if (!isLoading && error) {
         // Network / parsing error handling
       }

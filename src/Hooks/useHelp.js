@@ -1,4 +1,5 @@
 import { useCallback, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
@@ -11,19 +12,21 @@ const useHelp = () => {
     reqIdentifier,
     clear,
   } = useHttp();
+  const { i18n } = useTranslation();
   const apiEndpointsContext = useContext(APIEndpointsContext);
 
   const getHelp = useCallback(
     (queryID) => {
+      let lang = i18n.language;
       let url = new URL(
-        apiEndpointsContext.getHelpURL,
+        `${apiEndpointsContext.getHelpURL}/${lang}`,
         apiEndpointsContext.getHelpURL
       );
       sendRequest(url, 'GET', null, queryID, {
         'Content-Type': 'text/html',
       });
     },
-    [apiEndpointsContext.getHelpURL, sendRequest]
+    [apiEndpointsContext.getHelpURL, i18n.language, sendRequest]
   );
 
   return {
