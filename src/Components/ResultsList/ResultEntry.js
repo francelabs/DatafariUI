@@ -241,6 +241,13 @@ const ResultEntry = (props) => {
     return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
   };
 
+  const prepareFolderURL = () => {
+    return `${apiEndpointsContext.docRedirectURL}?url=${props.url.substring(
+      0,
+      props.url.lastIndexOf('/')
+    )}&id=${props.qid}&q=${props.q}&position=${props.position}`;
+  };
+
   const preparePreviewURL = () => {
     let request = buildSearchQueryString();
     return `/preview?docPos=${props.position}&docId=${props.id}&${request}&action=OPEN_PREVIEW`;
@@ -293,8 +300,23 @@ const ResultEntry = (props) => {
             <div className={classes.urlContainer}>
               <span className={classes.url}>{prepareUrl()}</span>
             </div>
+            {props['folderLinkSources'] &&
+              props['folderLinkSources'].indexOf(props['repo_source']) !==
+                -1 && (
+                <div>
+                  <Link
+                    color="secondary"
+                    href={prepareFolderURL()}
+                    target="new"
+                  >
+                    {t('Open Folder')}
+                  </Link>
+                </div>
+              )}
             <div>
-              <span>Source: {props['repo_source']}</span>
+              <span>
+                {t('Source')}: {props['repo_source']}
+              </span>
               {/*               
               <span className={classes.moreLikeThis}>
                 <Link

@@ -6,6 +6,7 @@ import Spinner from '../Spinner/Spinner';
 import { makeStyles, Divider, List } from '@material-ui/core';
 import useFavorites from '../../Hooks/useFavorites';
 import { useTranslation } from 'react-i18next';
+import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
@@ -40,6 +41,7 @@ const ResultsList = (porps) => {
   const [modifQueries, setModifQueries] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
+  const [folderLinkSources] = useFolderLinkSources();
 
   useEffect(() => {
     getFavoritesStatus('FETCH_FAVORITES_STATUS');
@@ -173,6 +175,7 @@ const ResultsList = (porps) => {
                           : result.title
                       )
                 }
+                folderLinkSources={folderLinkSources}
               />
               <Divider variant="inset" component="li" />
             </React.Fragment>
