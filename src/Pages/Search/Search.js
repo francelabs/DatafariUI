@@ -68,7 +68,7 @@ const Search = (props) => {
                 minShow={5}
               />
               <QueryFacet
-                title={t('Date')}
+                title={t('Creation Date')}
                 queries={[
                   'creation_date:[NOW/DAY TO NOW]',
                   'creation_date:[NOW/DAY-7DAY TO NOW/DAY]',

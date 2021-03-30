@@ -45,7 +45,7 @@ const DateFacetCustom = (props) => {
         : '*';
       const toDateString = selectedToDate ? selectedToDate.toISOString() : '*';
       const newFilters = { ...query.filters };
-      const field = props.field ? props.field : 'last_modified';
+      const field = props.field ? props.field : 'creation_date';
       newFilters[FILTER_ID] = {
         value: `${field}:[${fromDateString} TO ${toDateString}]`,
         extra: {
