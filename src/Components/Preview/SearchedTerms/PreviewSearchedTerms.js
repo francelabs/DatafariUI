@@ -126,7 +126,13 @@ const PreviewSearchedTerms = (props) => {
                       <ListItemText
                         primary={
                           <>
-                            <span className={`${classes.highlighted}`}>
+                            <span
+                              className={`${
+                                highlightObject.highlighted
+                                  ? classes.highlighted
+                                  : ''
+                              }`}
+                            >
                               {highlightTerm}
                             </span>
                             <span className={classes.textLabel}></span>

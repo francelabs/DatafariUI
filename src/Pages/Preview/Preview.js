@@ -7,6 +7,7 @@ import PreviewNavigation from '../../Components/Preview/PreviewNavigation/Previe
 import PreviewContent from '../../Components/Preview/PreviewContent/PreviewContent';
 import PreviewRightMenu from '../../Components/Preview/PreviewRightMenu/PreviewRightMenu';
 import useHttp from '../../Hooks/useHttp';
+import produce from 'immer';
 
 import { useLocation } from 'react-router-dom';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
@@ -43,26 +44,41 @@ const highlightingReducer = (currentHighlighting, action) => {
   newHighlighting[action.term] = term;
   switch (action.type) {
     case 'INIT':
-      return { ...action.highlighting };
+      // Aims at producing a copy of action.highlightins
+      // We need to be separated, we don't want future changes to action.highlighting
+      // to change our internal highlighting object.
+      return produce(action.highlighting, (draft) => {});
     case 'TOGGLE_HIGHLIGHT':
-      term.highlighted = !term.highlighted;
-      term.highlightedIndex = undefined;
-      return newHighlighting;
+      return produce(currentHighlighting, (highlightingDraft) => {
+        const term = highlightingDraft[action.term];
+        term.highlighted = !term.highlighted;
+        term.highlightedIndex = undefined;
+      });
     case 'HIGHLIGHT_NEXT':
-      term.highlightedIndex =
-        term.highlightedIndex !== undefined
-          ? mod(term.highlightedIndex + 1, term.numOccurence)
-          : 0;
-      newHighlighting[action.term] = term;
-      return newHighlighting;
+      return produce(currentHighlighting, (highlightingDraft) => {
+        const term = highlightingDraft[action.term];
+        term.highlightedIndex =
+          term.highlightedIndex !== undefined
+            ? mod(term.highlightedIndex + 1, term.numOccurence)
+            : 0;
+        if (!term.highlighted) {
+          term.highlighted = true;
+        }
+      });
     case 'HIGHLIGHT_PREVIOUS':
-      term.highlightedIndex =
-        term.highlightedIndex !== undefined
-          ? mod(term.highlightedIndex - 1, term.numOccurence)
-          : term.numOccurence - 1;
-      newHighlighting[action.term] = term;
-      return newHighlighting;
+      return produce(currentHighlighting, (highlightingDraft) => {
+        const term = highlightingDraft[action.term];
+        term.highlightedIndex =
+          term.highlightedIndex !== undefined
+            ? mod(term.highlightedIndex - 1, term.numOccurence)
+            : term.numOccurence - 1;
+        if (!term.highlighted) {
+          term.highlighted = true;
+        }
+      });
     default:
+      // No change here, do not want to use produce to avoid a change in reference
+      // which would cause un-necessary rerenders.
       return currentHighlighting;
   }
 };
