@@ -9,7 +9,7 @@ const useFavorites = () => {
   const getFavorites = useCallback(
     (queryID, docIDs) => {
       const url = new URL(
-        `${apiEndpointsContext.getFavoritesURL}`,
+        `${apiEndpointsContext.currentUserFavoritesURL}`,
         new URL(document.location.href)
       );
       if (docIDs) {
@@ -17,44 +17,38 @@ const useFavorites = () => {
       }
       sendRequest(url, 'GET', null, queryID);
     },
-    [apiEndpointsContext.getFavoritesURL, sendRequest]
+    [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
   );
 
   const addFavorite = useCallback(
     (queryID, docID, docTitle) => {
-      const formData = new FormData();
-      formData.append('idDocument', docID);
-      formData.append('titleDocument', docTitle);
-      const body = new URLSearchParams(formData);
+      const favorite = {
+        id: docID,
+        title: docTitle,
+      };
       sendRequest(
-        `${apiEndpointsContext.addFavoriteURL}`,
+        `${apiEndpointsContext.currentUserFavoritesURL}`,
         'POST',
-        body,
-        queryID,
-        {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        }
+        JSON.stringify(favorite),
+        queryID
       );
     },
-    [apiEndpointsContext.addFavoriteURL, sendRequest]
+    [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
   );
 
   const removeFavorite = useCallback(
     (queryID, docID) => {
-      const formData = new FormData();
-      formData.append('idDocument', docID);
-      const body = new URLSearchParams(formData);
+      const body = {
+        id: docID,
+      };
       sendRequest(
-        `${apiEndpointsContext.deleteFavoriteURL}`,
-        'POST',
-        body,
-        queryID,
-        {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        }
+        `${apiEndpointsContext.currentUserFavoritesURL}`,
+        'DELETE',
+        JSON.stringify(body),
+        queryID
       );
     },
-    [apiEndpointsContext.deleteFavoriteURL, sendRequest]
+    [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
   );
 
   const getFavoritesStatus = useCallback(

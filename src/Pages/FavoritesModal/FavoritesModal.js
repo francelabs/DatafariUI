@@ -99,10 +99,8 @@ const FavortiesModal = (props) => {
     // Effect for fetching favorites query
     if (reqIdentifier === fetchQueryID) {
       if (!isLoading && !error && data) {
-        if (data.code === 0) {
-          setFavorites(
-            data.favoritesList.map((element) => JSON.parse(element))
-          );
+        if (data.status === 'OK') {
+          setFavorites(data.content.favorites);
         } else {
           // Servlet returns error code handling (not connected or other...)
         }
@@ -164,7 +162,7 @@ const FavortiesModal = (props) => {
     // Effect for removing favorites query
     if (reqIdentifier !== fetchQueryID) {
       if (!isLoading && !error && data) {
-        if (data.code === 0) {
+        if (data.status === 'OK') {
           setFavorites((currentFavorites) => {
             const favoritesIDs = currentFavorites.map(
               (favorite) => favorite.id

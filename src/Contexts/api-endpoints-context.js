@@ -7,6 +7,7 @@ const DEFAULT_ENDPOINTS = {
   adminURL: '',
   currentUserURL: '',
   currentUserAlertsURL: '',
+  currentUserFavoritesURL: '',
   currentUserSavedSearchesURL: '',
   searchURL: '',
   getAutocompleteAdvancedFieldsURL: '',
@@ -15,9 +16,6 @@ const DEFAULT_ENDPOINTS = {
   getFieldsInfoURL: '',
   getExactFieldsURL: '',
   favoritesStatusURL: '',
-  getFavoritesURL: '',
-  addFavoriteURL: '',
-  deleteFavoriteURL: '',
   docRedirectURL: '',
   getHelpURL: '',
   getPrivacyPolicyURL: '',
@@ -56,6 +54,10 @@ const APIEndpointsContextProvider = (props) => {
       restAPIBaseURL
     ),
     searchURL: new URL(`${restAPIBaseURL.pathname}/search`, restAPIBaseURL),
+    currentUserFavoritesURL: new URL(
+      `${restAPIBaseURL.pathname}/users/current/favorites`,
+      restAPIBaseURL
+    ),
     currentUserAlertsURL: new URL(
       `${restAPIBaseURL.pathname}/users/current/alerts`,
       restAPIBaseURL
@@ -86,18 +88,6 @@ const APIEndpointsContextProvider = (props) => {
     ),
     favoritesStatusURL: new URL(
       `${restAPIBaseURL.pathname}/status/features/favorites`,
-      datafariBaseURL
-    ),
-    getFavoritesURL: new URL(
-      `${datafariBaseURL.pathname}/GetFavorites`,
-      datafariBaseURL
-    ),
-    addFavoriteURL: new URL(
-      `${datafariBaseURL.pathname}/addFavorite`,
-      datafariBaseURL
-    ),
-    deleteFavoriteURL: new URL(
-      `${datafariBaseURL.pathname}/deleteFavorite`,
       datafariBaseURL
     ),
     docRedirectURL: new URL(`${datafariBaseURL.pathname}/URL`, datafariBaseURL),

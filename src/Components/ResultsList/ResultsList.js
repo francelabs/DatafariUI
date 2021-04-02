@@ -76,10 +76,8 @@ const ResultsList = (porps) => {
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
-      if (data.code === 0) {
-        setFavorites(
-          data.favoritesList.map((favorite) => JSON.parse(favorite).id)
-        );
+      if (data.status === 'OK') {
+        setFavorites(data.content.favorites.map((favorite) => favorite.id));
       }
     }
   }, [data, error, isLoading, fetchQueryID, reqIdentifier, setFavorites]);
@@ -115,7 +113,7 @@ const ResultsList = (porps) => {
   useEffect(() => {
     if (modifQueries[reqIdentifier]) {
       if (!isLoading && !error && data) {
-        if (data.code === 0) {
+        if (data.code === 0 || data.status === 'OK') {
           setFavorites((currentFavorites) => {
             if (modifQueries[reqIdentifier] === 'add') {
               return currentFavorites.concat(reqIdentifier);
