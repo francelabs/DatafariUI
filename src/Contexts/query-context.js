@@ -35,43 +35,81 @@ const queryReducer = (query, action) => {
   );
   switch (action.type) {
     case SET_FIELD_FACETS:
-      return { ...query, page: 1, fieldFacets: action.fieldFacets };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.fieldFacets = produce(action.fieldFacets, (draft) => {});
+      });
     case SET_QUERY_FACETS:
-      return { ...query, page: 1, queryFacets: action.queryFacets };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.queryFacets = produce(action.queryFacets, (draft) => {});
+      });
     case SET_ROWS:
-      return { ...query, page: 1, rows: action.rows };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.rows = action.row;
+      });
     case SET_PAGE:
-      return { ...query, page: action.page };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = action.page;
+      });
     case SET_ELEMENTS:
-      return {
-        ...query,
-        page: 1,
-        elements: action.elements,
-        queryFacets: newQueryFacets,
-        fieldFacets: newFieldFacets,
-        filters: {},
-      };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.elements = action.elements;
+        queryDraft.queryFacets = newQueryFacets;
+        queryDraft.fieldFacets = newFieldFacets;
+        queryDraft.filters = {};
+        queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
+          ? action.spellcheckOriginalQuery
+          : undefined;
+      });
+    // return {
+    //   ...query,
+    //   page: 1,
+    //   elements: action.elements,
+    //   queryFacets: newQueryFacets,
+    //   fieldFacets: newFieldFacets,
+    //   filters: {},
+    //   spellcheckOriginalQuery: undefined,
+    // };
     case SET_ELEMENTS_NO_RESET:
-      return {
-        ...query,
-        page: 1,
-        elements: action.elements,
-      };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.elements = action.elements;
+      });
+    // return {
+    //   ...query,
+    //   page: 1,
+    //   elements: action.elements,
+    // };
     case SET_SORT:
-      return { ...query, page: 1, sort: action.sort };
+      return produce(query, (queryDraft) => {
+        queryDraft.sort = produce(action.sort, (draft) => {});
+      });
+    // return { ...query, page: 1, sort: action.sort };
     case RESET_FACETS_SELECTION:
-      return {
-        ...query,
-        queryFacets: newQueryFacets,
-        fieldFacets: newFieldFacets,
-        filters: {},
-      };
+      return produce(query, (queryDraft) => {
+        queryDraft.queryFacets = newQueryFacets;
+        queryDraft.fieldFacets = newFieldFacets;
+        queryDraft.filters = {};
+      });
+    // return {
+    //   ...query,
+    //   queryFacets: newQueryFacets,
+    //   fieldFacets: newFieldFacets,
+    //   filters: {},
+    // };
     case SET_FILTERS:
-      return { ...query, page: 1, filters: action.filters };
+      return produce(query, (queryDraft) => {
+        queryDraft.page = 1;
+        queryDraft.filters = action.filters;
+      });
+    // return { ...query, page: 1, filters: action.filters };
     case SET_QUERY:
-      return action.query;
+      return produce(action.query, (draft) => {});
     default:
-      return { ...query };
+      return produce(query, (queryDraft) => {});
   }
 };
 /*
@@ -108,6 +146,7 @@ export const QueryContext = React.createContext({
     page: 1,
     op: 'AND',
     sort: { label: 'Relevance', value: 'score desc' },
+    spellcheckOriginalQuery: undefined,
   },
   dispatch: () => {},
   buildSearchQueryString: () => {},

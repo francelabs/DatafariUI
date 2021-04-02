@@ -17,17 +17,29 @@ const CurrentSearchAndSpellcheck = (props) => {
   const classes = useStyles();
 
   const spellcheckClick = useCallback(() => {
-    queryDispatch({
-      type: SET_ELEMENTS,
-      elements: results.spellcheck.collation,
-    });
-  }, [results.spellcheck, queryDispatch]);
+    if (results.spellcheck.collation !== query.elements) {
+      let original = undefined;
+      if (results.numFound === 0) {
+        original = query.elements;
+      }
+      queryDispatch({
+        type: SET_ELEMENTS,
+        elements: results.spellcheck.collation,
+        spellcheckOriginalQuery: original,
+      });
+    }
+  }, [results.numFound, results.spellcheck, queryDispatch, query.elements]);
 
   useEffect(() => {
-    if (results.numFound === 0 && results.spellcheck) {
+    if (!results.isLoading && results.numFound === 0 && results.spellcheck) {
       spellcheckClick();
     }
-  }, [results.numFound, results.spellcheck, spellcheckClick]);
+  }, [
+    results.isLoading,
+    results.numFound,
+    results.spellcheck,
+    spellcheckClick,
+  ]);
 
   return (
     <>
@@ -47,6 +59,15 @@ const CurrentSearchAndSpellcheck = (props) => {
               className={classes.spellcheck}
             >
               {results.spellcheck.collation}
+            </Typography>
+          </>
+        )}
+        {query.spellcheckOriginalQuery && (
+          <>
+            {' '}
+            - {t('No results were found for ')}
+            <Typography component="span" color="secondary">
+              {query.spellcheckOriginalQuery}
             </Typography>
           </>
         )}
