@@ -9,6 +9,7 @@ import {
 import useHttp from '../../../../Hooks/useHttp';
 import Spinner from '../../../Spinner/Spinner';
 import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   autocompleteTitleContainer: {
@@ -21,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SimpleAutocomplete = (props) => {
+  const { t } = useTranslation();
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
@@ -67,9 +69,11 @@ const SimpleAutocomplete = (props) => {
       <>
         <ListSubheader className={classes.autocompleteTitleContainer}>
           <Typography className={classes.autocompleteTitle}>
-            SUGGESTED QUERIES
+            {t('SUGGESTED QUERIES')}
           </Typography>
-          <Typography>Queries extending you current query terms</Typography>
+          <Typography>
+            {t('Queries extending your current query terms')}
+          </Typography>
         </ListSubheader>
         <Divider />
         {suggestions &&
@@ -86,7 +90,7 @@ const SimpleAutocomplete = (props) => {
             </MenuItem>
           ))}
         {(!suggestions || suggestions.length === 0) && (
-          <MenuItem>No suggestions</MenuItem>
+          <MenuItem>{t('No suggestions')}</MenuItem>
         )}
       </>
     ))
