@@ -64,38 +64,18 @@ const PrivacyPolicyModal = (props) => {
   useEffect(() => {
     // Effect for fetching help content
     if (reqIdentifier === fetchQueryID) {
-      if (!isLoading && !error && data) {
-        setPrivacyPolicyContent(data);
-        clear();
-      } else if (!isLoading && error) {
-        // Network / parsing error handling
-      }
-    }
-  }, [reqIdentifier, data, isLoading, error, setPrivacyPolicyContent, clear]);
-
-  useEffect(() => {
-    // Effect for removing alert query
-    if (reqIdentifier !== fetchQueryID) {
-      if (!isLoading && !error && data) {
+      if (!isLoading && !error && data && data.status) {
         if (data.status === 'OK') {
-          setPrivacyPolicyContent((currentAlerts) => {
-            const alertsIDs = currentAlerts.map((alert) => alert._id);
-            if (alertsIDs.indexOf(reqIdentifier) !== -1) {
-              const newAlerts = currentAlerts.slice(0, currentAlerts.length);
-              newAlerts.splice(alertsIDs.indexOf(reqIdentifier), 1);
-              return newAlerts;
-            } else {
-              return currentAlerts;
-            }
-          });
+          setPrivacyPolicyContent(data.content.htmlPrivacyContent);
+          clear();
         } else {
-          // Servlet returns error code handling (not connected or other...)
+          //servlet generated error response
         }
       } else if (!isLoading && error) {
         // Network / parsing error handling
       }
     }
-  }, [reqIdentifier, data, isLoading, error, setPrivacyPolicyContent]);
+  }, [reqIdentifier, data, isLoading, error, setPrivacyPolicyContent, clear]);
 
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">

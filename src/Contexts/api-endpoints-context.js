@@ -93,9 +93,13 @@ const APIEndpointsContextProvider = (props) => {
     docRedirectURL: new URL(`${datafariBaseURL.pathname}/URL`, datafariBaseURL),
     getHelpURL: new URL(`${restAPIBaseURL.pathname}/help`, restAPIBaseURL),
     getPrivacyPolicyURL: new URL(
-      `${datafariBaseURL.pathname}/resources/privacyPolicyAssets/privacyPolicyContent.jsp`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/privacy`,
+      restAPIBaseURL
     ),
+    // new URL(
+    //   `${datafariBaseURL.pathname}/resources/privacyPolicyAssets/privacyPolicyContent.jsp`,
+    //   datafariBaseURL
+    // ),
     getEmailsAdminURL: new URL(
       `${restAPIBaseURL.pathname}/emails/admin`,
       restAPIBaseURL
