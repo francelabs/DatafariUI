@@ -1,12 +1,11 @@
-> React app to develop your search interface to be used with Datafari
+# React app to develop your search interface to be used with Datafari
 
 ## Contents
 
 - [About Datafari UI](#about-datafari-ui)
-- [Getting started](#getting-started-)
+- [Getting started](#getting-started)
 - [Creating a search experience](#creating-a-search-experience)
-- [FAQ](#faq-)
-- [Contribute](#contribute-)
+- [Contribute](#contribute)
 - [License](#license-)
 
 ---
@@ -233,6 +232,424 @@ the list of entries is displayed. You can modify those to change which propertie
 
 The logo displayed in the top left corner is an SVG file that must be changed in the app before building it.
 The file to change is `src/Icons/top_left_logo.svg`.
+
+## Contribute
+
+Here are some information to help you create new UI components, including communication with the backend.
+To explain how things are connected together and how to integrate a new functionality, i will use the already implemented favorite feature.
+This feature allows a user to:
+
+- mark/unmark documents as favorite in the results page
+- see if a document is a favorite or not from the results page
+  This feature requires communicating with the Datafari backend to:
+- Get the list of gavorites documents for the current user
+- Add a document to the favorite list
+- Remove a document from the favorite list
+
+To implement this feature we will do several things:
+
+- Define the URL to the endpoint(s) we need to access from Datafari API in the APIEndpointsContext
+- Create a Hook that will manage all the interactions with the backend and provide components with helper functions and states variables to work with
+- Create a component to show if a document is bookmarked or not in the results list and allow to mark/unmark a document as favorite
+- Integrate this component in the results list
+- Create a modal page to display the list of results
+
+If you go through the code, you will see some features that we do not address in this documentation:
+
+- get access to a modal showing the list of documents he has marked as favorite.
+- The favorite feature elements are only displayed if the favorite feature is active on the backend
+
+### Defining the URL to the required Datafari API endpoints
+
+All Datafari API endpoints are defined in the `APIEndpointsContext` (`src/Contexts/api-endpoints-context.js`).
+For detailed information about contexts, please refer to the React documentation. But to make it simple, they allow
+to share variable accross components without the need to pass them through props everytime.
+
+Here we need to query the current user favorite endpoint which address is `{DATAFARI_REST_API_BASE_URL}/users/current/favorites`.
+It supports the following HTTP verbs that are important to us:
+
+- GET to get the list of favorites
+- POST to add a favorite
+- DELETE to remove a favorite
+
+We do not need to define any other endpoint for the set of features we want to support.
+To add this endpoint to the context we will need to add at two places in the `src/Contexts/api-endpoints-context.js`;
+First near the top in the definition of the DEFAULT_ENDPOINTS variable from line 3 we need to add:
+
+```js
+  currentUserFavoritesURL: '',
+```
+
+This declaration allows the autocomplete feature of our IDE to know the variable exists in the object and helps us in our development.
+It also ensure that the property is defined even though its value is not known yet.
+As we need some helper variables to create the URL, we cannot set it to a fixed value here.
+
+Then the creation of the URL is to be done in the creation of the state variable value in the UseState statement begining around line 47.
+This variable contains the creation of all the URLs.
+You will find somewhere the creation of the URL we need which looks like the following:
+
+```js
+currentUserFavoritesURL: new URL(
+      `${restAPIBaseURL.pathname}/users/current/favorites`,
+      restAPIBaseURL
+    ),
+```
+
+You can see we use here the variable `restAPIBaseURL` to create our URL. This is a special variable pointing to the base
+of the REST API of the Datafari backend we should refer to. This varaible in turns uses the `DatafariBaseURL` variable to define
+itself. The DatafariBaseURL is built from the `window.datafariBaseURL` defined in the `src/index.js` file we talked about in the
+Getting Started section.
+
+Proceeding this way ensures that all URLs are refering to the same Datafari backends and simplifies the definition of a new backend if need be.
+
+Now that our endpoint URL is defined, we can create a hook for the components to use to access the current user favorite functionalities.
+
+### Creating the useFavorites hook
+
+The goal for this hook is to provide components with helper functions to perform actions on the favorites (get, create, delete) and some
+state cariable providing the state and resopnses from the backend.
+
+It comes to no surprise that this hook uses the `APIEndpointsContext` to access to the API endpoint URL we defined earlier.
+But it also uses the `useHTTP` hook, which is an helper to perform HTTP request and get the responses.
+
+```js
+const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
+const apiEndpointsContext = useContext(APIEndpointsContext);
+```
+
+Here are the usage of the variables from useHTTP:
+
+- `isLoading` is a boolean state variable telling if a request is in progress or not
+- `data` is an object state variable that holds the body of the response once the request is done
+- `error` is an object state variable holding information if any error occurs during the request
+- `sendRequest` is an helper function to send a request, we will detail its usage below
+- `reqIdentifier` is the identifier of the request for which other variables are set at a given moment (in case several requests are done using a single useHTTP hook, although we do not recommend sending several requests in parallel; i.e. avoid sending a new request if the previous one has not completed).
+
+The `sendRequest` function is used as shown below:
+
+```
+sendRequest(url, method, body, reqIdentifier, headers)
+```
+
+- `url` is a URL objecct providing the URL to which the request must be sent
+- `method` is a string giving the HTTP verb to use ('GET', 'POST', ...)
+- `body` is the body of the query, can be null if not needed
+- `reqIdentifier` is a String to identify the request in state updates, will be used to set the the reqIdentifier state variable when updating other state variables
+- `headers` is an object to define specific headers if needed. It is optional and can be ommitted or set to null.
+
+Given those informations, we ca implements the core functionalities needed for our favorites features.
+
+```js
+const getFavorites = useCallback(
+  (queryID) => {
+    sendRequest(
+      `${apiEndpointsContext.currentUserFavoritesURL}`,
+      'GET',
+      null,
+      queryID
+    );
+  },
+  [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
+);
+
+const addFavorite = useCallback(
+  (queryID, docID, docTitle) => {
+    const favorite = {
+      id: docID,
+      title: docTitle,
+    };
+    sendRequest(
+      `${apiEndpointsContext.currentUserFavoritesURL}`,
+      'POST',
+      JSON.stringify(favorite),
+      queryID
+    );
+  },
+  [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
+);
+
+const removeFavorite = useCallback(
+  (queryID, docID) => {
+    const body = {
+      id: docID,
+    };
+    sendRequest(
+      `${apiEndpointsContext.currentUserFavoritesURL}`,
+      'DELETE',
+      JSON.stringify(body),
+      queryID
+    );
+  },
+  [apiEndpointsContext.currentUserFavoritesURL, sendRequest]
+);
+```
+
+The useCallback function ensures that our functions are not recreated on each rerender of the components using the the `useFavorites` hook.
+The functions are recreated only if the dependencies change, in this case `apiEndpointsContext.currentUserFavoritesURL` and `sendRequest`, which are constent.
+This optimizes the rerenders cycles.
+
+Beside that, the three functions are pretty simple, they take as argument the required elements, a `queryID` to identify the query and send the request.
+Updates do not need to be managed as the `useHTTP` hook takes care of updating `isLoading`, `data` etc.
+Components will need to take care of returned errors and responses.
+
+Once those functions are created, they are returned by the hook as well as the necessary state functions embeded into object that represents the output of the hook:
+
+```js
+return {
+  getFavorites: getFavorites,
+  addFavorite: addFavorite,
+  removeFavorite: removeFavorite,
+  getFavoritesStatus: getFavoritesStatus,
+  isLoading: isLoading,
+  data: data,
+  error: error,
+  reqIdentifier: reqIdentifier,
+};
+```
+
+This return statement holds the "public" part of the hook, what can be accessed and called from the components using the hook.
+Keep in mind that everytime a component uses a hook, a new instance of the hook is created. Those are not made to share data.
+Please refer to the React documentation for more information about hooks.
+
+We now have a hook ready to be use, lets implement a component to show if a document is a favorite or not.
+
+### Showing favorites in the results list
+
+We want each result in the results list to display an icon saying if they are bookmarked as favorite or not by the user.
+This icon must be clickable to change the bookmarked status of the corresponding result.
+
+To do so, we need to have access to the favorites list and check if the current result is in this list.
+We already have a `ResultsList` component displaying the list of ressults through `ResultEntry` components.
+
+Two main options are availables to us:
+
+- Using the favorites hook inside the `ResultEntry` component, get the list of favorites there and build the logic there (we can even create a new component that is used inside the `ResultEntry` component)
+- Using the favorites hook inside the `ResultsList` component and pass as props to the `ResultEntry` component the required informations about the favorite state of the results (is it a favorite, a function to call to change the state)
+
+The first solution provides a nice separation of concerns and allows to manage the favorite status in a dedicated component,
+however it means that for earch result displayed, the list of favorites will be querried to the backend and processed in the React app.
+This represents way too much queries. Therefore, we chose to use the second approach. In this case, the list of favorites is querried
+once and the `ResultsList` component pass as props the required elements to the ResultEntry component.
+
+First of all, lets tackle the modifications in the `ResultsList` component.
+We need to get an instance of the `useFavorites` hook within our component definition like so:
+
+```js
+const {
+  isLoading,
+  data,
+  error,
+  reqIdentifier,
+  getFavorites,
+  addFavorite,
+  removeFavorite,
+  getFavoritesStatus,
+} = useFavorites();
+```
+
+Then we need a place to store the list of favorites once we received it, this will be stored in a state.
+We will also use state to store some information about the queries we make.
+
+```js
+const [favorites, setFavorites] = useState([]);
+const [fetchQueryID, setFetchQueryID] = useState(null);
+const [modifQueries, setModifQueries] = useState([]);
+```
+
+Then we need to retrieve the list of favorites. To do so, we will use the `useEffect` hook that allows to run a function uppon certain circomstances:
+
+```js
+useEffect(() => {
+  if (results.results) {
+    let newQueryID = Math.random().toString(36).substring(2, 15);
+    setFetchQueryID(newQueryID);
+    getFavorites(
+      newQueryID,
+      results.results.map((result) => result.id)
+    );
+  }
+}, [results.results, getFavorites, setFetchQueryID]);
+```
+
+In this case whenever the `results.results`, `getFavorites` or `setFetchQueryID` variable change, the function is run.
+Realisticaly, only `results.results` should ever change, the others are there for completeness and to abide to React best practices.
+This means that whenever a new set of results arrives, we run the function, and as the core of the function shows, if the set of results
+is not null, we fetch the favorites using a randomly generated query ID.
+
+Great so far, but now we need to handle the responses from the request when they arrive. They arrive in the form of
+updates to the `isLoading`, `data` and `error` state variable from the `useFavorites`.
+
+To catch such changes, another `useEffect` hook usage will be used:
+
+```js
+useEffect(() => {
+  if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
+    if (data.status === 'OK') {
+      setFavorites(data.content.favorites.map((favorite) => favorite.id));
+    }
+  }
+}, [data, error, isLoading, fetchQueryID, reqIdentifier, setFavorites]);
+```
+
+Here, any modification of one of the variables: `data`, `error`, `isLoading`, `fetchQueryID`, `reqIdentifier`, `fetchQueryID` will trigger the effect.
+The effect then checks if `reqIdentifier` correspond to the identifier we created randomly before, if the query is done and there are no errors.
+In this case, it sets up the `favorites` state using the content of the response, keeping only the id of the favorites as this is all we need here.
+
+We now have enough information to tell if a results is bookmarked or not.
+We only need to check if the id of a results is in the list of favorites id we retrieved from the server.
+Let pass that information along to the `ResultEntry` component.
+To do so, we will add a prop to the `ResultEntry` component holding this information:
+
+```js
+<ResultEntry
+  {...result}
+  position={results.start + index}
+  bookmarkEnabled={favoritesEnabled}
+  bookmarked={favorites.indexOf(result.id) !== -1}
+  folderLinkSources={folderLinkSources}
+/>
+```
+
+Among the other props this component already requires, you can see we added the `bookmarked` prop to hold the information about the status of this document as a favorite.
+
+We can now enrich the `ResultEntry` component to take advantage of that and show a bookmark badge for each result, empty if the result is not bookmarked, full if it is:
+
+```js
+<ListItemSecondaryAction className={classes.bookmarkAction}>
+  <IconButton edge="end" aria-label="bookmark">
+    {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+  </IconButton>
+</ListItemSecondaryAction>
+```
+
+Now we have the bookmark status displayed but we still need to be able to update it when the user clicks on the bookmark badge.
+To do so, we need to perform a request to the backend when the icon is clicked.
+The `useFavorite` hook is instanciated within the `ResultsList` component, and the `ResultsList` component is responsible for
+managing the favorites list, therefore it seems legitimate to create the callback functions for the clicks here and pass them
+as props to the `ResultEntry` compoenent.
+
+We need two functions: one for adding a result as favorite, one for removing.
+
+```js
+const addFavoriteCallback = useCallback(
+  (favoriteID, favoriteTitle) => {
+    return () => {
+      setModifQueries((currentQueries) => {
+        const newQueries = { ...currentQueries };
+        newQueries[favoriteID] = 'add';
+        return newQueries;
+      });
+      addFavorite(favoriteID, favoriteID, favoriteTitle);
+    };
+  },
+  [setModifQueries, addFavorite]
+);
+
+const removeFavoriteCallback = useCallback(
+  (favoriteID) => {
+    return () => {
+      setModifQueries((currentQueries) => {
+        const newQueries = { ...currentQueries };
+        newQueries[favoriteID] = 'remove';
+        return newQueries;
+      });
+      removeFavorite(favoriteID, favoriteID);
+    };
+  },
+  [setModifQueries, removeFavorite]
+);
+```
+
+Those are functions that return a callback function parametrized using the provided parameters (the ID of the result and its title in the case of an addition request).
+The callback functions send the necessary query to the backend using the corresponding helper functions from the `useFavorites` hook.
+But before that, they update the state variable holding the list of request currently in progress to modify the favorites list (adding or removing).
+We store there the id of the request, set to the id of the document, as well as the action being done (add of remove).
+
+As seen before, we sent request, we now need to handle the changes in the state corresponding to the reception of a response and handle that.
+This will be again done using useEffect:
+
+```js
+useEffect(() => {
+  if (modifQueries[reqIdentifier]) {
+    if (!isLoading && !error && data) {
+      if (data.code === 0 || data.status === 'OK') {
+        setFavorites((currentFavorites) => {
+          if (modifQueries[reqIdentifier] === 'add') {
+            return currentFavorites.concat(reqIdentifier);
+          } else {
+            return currentFavorites.filter((docID) => docID !== reqIdentifier);
+          }
+        });
+        setModifQueries((currentQueries) => {
+          const newQueries = { ...currentQueries };
+          newQueries[reqIdentifier] = undefined;
+          delete newQueries[reqIdentifier];
+          return newQueries;
+        });
+      }
+    }
+  }
+}, [
+  data,
+  error,
+  isLoading,
+  reqIdentifier,
+  setFavorites,
+  modifQueries,
+  setModifQueries,
+]);
+```
+
+Note that there is not problem having several separate effects tied to the same state variables.
+Here again we use the `data`, `error`, `isLoading` and `reqIdentifier` variables.
+The first thing done is to check if the `reqIdentifier` is one corresponding to a modification request registered in `modifQueries`.
+If this is the case, the list of favorites is updated by adding, removing the corresponding document id from the list of favorites.
+This updated in the state variable will tgrigger a rerender that will updates the displayed `ResultEntry` components id their props changed.
+
+For now, this never happens as the callbacks functions are never used.
+Lets add them as props to the `ResultEntry` component:
+
+```js
+<ResultEntry
+  {...result}
+  position={results.start + index}
+  bookmarkEnabled={favoritesEnabled}
+  bookmarked={favorites.indexOf(result.id) !== -1}
+  bookmarkClickCallback={
+    favorites.indexOf(result.id) !== -1
+      ? removeFavoriteCallback(result.id)
+      : addFavoriteCallback(
+          result.id,
+          Array.isArray(result.title) ? result.title[0] : result.title
+        )
+  }
+  folderLinkSources={folderLinkSources}
+/>
+```
+
+Depending on if the result is bookmarked or not, the callback passed is the one to create or delete a favorite.
+
+We will now update our `ResultEntry` component to use this click callback function on our button:
+
+```js
+<ListItemSecondaryAction className={classes.bookmarkAction}>
+  <IconButton
+    edge="end"
+    aria-label="bookmark"
+    onClick={props.bookmarkClickCallback}
+  >
+    {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+  </IconButton>
+</ListItemSecondaryAction>
+```
+
+And we are done, we have implemented the feature we wanted for the favorites in the results list.
+The actual code contains a little bit more than that as it also checks out if the user is authenticated and if the feature is
+activated in the backend before displaying anything.
+
+Have a look at the code for the `FavoritesModal` (`src/Pages/FavoritesModal/FavoritesModal.js`) for more exemple on the usage of the
+`useFavorites` hook. You can also have a look at how alerts are managed for another code exemple, it follows the same rules of creating
+an endpoint URL, a hook, and use the hook in components in combination to effects (`useEffect`) to handle responses.
 
 ## License 📗
 
