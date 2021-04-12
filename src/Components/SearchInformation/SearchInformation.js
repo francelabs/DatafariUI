@@ -105,8 +105,8 @@ const SearchInformation = (props) => {
     queryDispatch({
       type: SET_SORT,
       sort: {
-        label: 'Date',
-        value: 'last_modified desc',
+        label: 'Creation Date',
+        value: 'creation_date desc',
       },
     });
     handleCloseSortMenu();
@@ -213,7 +213,9 @@ const SearchInformation = (props) => {
               <MenuItem onClick={handleSelectRelevanceSort}>
                 {t('Relevance')}
               </MenuItem>
-              <MenuItem onClick={handleSelectDateSort}>{t('Date')}</MenuItem>
+              <MenuItem onClick={handleSelectDateSort}>
+                {t('Creation Date')}
+              </MenuItem>
             </Menu>
             {/* 
           <IconButton>
