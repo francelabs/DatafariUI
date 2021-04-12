@@ -158,8 +158,7 @@ const ResultsList = (porps) => {
   return (
     <>
       {/* Display a spinner while waiting for results, 
-      an error message in case of error and 'No Results' 
-      if there are 0 results */}
+      an error message in case of error. */}
       {results.isLoading ? (
         <div className={classes.spinnerContainer}>
           <div>
@@ -169,7 +168,8 @@ const ResultsList = (porps) => {
       ) : results.error ? (
         <ResultError error={results.error.message} />
       ) : results.results.length === 0 ? (
-        <div>{t('No results')}</div>
+        /* Nothing to display, no results text is displayed by the search info */
+        <></>
       ) : (
         /* Display the results list, each result is rendered by a ResultEntry component */
         <List className={classes.resultsContainer}>
