@@ -50,6 +50,7 @@ const FieldFacet = (props) => {
 
   const numShowed = showMore ? maxShow : minShow;
 
+  // Effect to add the facet to the query if it is not registered
   useEffect(() => {
     if (!query.fieldFacets[field]) {
       const newFieldFacets = { ...query.fieldFacets };
@@ -58,6 +59,9 @@ const FieldFacet = (props) => {
     }
   }, [field, query, queryDispatch, op]);
 
+  // Handler when clicking on a facet entry.
+  // Adds or remove the entry from the selected list
+  // depending on its current state.
   const onClick = (value) => {
     return () => {
       const newQueryFieldFacets = produce(
@@ -65,10 +69,6 @@ const FieldFacet = (props) => {
         (fieldFacetsDraft) => {
           if (!fieldFacetsDraft[field].selected) {
             fieldFacetsDraft[field].selected = [];
-          } else {
-            fieldFacetsDraft[field].selected = [
-              ...fieldFacetsDraft[field].selected,
-            ];
           }
           const selected = fieldFacetsDraft[field].selected;
           const selectedIndex = selected.indexOf(value);
@@ -86,6 +86,7 @@ const FieldFacet = (props) => {
     };
   };
 
+  // Build a facet values array from the results to be displayed
   let facetValues = [];
   if (results.fieldFacets[field]) {
     for (
@@ -123,9 +124,14 @@ const FieldFacet = (props) => {
     setMenuOpen(false);
   };
 
+  // Removes all facet entry selection
   const handleClearFilterClick = () => {
-    const newQueryFieldFacets = { ...query.fieldFacets };
-    newQueryFieldFacets[field].selected = undefined;
+    const newQueryFieldFacets = produce(
+      query.fieldFacets,
+      (fieldFacetsDraft) => {
+        fieldFacetsDraft[field].selected = undefined;
+      }
+    );
 
     queryDispatch({
       type: SET_FIELD_FACETS,
@@ -134,13 +140,18 @@ const FieldFacet = (props) => {
     setMenuOpen(false);
   };
 
+  // Select all facet entries
   const handleSelectAllClick = () => {
-    const newQueryFieldFacets = { ...query.fieldFacets };
-    newQueryFieldFacets[field].selected = [
-      ...results.fieldFacets[field].filter((value, index) => {
-        return index % 2 === 0;
-      }),
-    ];
+    const newQueryFieldFacets = produce(
+      query.fieldFacets,
+      (fieldFacetsDraft) => {
+        fieldFacetsDraft[field].selected = [
+          ...results.fieldFacets[field].filter((value, index) => {
+            return index % 2 === 0;
+          }),
+        ];
+      }
+    );
 
     queryDispatch({
       type: SET_FIELD_FACETS,

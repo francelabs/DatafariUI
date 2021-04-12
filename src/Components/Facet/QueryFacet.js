@@ -56,6 +56,7 @@ const QueryFacet = (props) => {
       ? props.multipleSelect
       : false;
 
+  // Effect to add the facet to the query if it is not registered
   useEffect(() => {
     if (!query.queryFacets[id]) {
       const newQueryFacets = { ...query.queryFacets };
@@ -68,6 +69,9 @@ const QueryFacet = (props) => {
     }
   }, [id, query, queryDispatch, labels, queries, props.title]);
 
+  // Handler when clicking on a facet entry.
+  // Adds or remove the entry from the selected list
+  // depending on its current state.
   const onClick = (value) => {
     return () => {
       const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
@@ -97,6 +101,7 @@ const QueryFacet = (props) => {
     };
   };
 
+  // Build a facet values array from the results to be displayed
   let facetValues = [];
   if (results.queryFacets[id]) {
     for (let index = 0; index < labels.length; index++) {
@@ -122,10 +127,11 @@ const QueryFacet = (props) => {
     setExpanded((previous) => !previous);
   };
 
+  // Removes all facet entry selection
   const handleClearFilterClick = () => {
-    const newQueryFacets = { ...query.queryFacets };
-    newQueryFacets[id].selected = undefined;
-
+    const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
+      queryFacetsDraft[id].selected = undefined;
+    });
     queryDispatch({
       type: SET_QUERY_FACETS,
       queryFacets: newQueryFacets,
@@ -133,9 +139,11 @@ const QueryFacet = (props) => {
     setMenuOpen(false);
   };
 
+  // Select all facet entries
   const handleSelectAllClick = () => {
-    const newQueryFacets = { ...query.queryFacets };
-    newQueryFacets[id].selected = [...labels];
+    const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
+      queryFacetsDraft[id].selected = [...labels];
+    });
 
     queryDispatch({
       type: SET_QUERY_FACETS,
