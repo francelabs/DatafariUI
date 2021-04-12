@@ -5,7 +5,6 @@ import ResultError from './ResultError';
 import Spinner from '../Spinner/Spinner';
 import { makeStyles, Divider, List } from '@material-ui/core';
 import useFavorites from '../../Hooks/useFavorites';
-import { useTranslation } from 'react-i18next';
 import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ResultsList = (porps) => {
-  const { t } = useTranslation();
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
   const {
