@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// List of extensions for which a dedicated file icon exists
 const extension_list = [
   'ai',
   'asf',
@@ -140,6 +141,9 @@ const ResultEntry = (props) => {
     });
   };
 
+  /*
+   * Prepare and formats the text to be shown as snippet
+   */
   const prepareSnippet = () => {
     let snippet = t('Document content not indexed');
     if (!props.emptied) {
@@ -175,6 +179,10 @@ const ResultEntry = (props) => {
     return snippet;
   };
 
+  /*
+   * Cut the title if too long and prepares the tooltip to show the full title
+   * when hovered.
+   */
   const prepareTitle = () => {
     let title = '';
     if (Array.isArray(props.title)) {
@@ -204,6 +212,10 @@ const ResultEntry = (props) => {
     return title;
   };
 
+  /*
+   * Cut the URL if too long and prepares the tooltip to show the full URL
+   * when hovered.
+   */
   const prepareUrl = () => {
     var maxSize = 70;
     let result = props.url;
@@ -237,10 +249,17 @@ const ResultEntry = (props) => {
     return result;
   };
 
+  /*
+   * Builds the URL to use as the link href to send to the result
+   */
   const prepareDocURL = () => {
     return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
   };
 
+  /*
+   * Builds the URL to use as the link href to send to the folder containing the result (for selected sources
+   * defined by the props folderLinkSources which is an array of String)
+   */
   const prepareFolderURL = () => {
     return `${apiEndpointsContext.docRedirectURL}?url=${props.url.substring(
       0,
@@ -248,11 +267,17 @@ const ResultEntry = (props) => {
     )}&id=${props.qid}&q=${props.q}&position=${props.position}`;
   };
 
+  /*
+   * Builds the URL to use as the link href to send to the preview page for this result
+   */
   const preparePreviewURL = () => {
     let request = buildSearchQueryString();
     return `/preview?docPos=${props.position}&docId=${props.id}&${request}&action=OPEN_PREVIEW`;
   };
 
+  /*
+   * Builds the URL to the file icon to be used for this result
+   */
   const selectFileIcon = (extension) => {
     if (extension_list.indexOf(extension) !== -1) {
       return `${process.env.PUBLIC_URL}/images/file_icons/icon_square_${extension}_v01-24px.png`;
@@ -317,7 +342,7 @@ const ResultEntry = (props) => {
               <span>
                 {t('Source')}: {props['repo_source']}
               </span>
-              {/*               
+              {/* More like this link, commented because not yet implemented.
               <span className={classes.moreLikeThis}>
                 <Link
                   color="secondary"
@@ -332,6 +357,7 @@ const ResultEntry = (props) => {
         }
         secondaryTypographyProps={{ component: 'div' }}
       />
+      {/* Favorite badge, shown only if the user is authenticated and favorites are active */}
       {props.bookmarkEnabled && userState.user && (
         <ListItemSecondaryAction className={classes.bookmarkAction}>
           <IconButton

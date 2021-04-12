@@ -26,7 +26,6 @@ const ResultsList = (porps) => {
   const { t } = useTranslation();
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
-  // const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const {
     isLoading,
     data,
@@ -43,10 +42,12 @@ const ResultsList = (porps) => {
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
   const [folderLinkSources] = useFolderLinkSources();
 
+  // Retrieve favorite status on mount (getFavortiesStatus should be constant)
   useEffect(() => {
     getFavoritesStatus('FETCH_FAVORITES_STATUS');
   }, [getFavoritesStatus]);
 
+  // Handles reception of the fetch status query
   useEffect(() => {
     if (reqIdentifier === 'FETCH_FAVORITES_STATUS') {
       if (!isLoading && !error && data) {
@@ -63,6 +64,8 @@ const ResultsList = (porps) => {
     }
   }, [data, error, favoritesEnabled, isLoading, reqIdentifier]);
 
+  // Upon changes in the results (new search) or favorites status
+  // Send a request to get the list of favorite for the user.
   useEffect(() => {
     if (results.results && favoritesEnabled) {
       let newQueryID = Math.random().toString(36).substring(2, 15);
@@ -74,6 +77,7 @@ const ResultsList = (porps) => {
     }
   }, [results.results, getFavorites, setFetchQueryID, favoritesEnabled]);
 
+  // Populate the favorites state variable upon reception of the response
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
       if (data.status === 'OK') {
@@ -82,6 +86,9 @@ const ResultsList = (porps) => {
     }
   }, [data, error, isLoading, fetchQueryID, reqIdentifier, setFavorites]);
 
+  // Click callback parametrized using the title and ID of the result
+  // to save as favorite. Sends the request to add a favorite and
+  // populate the modifQueries state to handle response reception.
   const addFavoriteCallback = useCallback(
     (favoriteID, favoriteTitle) => {
       return () => {
@@ -96,6 +103,9 @@ const ResultsList = (porps) => {
     [setModifQueries, addFavorite]
   );
 
+  // Click callback parametrized using the title and ID of the result
+  // to save as favorite. Sends the request to add a favorite and
+  // populate the modifQueries state to handle response reception.
   const removeFavoriteCallback = useCallback(
     (favoriteID) => {
       return () => {
@@ -110,6 +120,9 @@ const ResultsList = (porps) => {
     [setModifQueries, removeFavorite]
   );
 
+  // Handle the reception of modif queries sent by the click callbacks.
+  // If there are no errors, change the favorites state according to the
+  // type of action (add or remove).
   useEffect(() => {
     if (modifQueries[reqIdentifier]) {
       if (!isLoading && !error && data) {
@@ -144,6 +157,9 @@ const ResultsList = (porps) => {
 
   return (
     <>
+      {/* Display a spinner while waiting for results, 
+      an error message in case of error and 'No Results' 
+      if there are 0 results */}
       {results.isLoading ? (
         <div className={classes.spinnerContainer}>
           <div>
@@ -155,6 +171,7 @@ const ResultsList = (porps) => {
       ) : results.results.length === 0 ? (
         <div>{t('No results')}</div>
       ) : (
+        /* Display the results list, each result is rendered by a ResultEntry component */
         <List className={classes.resultsContainer}>
           {results.results.map((result, index) => (
             <React.Fragment>
