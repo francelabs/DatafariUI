@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import PrivacyPolicyModal from '../../Pages/PrivacyPolicyModal/PrivacyPolicyModal';
 
 const SettingsMenu = (props) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(undefined);
-
-  const privacyClick = () => {
-    setOpen('privacy');
-    props.onClose();
-  };
+  //const [open, setOpen] = useState(undefined);
 
   return (
     <Menu
@@ -32,13 +26,6 @@ const SettingsMenu = (props) => {
       <MenuItem onClick={() => props.onClose()}>
         {t('Edit Page Layout')}
       </MenuItem>
-      <MenuItem onClick={privacyClick}>{t('Privacy Settings')}</MenuItem>
-      <PrivacyPolicyModal
-        open={open === 'privacy'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
     </Menu>
   );
 };

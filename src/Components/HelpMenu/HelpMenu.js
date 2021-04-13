@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import PrivacyPolicyModal from '../../Pages/PrivacyPolicyModal/PrivacyPolicyModal';
 import HelpModal from '../../Pages/HelpModal/HelpModal';
 
 const HelpMenu = (props) => {
@@ -9,6 +10,11 @@ const HelpMenu = (props) => {
 
   const howToSearchClick = () => {
     setOpen('helpModal');
+    props.onClose();
+  };
+
+  const privacyClick = () => {
+    setOpen('privacy');
     props.onClose();
   };
 
@@ -30,9 +36,14 @@ const HelpMenu = (props) => {
       }}
     >
       <MenuItem onClick={howToSearchClick}>{t('How to search')}</MenuItem>
-      {/* <MenuItem onClick={() => props.onClose()}>
-        {t('Privacy Policies')}
-      </MenuItem>
+      <MenuItem onClick={privacyClick}>{t('Privacy Policy')}</MenuItem>
+      <PrivacyPolicyModal
+        open={open === 'privacy'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      {/* 
       <MenuItem onClick={() => props.onClose()}>{t('Contact us')}</MenuItem>
       <MenuItem onClick={() => props.onClose()}>{t('About Datafari')}</MenuItem> */}
       <HelpModal
