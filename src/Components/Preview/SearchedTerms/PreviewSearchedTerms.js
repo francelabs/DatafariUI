@@ -15,8 +15,9 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useTranslation } from 'react-i18next';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
+// commented out for now as autoscroll does not work
+//import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+//import SkipNextIcon from '@material-ui/icons/SkipNext';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -66,11 +67,31 @@ const PreviewSearchedTerms = (props) => {
     setMenuOpen(false);
   };
 
-  const handleClearFilterClick = () => {
+  // Unselect all search terms for highlighting (toggles selection for selected terms)
+  const handleUnselectAllClick = () => {
+    Object.getOwnPropertyNames(props.highlighting).forEach((highlightTerm) => {
+      const highlightObject = props.highlighting[highlightTerm];
+      if (highlightObject.numOccurence > 0 && highlightObject.highlighted) {
+        props.dispatchHighlighting({
+          type: 'TOGGLE_HIGHLIGHT',
+          term: highlightTerm,
+        });
+      }
+    });
     setMenuOpen(false);
   };
 
+  // Select all search terms for highlighting (toggles selection for unselected terms)
   const handleSelectAllClick = () => {
+    Object.getOwnPropertyNames(props.highlighting).forEach((highlightTerm) => {
+      const highlightObject = props.highlighting[highlightTerm];
+      if (highlightObject.numOccurence > 0 && !highlightObject.highlighted) {
+        props.dispatchHighlighting({
+          type: 'TOGGLE_HIGHLIGHT',
+          term: highlightTerm,
+        });
+      }
+    });
     setMenuOpen(false);
   };
 
@@ -91,8 +112,8 @@ const PreviewSearchedTerms = (props) => {
           onClose={handleCloseMenu}
         >
           <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
-          <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
+          <MenuItem onClick={handleUnselectAllClick}>
+            {t('Unselect All')}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
@@ -137,7 +158,7 @@ const PreviewSearchedTerms = (props) => {
                             </span>
                             <span className={classes.textLabel}></span>
                             <span>{highlightObject.numOccurence}</span>
-                            <IconButton
+                            {/* <IconButton
                               size="small"
                               className={classes.navButtons}
                               onClick={() => {
@@ -163,7 +184,7 @@ const PreviewSearchedTerms = (props) => {
                               }}
                             >
                               <SkipNextIcon fontSize="small" color="action" />
-                            </IconButton>
+                            </IconButton> */}
                           </>
                         }
                         primaryTypographyProps={{

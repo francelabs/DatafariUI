@@ -61,11 +61,21 @@ const PreviewProperties = (props) => {
     setMenuOpen(false);
   };
 
-  const handleClearFilterClick = () => {
+  const handleCollapseAllClick = () => {
+    setTitleOpen(false);
+    setDescriptionOpen(false);
+    setMimeOpen(false);
+    setAuthorsOpen(false);
+    setDatesOpen(false);
     setMenuOpen(false);
   };
 
-  const handleSelectAllClick = () => {
+  const handleExpandAllClick = () => {
+    setTitleOpen(true);
+    setDescriptionOpen(true);
+    setMimeOpen(true);
+    setAuthorsOpen(true);
+    setDatesOpen(true);
     setMenuOpen(false);
   };
 
@@ -204,9 +214,9 @@ const PreviewProperties = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
-          <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
+          <MenuItem onClick={handleExpandAllClick}>{t('Expand All')}</MenuItem>
+          <MenuItem onClick={handleCollapseAllClick}>
+            {t('Collapse All')}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>

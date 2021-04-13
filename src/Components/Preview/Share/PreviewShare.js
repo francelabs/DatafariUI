@@ -61,11 +61,15 @@ const PreviewShare = (props) => {
     setMenuOpen(false);
   };
 
-  const handleClearFilterClick = () => {
+  const handleCollapseAllClick = () => {
+    setShareOriginalOpen(false);
+    setSharePreviewOpen(false);
     setMenuOpen(false);
   };
 
-  const handleSelectAllClick = () => {
+  const handleExpandAllClick = () => {
+    setShareOriginalOpen(true);
+    setSharePreviewOpen(true);
     setMenuOpen(false);
   };
 
@@ -114,9 +118,9 @@ const PreviewShare = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
-          <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
+          <MenuItem onClick={handleExpandAllClick}>{t('Expand All')}</MenuItem>
+          <MenuItem onClick={handleCollapseAllClick}>
+            {t('Collapse All')}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
