@@ -13,7 +13,7 @@ import SimpleSearchBar from '../SearchBar/SimpleSearchBar';
 import Avatar from '@material-ui/core/Avatar';
 
 import topLeftLogo from '../../Icons/top_left_logo.svg';
-//import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from '@material-ui/icons/Settings';
 import LanguageIcon from '@material-ui/icons/Language';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
@@ -25,7 +25,7 @@ import SvgIcon from '@material-ui/icons/AccountCircle';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
 import HelpMenu from '../HelpMenu/HelpMenu';
-//import SettingsMenu from '../SettingsMenu/SettingsMenu';
+import SettingsMenu from '../SettingsMenu/SettingsMenu';
 import { Link } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -107,7 +107,7 @@ const TopMenu = () => {
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
   const [feedbacksMenuAnchorEl, setFeedbacksMenuAnchorEl] = useState(null);
   const [helpMenuAnchorEl, setHelpMenuAnchorEl] = useState(null);
-  //const [settingsMenuAnchorEl, setSettingsMenuAnchorEl] = useState(null);
+  const [settingsMenuAnchorEl, setSettingsMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { state: userState } = useContext(UserContext);
   const { t } = useTranslation();
@@ -156,13 +156,13 @@ const TopMenu = () => {
     setHelpMenuAnchorEl(event.currentTarget);
   };
 
-  // const handleCloseSettingsMenu = () => {
-  //   setSettingsMenuAnchorEl(null);
-  // };
+  const handleCloseSettingsMenu = () => {
+    setSettingsMenuAnchorEl(null);
+  };
 
-  // const handleOpenSettingsMenu = (event) => {
-  //   setSettingsMenuAnchorEl(event.currentTarget);
-  // };
+  const handleOpenSettingsMenu = (event) => {
+    setSettingsMenuAnchorEl(event.currentTarget);
+  };
 
   const loginURL = new URL(apiEndpointsContext.authURL);
   loginURL.search =
@@ -200,7 +200,7 @@ const TopMenu = () => {
             {t('Admin')}
           </MenuItem>
         )}
-      {/* {userState.user &&
+      {userState.user &&
         userState.user.roles &&
         (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
           userState.user.roles.indexOf('SearchExpert') !== -1) && (
@@ -212,7 +212,7 @@ const TopMenu = () => {
           >
             {t('Admin')}
           </MenuItem>
-        )} */}
+        )}
       <MenuItem
         onClick={handleMenuClose}
         component={Link}
@@ -276,7 +276,6 @@ const TopMenu = () => {
             <IconButton
               aria-label={t('Language selection')}
               color="inherit"
-              // ref={langMenuAnchorRef}
               onClick={handleOpenLangMenu}
             >
               <LanguageIcon fontSize="large" />
@@ -296,14 +295,13 @@ const TopMenu = () => {
             >
               <HelpOutlineIcon fontSize="large" />
             </IconButton>
-            {/* Hidden for now as no settings parameters are implemented
             <IconButton
               aria-label={t('Settings')}
               color="inherit"
               onClick={handleOpenSettingsMenu}
             >
               <SettingsIcon fontSize="large" />
-            </IconButton> */}
+            </IconButton>
             {userState.isLoading ? (
               <Spinner />
             ) : userState.user === null ? (
@@ -378,12 +376,12 @@ const TopMenu = () => {
         onClose={handleCloseHelpMenu}
         id="help-menu"
       />
-      {/* <SettingsMenu
+      <SettingsMenu
         open={Boolean(settingsMenuAnchorEl)}
         anchorEl={settingsMenuAnchorEl}
         onClose={handleCloseSettingsMenu}
         id="settings-menu"
-      /> */}
+      />
     </>
   );
 };
