@@ -8,6 +8,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Hidden,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import FavortiesModal from '../../Pages/FavoritesModal/FavoritesModal';
@@ -106,36 +107,38 @@ const SearchTopMenu = () => {
           <MenuItem onClick={handleOpen('advanceSearch')}>
             {t('Advanced Search')}
           </MenuItem>
-          <Divider />
-          {userState.user && (
-            <>
-              <MenuItem onClick={handleOpen('manageSavedQeuries')}>
-                {t('Manage Saved Queries')}
-              </MenuItem>
-              <MenuItem onClick={handleOpen('saveQuery')}>
-                {t('Save Current Query')}
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={handleOpen('manageAlerts')}>
-                {t('Manage Alerts')}
-              </MenuItem>
-              <MenuItem onClick={handleOpen('createAlert')}>
-                {t('Save Query As Alert')}
-              </MenuItem>
-              <Divider />
-              {favoritesEnabled && (
-                <>
-                  <MenuItem onClick={handleOpen('favorites')}>
-                    {t('Manage Favorites')}
-                  </MenuItem>
-                  <Divider />
-                </>
-              )}
-            </>
-          )}
-          {/* <MenuItem onClick={handleOpen('exportResults')}>
+          <Hidden smDown>
+            <Divider />
+            {userState.user && (
+              <>
+                <MenuItem onClick={handleOpen('manageSavedQeuries')}>
+                  {t('Manage Saved Queries')}
+                </MenuItem>
+                <MenuItem onClick={handleOpen('saveQuery')}>
+                  {t('Save Current Query')}
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleOpen('manageAlerts')}>
+                  {t('Manage Alerts')}
+                </MenuItem>
+                <MenuItem onClick={handleOpen('createAlert')}>
+                  {t('Save Query As Alert')}
+                </MenuItem>
+                <Divider />
+                {favoritesEnabled && (
+                  <>
+                    <MenuItem onClick={handleOpen('favorites')}>
+                      {t('Manage Favorites')}
+                    </MenuItem>
+                    <Divider />
+                  </>
+                )}
+              </>
+            )}
+            {/* <MenuItem onClick={handleOpen('exportResults')}>
             {t('Export Current Results')}
           </MenuItem> */}
+          </Hidden>
         </Menu>
       </Toolbar>
       <AdvancedSearchModal

@@ -4,12 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -247,33 +243,20 @@ const TopMenu = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+      <MenuItem onClick={handleMobileMenuClose}>{t('Logout')}</MenuItem>
+      {userState.user &&
+        userState.user.roles &&
+        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
+          userState.user.roles.indexOf('SearchExpert') !== -1) && (
+          <MenuItem
+            onClick={handleMobileMenuClose}
+            component={Link}
+            href={apiEndpointsContext.adminURL}
+            target="_blank"
+          >
+            {t('Admin')}
+          </MenuItem>
+        )}
     </Menu>
   );
 
@@ -356,15 +339,29 @@ const TopMenu = () => {
             )}
           </div>
           <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
+            {userState.isLoading ? (
+              <Spinner />
+            ) : userState.user === null ? (
+              <IconButton
+                edge="end"
+                aria-label="Login"
+                aria-haspopup="true"
+                href={`${loginURL}`}
+                color="inherit"
+              >
+                <SvgIcon component={LoginIcon} alt="Login" />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreIcon />
+              </IconButton>
+            )}
           </div>
         </Toolbar>
       </AppBar>
