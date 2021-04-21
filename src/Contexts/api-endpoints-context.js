@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+// Used for context creation, defines all the properties that will
+// be filled below in the provider.
 const DEFAULT_ENDPOINTS = {
   datafariBaseURL: '',
   restAPIBaseURL: '',
@@ -20,10 +22,14 @@ const DEFAULT_ENDPOINTS = {
   getHelpURL: '',
   getPrivacyPolicyURL: '',
   getEmailsAdminURL: '',
+  licenceURL: '',
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
 
+// Context defining the URL to all the API endpoints.
+// The base Datafari URL is read from the window.datafariBaseURL
+// variable and all other URLs are parametrized from this base.
 const APIEndpointsContextProvider = (props) => {
   // Getting rid of the last forward slash if it is there.
   const [datafariBaseURL] = useState(
@@ -96,14 +102,11 @@ const APIEndpointsContextProvider = (props) => {
       `${restAPIBaseURL.pathname}/privacy`,
       restAPIBaseURL
     ),
-    // new URL(
-    //   `${datafariBaseURL.pathname}/resources/privacyPolicyAssets/privacyPolicyContent.jsp`,
-    //   datafariBaseURL
-    // ),
     getEmailsAdminURL: new URL(
       `${restAPIBaseURL.pathname}/emails/admin`,
       restAPIBaseURL
     ),
+    licenceURL: new URL(`${restAPIBaseURL.pathname}/licence`, restAPIBaseURL),
   });
   return (
     <APIEndpointsContext.Provider value={value}>

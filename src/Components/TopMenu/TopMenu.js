@@ -200,19 +200,6 @@ const TopMenu = () => {
             {t('Admin')}
           </MenuItem>
         )}
-      {userState.user &&
-        userState.user.roles &&
-        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
-          userState.user.roles.indexOf('SearchExpert') !== -1) && (
-          <MenuItem
-            onClick={handleMenuClose}
-            component={Link}
-            href={apiEndpointsContext.adminURL}
-            target="_blank"
-          >
-            {t('Admin')}
-          </MenuItem>
-        )}
       <MenuItem
         onClick={handleMenuClose}
         component={Link}

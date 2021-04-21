@@ -27,6 +27,8 @@ import 'fontsource-montserrat/500.css';
 import 'fontsource-montserrat/700.css';
 import Preview from './Pages/Preview/Preview';
 import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
+import LicenceContextProvider from './Contexts/licence-context';
+import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 const defaultTheme = createMuiTheme({
@@ -66,21 +68,23 @@ function Main() {
       <ThemeProvider theme={defaultTheme}>
         <CssBaseline />
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <QueryContextProvider>
-            <ResultsContextProvider>
-              <BrowserRouter basename={process.env.PUBLIC_URL}>
-                <TopMenu />
-                {/* <MainNavigation entries={menuEntries} /> */}
-                <div>
-                  <Switch>
-                    <Route path="/" component={SearchPage} exact />
-                    <Route path="/search" component={SearchPage} />
-                    <Route path="/preview" component={Preview} />
-                  </Switch>
-                </div>
-              </BrowserRouter>
-            </ResultsContextProvider>
-          </QueryContextProvider>
+          <LicenceContextProvider>
+            <QueryContextProvider>
+              <ResultsContextProvider>
+                <BrowserRouter basename={process.env.PUBLIC_URL}>
+                  <LicenceChecker />
+                  <TopMenu />
+                  <div>
+                    <Switch>
+                      <Route path="/" component={SearchPage} exact />
+                      <Route path="/search" component={SearchPage} />
+                      <Route path="/preview" component={Preview} />
+                    </Switch>
+                  </div>
+                </BrowserRouter>
+              </ResultsContextProvider>
+            </QueryContextProvider>
+          </LicenceContextProvider>
         </MuiPickersUtilsProvider>
       </ThemeProvider>
     </StylesProvider>
@@ -88,6 +92,14 @@ function Main() {
 }
 
 function App() {
+  /*
+   * UserContextProvider and APIEndpointsContextProvider must stay here !
+   * UserContextProvider will not behave as expected if put elsewhere and
+   * it requires APIEndpointsContextProvider to work. This is because the
+   * Main component uses the UserContext and thus it must itself be wrapped
+   * by the UserContextProvider to be able to perform the autoConnect action
+   * properly.
+   */
   return (
     <Suspense fallback="loading">
       <APIEndpointsContextProvider>
