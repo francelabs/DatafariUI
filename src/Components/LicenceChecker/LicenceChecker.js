@@ -88,13 +88,13 @@ const LicenceChecker = () => {
   };
 
   const timeEndingContent = (
-    <Typography>{t('Datafari licence expiracy date is close.')}</Typography>
+    <Typography>{t('Your Datafari licence will expire soon.')}</Typography>
   );
 
   const timeOverdueContent = (
     <Typography>
       {t(
-        'Datafari licence expiracy date is passed, Datafari will soon cease to function.'
+        'Your Datafari licence has expired, Datafari will soon stop functioning.'
       )}
     </Typography>
   );
@@ -102,21 +102,21 @@ const LicenceChecker = () => {
   const timeExpiredContent = (
     <Typography>
       {t(
-        'Datafari licence expiracy date passed, licence has expired and search will not be available until it is renewed.'
+        'Your Datafari licence has expired, search will not be available until it is renewed.'
       )}
     </Typography>
   );
 
   const filesEndingContent = (
     <Typography>
-      {t('Datafari indexed files is close to the licence limit.')}
+      {t('The number of indexed files in Datafari is approaching the limit set by your licence.')}
     </Typography>
   );
 
   const filesOverdueContent = (
     <Typography>
       {t(
-        'Datafari indexed files licence limit has been overtaken, licence update is required or Datafari will cease to function.'
+        'The number of indexed files in Datafari has overcome the limit set by your licence, please update it or Datafari will soon stop functioning.'
       )}
     </Typography>
   );
@@ -124,7 +124,7 @@ const LicenceChecker = () => {
   const filesExpiredContent = (
     <Typography>
       {t(
-        'Datafari indexed files licence limit has been greatly overtaken, Datafari search capabilities are disabled until the licence is updated.'
+        'The number of indexed files in Datafari has overcome the limit set by your licence, search has been disabled until the licence is updated.'
       )}
     </Typography>
   );
@@ -132,7 +132,7 @@ const LicenceChecker = () => {
   const usersEndingContent = (
     <Typography>
       {t(
-        'Datafari active users is close to its maximum allowed by the licence.'
+        'The number of active users in Datafari is approaching the limit set by your licence.'
       )}
     </Typography>
   );
@@ -140,8 +140,8 @@ const LicenceChecker = () => {
   const usersExpiredContent = (
     <Typography>
       {t(
-        'Datafari active users has reached the maximum number of users allowed by the licence, ' +
-          'new users coming to Datafari cannot use the search engine. ' +
+        'The number of active Datafari users is greater than the maximum set by your licence, ' +
+          'new users connecting to Datafari will not be able to search. ' +
           'Consider upgrading the licence if you need to support more users.'
       )}
     </Typography>
@@ -174,7 +174,7 @@ const LicenceChecker = () => {
           variant="contained"
           size="small"
         >
-          {t('Contact for a new licence')}
+          {t('Ask for a new licence')}
         </Button>
       </Link>
       <Button onClick={handleClose} color="secondary">
