@@ -6,7 +6,9 @@
       {
         "outputPath": "public/locales/{{locale}}/{{ns}}.json",
         "locales": ["ar", "de", "en", "es", "fr", "it", "pt_br", "ru"],
-        "discardOldKeys" : true
+        "discardOldKeys": true,
+        "keySeparator": "::",
+        "nsSeparator": ":::"
       }
     ]
   ]

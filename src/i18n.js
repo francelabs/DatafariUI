@@ -27,6 +27,8 @@ i18n
       // for all available options read the backend's repository readme file
       loadPath: process.env.PUBLIC_URL + '/locales/{{lng}}/{{ns}}.json',
     },
+    nsSeparator: ':::',
+    keySeparator: '::',
   });
 
 export default i18n;
