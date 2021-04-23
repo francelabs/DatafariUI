@@ -253,7 +253,8 @@ const ResultEntry = (props) => {
    * Builds the URL to use as the link href to send to the result
    */
   const prepareDocURL = () => {
-    return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&id=${props.qid}&q=${props.q}&position=${props.position}`;
+    let request = buildSearchQueryString();
+    return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&${request}&position=${props.position}`;
   };
 
   /*
@@ -261,10 +262,11 @@ const ResultEntry = (props) => {
    * defined by the props folderLinkSources which is an array of String)
    */
   const prepareFolderURL = () => {
+    let request = buildSearchQueryString();
     return `${apiEndpointsContext.docRedirectURL}?url=${props.url.substring(
       0,
       props.url.lastIndexOf('/')
-    )}&id=${props.qid}&q=${props.q}&position=${props.position}`;
+    )}&${request}&position=${props.position}`;
   };
 
   /*

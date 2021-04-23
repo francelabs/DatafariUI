@@ -117,7 +117,9 @@ const Preview = (props) => {
           queryParams.set('start', 0);
         }
         queryParams.set('wt', 'json');
-        queryParams.set('action', 'OPEN_PREVIEW');
+        if (!queryParams.get('action')) {
+          queryParams.set('action', 'OPEN_PREVIEW');
+        }
 
         url.search = `?${queryParams.toString()}`;
       } else {
