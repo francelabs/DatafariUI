@@ -58,10 +58,24 @@ const LicenceChecker = () => {
 
   useEffect(() => {
     if (!isLoading && !error && type !== undefined && !alertDisplayed) {
+      const isAdmin =
+        userState.user &&
+        userState.user.roles &&
+        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
+          userState.user.roles.indexOf('SearchExpert') !== -1);
       if (
-        files !== 'valid' ||
-        time !== 'valid' ||
-        (users !== undefined && users !== 'valid')
+        isAdmin &&
+        (files !== 'valid' ||
+          time !== 'valid' ||
+          (users !== undefined && users !== 'valid'))
+      ) {
+        setOpen(true);
+        setAlertDisplayed(true);
+      } else if (
+        files === 'overdue' ||
+        time === 'overdue' ||
+        files === 'expired' ||
+        time === 'expired'
       ) {
         setOpen(true);
         setAlertDisplayed(true);
@@ -76,6 +90,7 @@ const LicenceChecker = () => {
     setOpen,
     time,
     type,
+    userState.user,
     users,
   ]);
 
@@ -109,7 +124,9 @@ const LicenceChecker = () => {
 
   const filesEndingContent = (
     <Typography>
-      {t('The number of indexed files in Datafari is approaching the limit set by your licence.')}
+      {t(
+        'The number of indexed files in Datafari is approaching the limit set by your licence.'
+      )}
     </Typography>
   );
 
