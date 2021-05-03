@@ -29,6 +29,7 @@ import Preview from './Pages/Preview/Preview';
 import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
 import LicenceContextProvider from './Contexts/licence-context';
 import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
+import { useTranslation } from 'react-i18next';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 const defaultTheme = createMuiTheme({
@@ -58,10 +59,13 @@ const defaultTheme = createMuiTheme({
 
 function Main() {
   const { actions: userActions } = useContext(UserContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     userActions.autoConnect();
   }, [userActions]);
+
+  document.title = t('Datafari Enterprise Search');
 
   return (
     <StylesProvider jss={jss}>
