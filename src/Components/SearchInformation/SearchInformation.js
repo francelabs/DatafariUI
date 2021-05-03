@@ -20,6 +20,7 @@ import FilterEntry from './FilterEntry';
 import SortIcon from '@material-ui/icons/Sort';
 import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
 import ResultCountInformation from './ResultCountInformation';
+import produce from 'immer';
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {
@@ -49,12 +50,16 @@ const SearchInformation = (props) => {
 
   const handleClearFieldFacet = (key, value) => {
     return () => {
-      const newFieldFacets = { ...query.fieldFacets };
-      if (newFieldFacets[key] && newFieldFacets[key].selected) {
-        const index = newFieldFacets[key].selected.indexOf(value);
-        if (index !== -1) {
-          newFieldFacets[key].selected.splice(index, 1);
-        }
+      if (query.fieldFacets[key] && query.fieldFacets[key].selected) {
+        const newFieldFacets = produce(
+          query.fieldFacets,
+          (fieldFacetsDraft) => {
+            const index = fieldFacetsDraft[key].selected.indexOf(value);
+            if (index !== -1) {
+              fieldFacetsDraft[key].selected.splice(index, 1);
+            }
+          }
+        );
         queryDispatch({
           type: SET_FIELD_FACETS,
           fieldFacets: newFieldFacets,
@@ -65,12 +70,16 @@ const SearchInformation = (props) => {
 
   const handleClearQueryFacet = (key, value) => {
     return () => {
-      const newQueryFacets = { ...query.queryFacets };
-      if (newQueryFacets[key] && newQueryFacets[key].selected) {
-        const index = newQueryFacets[key].selected.indexOf(value);
-        if (index !== -1) {
-          newQueryFacets[key].selected.splice(index, 1);
-        }
+      if (query.queryFacets[key] && query.queryFacets[key].selected) {
+        const newQueryFacets = produce(
+          query.queryFacets,
+          (queryFacetsDraft) => {
+            const index = queryFacetsDraft[key].selected.indexOf(value);
+            if (index !== -1) {
+              queryFacetsDraft[key].selected.splice(index, 1);
+            }
+          }
+        );
         queryDispatch({
           type: SET_QUERY_FACETS,
           queryFacets: newQueryFacets,
@@ -81,8 +90,9 @@ const SearchInformation = (props) => {
 
   const handleClearFilter = (key) => {
     return () => {
-      const newFilters = { ...query.filters };
-      delete newFilters[key];
+      const newFilters = produce(query.filters, (filtersDraft) => {
+        delete filtersDraft[key];
+      });
       queryDispatch({
         type: SET_FILTERS,
         filters: newFilters,

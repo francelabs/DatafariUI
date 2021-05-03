@@ -8,6 +8,7 @@ import { KeyboardDatePicker } from '@material-ui/pickers';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { QueryContext, SET_FILTERS } from '../../Contexts/query-context';
+import produce from 'immer';
 
 const FILTER_ID = 'customDateRange';
 
@@ -44,19 +45,20 @@ const DateFacetCustom = (props) => {
         ? selectedFromDate.toISOString()
         : '*';
       const toDateString = selectedToDate ? selectedToDate.toISOString() : '*';
-      const newFilters = { ...query.filters };
-      const field = props.field ? props.field : 'creation_date';
-      newFilters[FILTER_ID] = {
-        value: `${field}:[${fromDateString} TO ${toDateString}]`,
-        extra: {
-          from: selectedFromDate,
-          to: selectedToDate,
-          field: field,
-        },
-      };
+      const newFilters = produce(query.filters, (filtersDraft) => {
+        const field = props.field ? props.field : 'creation_date';
+        filtersDraft[FILTER_ID] = {
+          value: `${field}:[${fromDateString} TO ${toDateString}]`,
+          extra: {
+            from: selectedFromDate,
+            to: selectedToDate,
+            field: field,
+          },
+        };
+      });
       queryDispatch({
         type: SET_FILTERS,
-        filters: { ...newFilters },
+        filters: newFilters,
       });
     } else {
       handleResetClick();
@@ -65,11 +67,12 @@ const DateFacetCustom = (props) => {
 
   const handleResetClick = () => {
     if (query.filters[FILTER_ID]) {
-      const newFilters = { ...query.filters };
-      delete newFilters[FILTER_ID];
+      const newFilters = produce(query.filters, (filtersDraft) => {
+        delete filtersDraft[FILTER_ID];
+      });
       queryDispatch({
         type: SET_FILTERS,
-        filters: { ...newFilters },
+        filters: newFilters,
       });
     }
   };
