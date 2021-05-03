@@ -19,7 +19,6 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import LangSelectionMenu from '../LangSelectionMenu/LangSelectionMenu';
 import { UserContext } from '../../Contexts/user-context';
-import Spinner from '../Spinner/Spinner';
 import { ReactComponent as LoginIcon } from '../../Icons/login-24px.svg';
 import SvgIcon from '@material-ui/icons/AccountCircle';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
@@ -289,9 +288,7 @@ const TopMenu = () => {
             >
               <SettingsIcon fontSize="large" />
             </IconButton>
-            {userState.isLoading ? (
-              <Spinner />
-            ) : userState.user === null ? (
+            {userState.user === null ? (
               <IconButton
                 edge="end"
                 aria-label="Login"
@@ -317,9 +314,7 @@ const TopMenu = () => {
             )}
           </div>
           <div className={classes.sectionMobile}>
-            {userState.isLoading ? (
-              <Spinner />
-            ) : userState.user === null ? (
+            {userState.user === null ? (
               <IconButton
                 edge="end"
                 aria-label="Login"

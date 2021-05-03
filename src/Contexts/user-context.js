@@ -59,6 +59,7 @@ const UserContextProvider = (props) => {
   }, [autoConnect]);
 
   useEffect(() => {
+    let timer = null;
     if (!isLoading && !error && data && reqIdentifier === queryID) {
       if (data.status !== 'OK') {
         userDispatcher({ type: 'SET_GUEST' });
@@ -68,11 +69,25 @@ const UserContextProvider = (props) => {
           type: 'SET_AUTHENTICATED_USER',
           user: { ...userData },
         });
+        timer = setTimeout(autoConnect, 60000);
       }
     } else if (!isLoading && error) {
       userDispatcher({ type: 'SET_GUEST' });
     }
-  }, [data, error, isLoading, queryID, reqIdentifier, userDispatcher]);
+    return () => {
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+    };
+  }, [
+    autoConnect,
+    data,
+    error,
+    isLoading,
+    queryID,
+    reqIdentifier,
+    userDispatcher,
+  ]);
 
   return (
     <UserContext.Provider
