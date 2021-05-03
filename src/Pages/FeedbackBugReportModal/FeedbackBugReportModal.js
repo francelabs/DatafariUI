@@ -98,7 +98,7 @@ ${t('Or any other details')}`;
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle onClose={handleClose}>
-        {t('Give us your feedback')}
+        {t('Tell us what went wrong')}
       </DialogTitle>
       <Divider />
       <DialogContent>
