@@ -94,7 +94,7 @@ ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle onClose={handleClose}>
-        {t('Give us your feedback')}
+        {t("I don't find a document")}
       </DialogTitle>
       <DialogContent>
         <Grid container justify="space-between">
