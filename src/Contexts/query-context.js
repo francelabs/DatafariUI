@@ -64,48 +64,26 @@ const queryReducer = (query, action) => {
           ? action.spellcheckOriginalQuery
           : undefined;
       });
-    // return {
-    //   ...query,
-    //   page: 1,
-    //   elements: action.elements,
-    //   queryFacets: newQueryFacets,
-    //   fieldFacets: newFieldFacets,
-    //   filters: {},
-    //   spellcheckOriginalQuery: undefined,
-    // };
     case SET_ELEMENTS_NO_RESET:
       return produce(query, (queryDraft) => {
         queryDraft.page = 1;
         queryDraft.elements = action.elements;
       });
-    // return {
-    //   ...query,
-    //   page: 1,
-    //   elements: action.elements,
-    // };
     case SET_SORT:
       return produce(query, (queryDraft) => {
         queryDraft.sort = produce(action.sort, (draft) => {});
       });
-    // return { ...query, page: 1, sort: action.sort };
     case RESET_FACETS_SELECTION:
       return produce(query, (queryDraft) => {
         queryDraft.queryFacets = newQueryFacets;
         queryDraft.fieldFacets = newFieldFacets;
         queryDraft.filters = {};
       });
-    // return {
-    //   ...query,
-    //   queryFacets: newQueryFacets,
-    //   fieldFacets: newFieldFacets,
-    //   filters: {},
-    // };
     case SET_FILTERS:
       return produce(query, (queryDraft) => {
         queryDraft.page = 1;
         queryDraft.filters = action.filters;
       });
-    // return { ...query, page: 1, filters: action.filters };
     case SET_QUERY:
       return produce(action.query, (draft) => {});
     default:
@@ -574,9 +552,8 @@ const QueryContextProvider = (props) => {
                     if (value[0] === '"' && value[value.length - 1] === '"') {
                       value = value.substring(1, value.length - 1);
                     }
-                    newFieldFacets[field].selected = newFieldFacets[
-                      field
-                    ].selected.concat(value);
+                    newFieldFacets[field].selected =
+                      newFieldFacets[field].selected.concat(value);
                     regexFieldFacetResult = regexFieldFacet.exec(element);
                   }
                 }
@@ -589,7 +566,11 @@ const QueryContextProvider = (props) => {
           });
         }
         draft.page = 1;
-        draft.elements = params.get('q');
+        if (params.get('q') === '*:*') {
+          draft.elements = '';
+        } else {
+          draft.elements = params.get('q');
+        }
         draft.fieldFacets = newFieldFacets;
         draft.queryFacets = newQueryFacets;
       });

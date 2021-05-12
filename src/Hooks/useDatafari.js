@@ -17,6 +17,10 @@ const useDatafari = () => {
 
   const { isLoading, error, data, sendRequest } = useHttp();
 
+  /**
+   * The buildQueryString function will change anytime an element in the query
+   * object change, effectively matking this function geeing rebuilt too.
+   */
   const makeRequest = useCallback(() => {
     const queryString = buildSearchQueryString();
     sendRequest(baseURL + '/select?' + queryString, 'GET', null);
@@ -39,6 +43,15 @@ const useDatafari = () => {
     []
   );
 
+  /**
+   * Everytime the makeRequest function changes, we need to execute the
+   * new available request. But to avoid unnecessary request calls (some
+   * UI intercation may lead to several query changes not happening in one
+   * update of the search object), we wait 150ms before sending off the request.
+   * If the query object is changed during that time, the makeRequest function will
+   * change too, effectively calling this effect again, cancelling the previous
+   * timeout and setting up a new one.
+   */
   useEffect(() => {
     const newRequest = setTimeout(() => {
       makeRequest();

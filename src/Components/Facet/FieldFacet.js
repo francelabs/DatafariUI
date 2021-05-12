@@ -53,8 +53,9 @@ const FieldFacet = (props) => {
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
     if (!query.fieldFacets[field]) {
-      const newFieldFacets = { ...query.fieldFacets };
-      newFieldFacets[field] = { field: field, tag: field, op: op };
+      const newFieldFacets = produce(query.fieldFacets, (fieldFacetsDraft) => {
+        fieldFacetsDraft[field] = { field: field, tag: field, op: op };
+      });
       queryDispatch({ type: SET_FIELD_FACETS, fieldFacets: newFieldFacets });
     }
   }, [field, query, queryDispatch, op]);

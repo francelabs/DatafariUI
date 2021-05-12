@@ -59,12 +59,13 @@ const QueryFacet = (props) => {
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
     if (!query.queryFacets[id]) {
-      const newQueryFacets = { ...query.queryFacets };
-      newQueryFacets[id] = {
-        labels: labels,
-        queries: queries,
-        title: props.title,
-      };
+      const newQueryFacets = produce(query.queryFacets, (queryfacetsDraft) => {
+        queryfacetsDraft[id] = {
+          labels: labels,
+          queries: queries,
+          title: props.title,
+        };
+      });
       queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
     }
   }, [id, query, queryDispatch, labels, queries, props.title]);
