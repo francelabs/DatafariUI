@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import produce from 'immer';
-import { QueryContext, SET_QUERY_FACETS } from '../../Contexts/query-context';
+import {
+  QueryContext,
+  REGISTER_QUERY_FACET,
+  SET_QUERY_FACET_SELECTED,
+} from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
 import {
@@ -58,47 +61,44 @@ const QueryFacet = (props) => {
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
-    if (!query.queryFacets[id]) {
-      const newQueryFacets = produce(query.queryFacets, (queryfacetsDraft) => {
-        queryfacetsDraft[id] = {
-          labels: labels,
-          queries: queries,
-          title: props.title,
-        };
-      });
-      queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
-    }
-  }, [id, query, queryDispatch, labels, queries, props.title]);
+    const newFacet = {
+      id: id,
+      labels: labels,
+      queries: queries,
+      title: props.title,
+    };
+    queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
+  }, [id, queryDispatch, labels, queries, props.title]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
   // depending on its current state.
   const onClick = (value) => {
     return () => {
-      const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
-        if (multipleSelect) {
-          if (!queryFacetsDraft[id].selected) {
-            queryFacetsDraft[id].selected = [];
-          }
-          const selected = queryFacetsDraft[id].selected;
-          const selectedIndex = selected.indexOf(value);
-          if (selectedIndex === -1) {
-            selected.push(value);
-          } else {
-            selected.splice(selectedIndex, 1);
-          }
+      // Remember query is immutable, copy array before modifying it.
+      let selected = query.selectedQueryFacets[id]
+        ? [...query.selectedQueryFacets[id]]
+        : [];
+      if (multipleSelect) {
+        const selectedIndex = selected.indexOf(value);
+        if (selectedIndex === -1) {
+          selected.push(value);
         } else {
-          if (
-            queryFacetsDraft[id].selected &&
-            queryFacetsDraft[id].selected[0] === value
-          ) {
-            queryFacetsDraft[id].selected = [];
-          } else {
-            queryFacetsDraft[id].selected = [value];
-          }
+          selected.splice(selectedIndex, 1);
         }
-      });
-      queryDispatch({ type: SET_QUERY_FACETS, queryFacets: newQueryFacets });
+      } else {
+        if (selected[0] === value) {
+          selected = [];
+        } else {
+          selected[0] = value;
+        }
+      }
+      const action = {
+        type: SET_QUERY_FACET_SELECTED,
+        facetId: id,
+        selected: selected,
+      };
+      queryDispatch(action);
     };
   };
 
@@ -113,9 +113,8 @@ const QueryFacet = (props) => {
             value={labels[index]}
             count={results.queryFacets[id][index]}
             selected={
-              query.queryFacets[id] &&
-              query.queryFacets[id].selected &&
-              query.queryFacets[id].selected.indexOf(labels[index]) !== -1
+              query.selectedQueryFacets[id] &&
+              query.selectedQueryFacets[id].indexOf(labels[index]) !== -1
             }
             key={`facet-${id}-${index}`}
           />
@@ -130,25 +129,20 @@ const QueryFacet = (props) => {
 
   // Removes all facet entry selection
   const handleClearFilterClick = () => {
-    const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
-      queryFacetsDraft[id].selected = undefined;
-    });
     queryDispatch({
-      type: SET_QUERY_FACETS,
-      queryFacets: newQueryFacets,
+      type: SET_QUERY_FACET_SELECTED,
+      facetId: id,
+      selected: [],
     });
     setMenuOpen(false);
   };
 
   // Select all facet entries
   const handleSelectAllClick = () => {
-    const newQueryFacets = produce(query.queryFacets, (queryFacetsDraft) => {
-      queryFacetsDraft[id].selected = [...labels];
-    });
-
     queryDispatch({
-      type: SET_QUERY_FACETS,
-      queryFacets: newQueryFacets,
+      type: SET_QUERY_FACET_SELECTED,
+      facetId: id,
+      selected: [...labels],
     });
     setMenuOpen(false);
   };

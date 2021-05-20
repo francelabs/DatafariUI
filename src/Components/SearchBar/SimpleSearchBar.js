@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { QueryContext, SET_ELEMENTS } from '../../Contexts/query-context';
+import { QueryContext } from '../../Contexts/query-context';
 
 import './SimpleSearchBar.css';
 import { fade, makeStyles } from '@material-ui/core/styles';
@@ -15,7 +15,8 @@ import {
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router';
+import qs from 'qs';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -62,16 +63,15 @@ const useStyles = makeStyles((theme) => ({
 
 const SimpleSearchBar = (props) => {
   const classes = useStyles();
-  const { query, dispatch: queryDispatch } = useContext(QueryContext);
+  const { query } = useContext(QueryContext);
+  const history = useHistory();
 
   const [querySuggestion, setQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
     queryText: '',
     triggerSuggestion: false,
   });
-
   const { queryText, triggerSuggestion } = textState;
-  const history = useHistory();
 
   useEffect(() => {
     setQuerySuggestion(false);
@@ -100,21 +100,34 @@ const SimpleSearchBar = (props) => {
     [setTextState]
   );
 
-  const search = (event) => {
-    event.stopPropagation();
-    queryDispatch({
-      type: SET_ELEMENTS,
-      elements: queryText,
-    });
-    history.push('/');
-  };
+  const search = useCallback(
+    (event) => {
+      event.stopPropagation();
+      const params = {
+        elements: queryText,
+      };
+      const newLocation = {
+        pathname: '/search',
+        search: qs.stringify(params, { addQueryPrefix: true }),
+      };
+      history.push(newLocation);
+    },
+    [history, queryText]
+  );
 
-  const handleSuggestSelect = (suggestion) => {
-    queryDispatch({
-      type: SET_ELEMENTS,
-      elements: suggestion,
-    });
-  };
+  const handleSuggestSelect = useCallback(
+    (suggestion) => {
+      const params = {
+        elements: suggestion,
+      };
+      const newLocation = {
+        pathname: '/search',
+        search: qs.stringify(params, { addQueryPrefix: true }),
+      };
+      history.push(newLocation);
+    },
+    [history]
+  );
 
   const handleClear = () => {
     setTextState({ queryText: '', triggerSuggestion: false });

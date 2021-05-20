@@ -11,10 +11,10 @@ import { useTranslation } from 'react-i18next';
 import { ResultsContext } from '../../Contexts/results-context';
 import {
   QueryContext,
-  SET_FIELD_FACETS,
-  SET_FILTERS,
-  SET_QUERY_FACETS,
+  SET_FIELD_FACET_SELECTED,
+  SET_QUERY_FACET_SELECTED,
   SET_SORT,
+  UNREGISTER_FILTER,
 } from '../../Contexts/query-context';
 import FilterEntry from './FilterEntry';
 import SortIcon from '@material-ui/icons/Sort';
@@ -50,19 +50,20 @@ const SearchInformation = (props) => {
 
   const handleClearFieldFacet = (key, value) => {
     return () => {
-      if (query.fieldFacets[key] && query.fieldFacets[key].selected) {
-        const newFieldFacets = produce(
-          query.fieldFacets,
-          (fieldFacetsDraft) => {
-            const index = fieldFacetsDraft[key].selected.indexOf(value);
+      if (query.selectedFieldFacets[key]) {
+        const selected = produce(
+          query.selectedFieldFacets[key],
+          (selectedDraft) => {
+            const index = selectedDraft.indexOf(value);
             if (index !== -1) {
-              fieldFacetsDraft[key].selected.splice(index, 1);
+              selectedDraft.splice(index, 1);
             }
           }
         );
         queryDispatch({
-          type: SET_FIELD_FACETS,
-          fieldFacets: newFieldFacets,
+          type: SET_FIELD_FACET_SELECTED,
+          facetId: key,
+          selected: selected,
         });
       }
     };
@@ -70,19 +71,20 @@ const SearchInformation = (props) => {
 
   const handleClearQueryFacet = (key, value) => {
     return () => {
-      if (query.queryFacets[key] && query.queryFacets[key].selected) {
-        const newQueryFacets = produce(
-          query.queryFacets,
-          (queryFacetsDraft) => {
-            const index = queryFacetsDraft[key].selected.indexOf(value);
+      if (query.selectedQueryFacets[key]) {
+        const selected = produce(
+          query.selectedQueryFacets[key],
+          (selectedDraft) => {
+            const index = selectedDraft.indexOf(value);
             if (index !== -1) {
-              queryFacetsDraft[key].selected.splice(index, 1);
+              selectedDraft.splice(index, 1);
             }
           }
         );
         queryDispatch({
-          type: SET_QUERY_FACETS,
-          queryFacets: newQueryFacets,
+          type: SET_QUERY_FACET_SELECTED,
+          facetId: key,
+          selected: selected,
         });
       }
     };
@@ -90,12 +92,9 @@ const SearchInformation = (props) => {
 
   const handleClearFilter = (key) => {
     return () => {
-      const newFilters = produce(query.filters, (filtersDraft) => {
-        delete filtersDraft[key];
-      });
       queryDispatch({
-        type: SET_FILTERS,
-        filters: newFilters,
+        type: UNREGISTER_FILTER,
+        id: key,
       });
     };
   };
@@ -125,15 +124,15 @@ const SearchInformation = (props) => {
   const filters = [];
   for (const key in query.fieldFacets) {
     if (
-      query.fieldFacets[key].selected &&
-      query.fieldFacets[key].selected.length > 0
+      query.selectedFieldFacets[key] &&
+      query.selectedFieldFacets[key].length > 0
     ) {
       filters.push(
         <Typography component="span">
           <Typography component="span" color="secondary">
-            {key}:&nbsp;
+            {query.fieldFacets[key].title}:&nbsp;
           </Typography>
-          {query.fieldFacets[key].selected.map((entry) => (
+          {query.selectedFieldFacets[key].map((entry) => (
             <FilterEntry
               value={entry}
               onClick={handleClearFieldFacet(key, entry)}
@@ -146,15 +145,15 @@ const SearchInformation = (props) => {
 
   for (const key in query.queryFacets) {
     if (
-      query.queryFacets[key].selected &&
-      query.queryFacets[key].selected.length > 0
+      query.selectedQueryFacets[key] &&
+      query.selectedQueryFacets[key].length > 0
     ) {
       filters.push(
         <Typography component="span">
           <Typography component="span" color="secondary">
             {query.queryFacets[key].title}:&nbsp;
           </Typography>
-          {query.queryFacets[key].selected.map((entry) => (
+          {query.selectedQueryFacets[key].map((entry) => (
             <FilterEntry
               value={entry}
               onClick={handleClearQueryFacet(key, entry)}

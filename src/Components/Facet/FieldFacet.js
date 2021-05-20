@@ -1,6 +1,15 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import produce from 'immer';
-import { QueryContext, SET_FIELD_FACETS } from '../../Contexts/query-context';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
+import {
+  QueryContext,
+  REGISTER_FIELD_FACET,
+  SET_FIELD_FACET_SELECTED,
+} from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
 import {
@@ -52,40 +61,41 @@ const FieldFacet = (props) => {
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
-    if (!query.fieldFacets[field]) {
-      const newFieldFacets = produce(query.fieldFacets, (fieldFacetsDraft) => {
-        fieldFacetsDraft[field] = { field: field, tag: field, op: op };
-      });
-      queryDispatch({ type: SET_FIELD_FACETS, fieldFacets: newFieldFacets });
-    }
-  }, [field, query, queryDispatch, op]);
+    const newFacet = {
+      id: field,
+      field: field,
+      tag: field,
+      op: op,
+      title: props.title,
+    };
+    queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
+  }, [field, queryDispatch, op, props.title]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
   // depending on its current state.
-  const onClick = (value) => {
-    return () => {
-      const newQueryFieldFacets = produce(
-        query.fieldFacets,
-        (fieldFacetsDraft) => {
-          if (!fieldFacetsDraft[field].selected) {
-            fieldFacetsDraft[field].selected = [];
-          }
-          const selected = fieldFacetsDraft[field].selected;
-          const selectedIndex = selected.indexOf(value);
-          if (selectedIndex === -1) {
-            selected.push(value);
-          } else {
-            selected.splice(selectedIndex, 1);
-          }
+  const onClick = useCallback(
+    (value) => {
+      return () => {
+        // remeber query is immutable, copy anything we want to modfiy
+        let selected = query.selectedFieldFacets[field]
+          ? [...query.selectedFieldFacets[field]]
+          : [];
+        const selectedIndex = selected.indexOf(value);
+        if (selectedIndex === -1) {
+          selected.push(value);
+        } else {
+          selected.splice(selectedIndex, 1);
         }
-      );
-      queryDispatch({
-        type: SET_FIELD_FACETS,
-        fieldFacets: newQueryFieldFacets,
-      });
-    };
-  };
+        queryDispatch({
+          type: SET_FIELD_FACET_SELECTED,
+          facetId: field,
+          selected: selected,
+        });
+      };
+    },
+    [field, query.selectedFieldFacets, queryDispatch]
+  );
 
   // Build a facet values array from the results to be displayed
   let facetValues = [];
@@ -101,9 +111,8 @@ const FieldFacet = (props) => {
           value={results.fieldFacets[field][i]}
           count={results.fieldFacets[field][i + 1]}
           selected={
-            query.fieldFacets[field] &&
-            query.fieldFacets[field].selected &&
-            query.fieldFacets[field].selected.indexOf(
+            query.selectedFieldFacets[field] &&
+            query.selectedFieldFacets[field].indexOf(
               results.fieldFacets[field][i]
             ) !== -1
           }
@@ -127,36 +136,26 @@ const FieldFacet = (props) => {
 
   // Removes all facet entry selection
   const handleClearFilterClick = () => {
-    const newQueryFieldFacets = produce(
-      query.fieldFacets,
-      (fieldFacetsDraft) => {
-        fieldFacetsDraft[field].selected = undefined;
-      }
-    );
-
     queryDispatch({
-      type: SET_FIELD_FACETS,
-      fieldFacets: newQueryFieldFacets,
+      type: SET_FIELD_FACET_SELECTED,
+      facetId: field,
+      selected: [],
     });
     setMenuOpen(false);
   };
 
   // Select all facet entries
   const handleSelectAllClick = () => {
-    const newQueryFieldFacets = produce(
-      query.fieldFacets,
-      (fieldFacetsDraft) => {
-        fieldFacetsDraft[field].selected = [
-          ...results.fieldFacets[field].filter((value, index) => {
-            return index % 2 === 0;
-          }),
-        ];
-      }
-    );
+    const selected = [
+      ...results.fieldFacets[field].filter((value, index) => {
+        return index % 2 === 0;
+      }),
+    ];
 
     queryDispatch({
-      type: SET_FIELD_FACETS,
-      fieldFacets: newQueryFieldFacets,
+      type: SET_FIELD_FACET_SELECTED,
+      facetId: field,
+      selected: selected,
     });
     setMenuOpen(false);
   };

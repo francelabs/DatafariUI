@@ -1,16 +1,21 @@
 import React, { useCallback, useReducer } from 'react';
 import produce from 'immer';
 
-export const SET_FIELD_FACETS = 'SET_FIELD_FACETS';
-export const SET_QUERY_FACETS = 'SET_QUERY_FACETS';
+export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
+export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
+export const REGISTER_QUERY_FACET = 'REGISTER_QUERY_FACET';
+export const SET_QUERY_FACET_SELECTED = 'SET_QUERY_FACET_SELECTED';
 export const SET_ROWS = 'SET_ROWS';
 export const SET_PAGE = 'SET_PAGE';
 export const SET_ELEMENTS = 'SET_ELEMENTS';
 export const SET_SORT = 'SET_SORT';
-export const RESET_FACETS_SELECTION = 'RESET_FACET_SELECTION';
 export const SET_FILTERS = 'SET_FILTERS';
+export const REGISTER_FILTER = 'REGISTER_FILTER';
+export const UNREGISTER_FILTER = 'UNREGISTER_FILTER';
 export const SET_ELEMENTS_NO_RESET = 'SET_ELEMENTS_NO_RESET';
 export const SET_QUERY = 'SET_QUERY';
+export const FILL_FROM_URL_PARAMS = 'FILL_FROM_URL_PARAMS';
+export const SET_OP = 'SET_OP';
 
 const resetFacetSelection = (fieldFacets, queryFacets) => {
   const newFieldFacets = { ...fieldFacets };
@@ -28,68 +33,227 @@ const resetFacetSelection = (fieldFacets, queryFacets) => {
   return [newFieldFacets, newQueryFacets];
 };
 
-const queryReducer = (query, action) => {
-  const [newFieldFacets, newQueryFacets] = resetFacetSelection(
-    query.fieldFacets,
-    query.queryFacets
-  );
-  switch (action.type) {
-    case SET_FIELD_FACETS:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.fieldFacets = produce(action.fieldFacets, (draft) => {});
-      });
-    case SET_QUERY_FACETS:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.queryFacets = produce(action.queryFacets, (draft) => {});
-      });
-    case SET_ROWS:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.rows = action.row;
-      });
-    case SET_PAGE:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = action.page;
-      });
-    case SET_ELEMENTS:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.elements = action.elements;
-        queryDraft.queryFacets = newQueryFacets;
-        queryDraft.fieldFacets = newFieldFacets;
-        queryDraft.filters = {};
-        queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
-          ? action.spellcheckOriginalQuery
-          : undefined;
-      });
-    case SET_ELEMENTS_NO_RESET:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.elements = action.elements;
-      });
-    case SET_SORT:
-      return produce(query, (queryDraft) => {
-        queryDraft.sort = produce(action.sort, (draft) => {});
-      });
-    case RESET_FACETS_SELECTION:
-      return produce(query, (queryDraft) => {
-        queryDraft.queryFacets = newQueryFacets;
-        queryDraft.fieldFacets = newFieldFacets;
-        queryDraft.filters = {};
-      });
-    case SET_FILTERS:
-      return produce(query, (queryDraft) => {
-        queryDraft.page = 1;
-        queryDraft.filters = action.filters;
-      });
-    case SET_QUERY:
-      return produce(action.query, (draft) => {});
-    default:
-      return produce(query, (queryDraft) => {});
-  }
+const defaultQuery = {
+  fieldFacets: {},
+  selectedFieldFacets: {},
+  queryFacets: {},
+  selectedQueryFacets: {},
+  filters: {},
+  elements: '',
+  rows: 10,
+  page: 1,
+  op: 'AND',
+  sort: { label: 'Relevance', value: 'score desc' },
 };
+
+const newQueryReducer = produce((queryDraft, action) => {
+  switch (action.type) {
+    case SET_ELEMENTS:
+      queryDraft.page = 1;
+      queryDraft.elements = action.elements ? action.elements : '';
+      queryDraft.selectedQueryFacets = {};
+      queryDraft.selectedFieldFacets = {};
+      queryDraft.filters = {};
+      queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
+        ? action.spellcheckOriginalQuery
+        : undefined;
+      break;
+    case SET_ELEMENTS_NO_RESET:
+      queryDraft.page = 1;
+      queryDraft.elements = action.elements ? action.elements : '';
+      break;
+    case SET_PAGE:
+      if (
+        action.page &&
+        typeof action.page === 'number' &&
+        isFinite(action.page) &&
+        Math.floor(action.page) === action.page
+      ) {
+        queryDraft.page = action.page;
+      }
+      break;
+    case SET_ROWS:
+      if (
+        action.rows &&
+        typeof action.rows === 'number' &&
+        isFinite(action.rows) &&
+        Math.floor(action.rows) === action.rows
+      ) {
+        queryDraft.page = 1;
+        queryDraft.rows = action.rows;
+      }
+      break;
+    case SET_SORT:
+      if (action.sort && action.sort.label && action.sort.value) {
+        queryDraft.sort = action.sort;
+      }
+      break;
+    case REGISTER_FIELD_FACET:
+      const candidateFieldFacet = action.fieldFacet;
+      if (
+        candidateFieldFacet &&
+        candidateFieldFacet.id &&
+        candidateFieldFacet.field &&
+        candidateFieldFacet.tag &&
+        candidateFieldFacet.op &&
+        candidateFieldFacet.title
+      ) {
+        if (!queryDraft.fieldFacets[candidateFieldFacet.id]) {
+          // No field facet with this id exist, lets create it
+          queryDraft.fieldFacets[candidateFieldFacet.id] = {
+            field: candidateFieldFacet.field,
+            tag: candidateFieldFacet.tag,
+            op: candidateFieldFacet.op,
+            title: candidateFieldFacet.title,
+          };
+        }
+        // If a field facet with the same id exists it won't be replaced
+        // It may be intentional (two visualization of the same facet) but
+        // can also come from an error (not changing the id when defining a
+        // new facet).
+      }
+      break;
+    case REGISTER_QUERY_FACET:
+      const candidateQueryFacet = action.queryFacet;
+      if (
+        candidateQueryFacet &&
+        candidateQueryFacet.id &&
+        candidateQueryFacet.labels &&
+        candidateQueryFacet.queries &&
+        candidateQueryFacet.title
+      ) {
+        if (!queryDraft.queryFacets[candidateQueryFacet.id]) {
+          // No query facet with this id exist, lets create it
+          queryDraft.queryFacets[candidateQueryFacet.id] = {
+            labels: candidateQueryFacet.labels,
+            queries: candidateQueryFacet.queries,
+            title: candidateQueryFacet.title,
+          };
+        }
+        // If a query facet with the same id exists it won't be replaced
+        // It may be intentional (two visualization of the same facet) but
+        // can also come from an error (not changing the id when defining a
+        // new facet).
+      }
+      break;
+    case SET_FIELD_FACET_SELECTED:
+      if (action.facetId && action.selected) {
+        queryDraft.selectedFieldFacets[action.facetId] = action.selected;
+      }
+      break;
+    case SET_QUERY_FACET_SELECTED:
+      if (action.facetId && action.selected) {
+        queryDraft.selectedQueryFacets[action.facetId] = action.selected;
+      }
+      break;
+    case REGISTER_FILTER:
+      if (action.filter && action.filter.id && action.filter.value) {
+        if (!queryDraft.filters[action.filter.id]) {
+          // No filter with this id, we can add it
+          queryDraft.filters[action.filter.id] = {
+            value: action.filter.value,
+            extra: action.filter.extra,
+          };
+          // If a filter with the same id already exists we do nothing
+        }
+      }
+      break;
+    case UNREGISTER_FILTER:
+      if (action.id && queryDraft.filters[action.id]) {
+        // Delete the existing filter with the provided id
+        delete queryDraft.filters[action.id];
+      }
+      // If no filter with the id exists, just do nothing
+      break;
+    case SET_OP:
+      if (action.op === 'OR' || action.op === 'AND') {
+        queryDraft.op = action.op;
+      }
+      break;
+    case FILL_FROM_URL_PARAMS:
+      const urlParams = action.params;
+      const currentRegisteredFacets = {
+        queryFacets: queryDraft.queryFacets,
+        fieldFacets: queryDraft.fieldFacets,
+      };
+      // We base on the default query
+      // We Keep field facets and query facets registration from current query as they should not change
+      // and override data with anything that is present in urlParams (urlParams has precedence over everything)
+      // TODO: Prone to injection of data from the URL, consider limiting the keys that are copied instead.
+      // Note that a producer can return a new object provided it did not modify the draft which is the case here.
+      return {
+        ...defaultQuery,
+        ...currentRegisteredFacets,
+        ...urlParams,
+      };
+    default:
+      // Nothing to do, query should remain unchanged
+      break;
+  }
+});
+
+// const queryReducer = (query, action) => {
+//   const [newFieldFacets, newQueryFacets] = resetFacetSelection(
+//     query.fieldFacets,
+//     query.queryFacets
+//   );
+//   switch (action.type) {
+//     case SET_FIELD_FACETS:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.fieldFacets = produce(action.fieldFacets, (draft) => {});
+//       });
+//     case SET_QUERY_FACETS:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.queryFacets = produce(action.queryFacets, (draft) => {});
+//       });
+//     case SET_ROWS:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.rows = action.row;
+//       });
+//     case SET_PAGE:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = action.page;
+//       });
+//     case SET_ELEMENTS:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.elements = action.elements;
+//         queryDraft.queryFacets = newQueryFacets;
+//         queryDraft.fieldFacets = newFieldFacets;
+//         queryDraft.filters = {};
+//         queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
+//           ? action.spellcheckOriginalQuery
+//           : undefined;
+//       });
+//     case SET_ELEMENTS_NO_RESET:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.elements = action.elements;
+//       });
+//     case SET_SORT:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.sort = produce(action.sort, (draft) => {});
+//       });
+//     case RESET_FACETS_SELECTION:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.queryFacets = newQueryFacets;
+//         queryDraft.fieldFacets = newFieldFacets;
+//         queryDraft.filters = {};
+//       });
+//     case SET_FILTERS:
+//       return produce(query, (queryDraft) => {
+//         queryDraft.page = 1;
+//         queryDraft.filters = action.filters;
+//       });
+//     case SET_QUERY:
+//       return produce(action.query, (draft) => {});
+//     default:
+//       return produce(query, (queryDraft) => {});
+//   }
+// };
 /*
  {
    fieldFacets: {
@@ -115,35 +279,28 @@ const queryReducer = (query, action) => {
  */
 
 export const QueryContext = React.createContext({
-  query: {
-    fieldFacets: {},
-    queryFacets: {},
-    filters: {},
-    elements: '',
-    rows: 10,
-    page: 1,
-    op: 'AND',
-    sort: { label: 'Relevance', value: 'score desc' },
-    spellcheckOriginalQuery: undefined,
-  },
+  query: defaultQuery,
   dispatch: () => {},
   buildSearchQueryString: () => {},
   prepareFiltersForAlerts: () => {},
   buildSavedSearchQuery: () => {},
   runQueryFromSavedSearch: () => {},
+  buildParamsForURL: () => {},
 });
 
 const QueryContextProvider = (props) => {
-  const [query, queryDispatcher] = useReducer(queryReducer, {
-    fieldFacets: {},
-    queryFacets: {},
-    filters: {},
-    elements: '',
-    rows: 10,
-    page: 1,
-    op: 'AND',
-    sort: { label: 'Relevance', value: 'score desc' },
-  });
+  // const [query, queryDispatcher] = useReducer(queryReducer, {
+  //   fieldFacets: {},
+  //   queryFacets: {},
+  //   filters: {},
+  //   elements: '',
+  //   rows: 10,
+  //   page: 1,
+  //   op: 'AND',
+  //   sort: { label: 'Relevance', value: 'score desc' },
+  // });
+
+  const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
     let result = '';
@@ -579,6 +736,46 @@ const QueryContextProvider = (props) => {
     [query]
   );
 
+  const isEmptyObj = (obj) => {
+    return obj && Object.keys(obj).length === 0 && obj.constructor === Object;
+  };
+
+  const buildParamsForURL = () => {
+    return produce(query, (draft) => {
+      // Registered field and query facets should never come from the URL
+      delete draft.fieldFacets;
+      delete draft.queryFacets;
+      // Delete anything that is null or identical to the default object
+      if (!draft.selectedFieldFacets || isEmptyObj(draft.selectedFieldFacets)) {
+        delete draft.selectedFieldFacets;
+      }
+      if (!draft.selectedQueryFacets || isEmptyObj(draft.selectedQueryFacets)) {
+        delete draft.selectedQueryFacets;
+      }
+      if (!draft.filters || isEmptyObj(draft.filters)) {
+        delete draft.filters;
+      }
+      if (!draft.elements || draft.elements === defaultQuery.elements) {
+        delete draft.elements;
+      }
+      if (!draft.page || draft.page === defaultQuery.page) {
+        delete draft.page;
+      }
+      if (!draft.rows || draft.rows === defaultQuery.rows) {
+        delete draft.rows;
+      }
+      if (!draft.op || draft.op === defaultQuery.op) {
+        delete draft.op;
+      }
+      if (
+        !draft.sort ||
+        (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')
+      ) {
+        delete draft.sort;
+      }
+    });
+  };
+
   return (
     <QueryContext.Provider
       value={{
@@ -588,6 +785,7 @@ const QueryContextProvider = (props) => {
         prepareFiltersForAlerts: prepareFiltersForAlerts,
         buildSavedSearchQuery: buildSavedSearchQuery,
         runQueryFromSavedSearch: runQueryFromSavedSearch,
+        buildParamsForURL: buildParamsForURL,
       }}
     >
       {props.children}

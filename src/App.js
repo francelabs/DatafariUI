@@ -1,6 +1,6 @@
 import React, { Suspense, useContext, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -68,30 +68,19 @@ function Main() {
   document.title = t('Datafari Enterprise Search');
 
   return (
-    <StylesProvider jss={jss}>
-      <ThemeProvider theme={defaultTheme}>
-        <CssBaseline />
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <LicenceContextProvider>
-            <QueryContextProvider>
-              <ResultsContextProvider>
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
-                  <LicenceChecker />
-                  <TopMenu />
-                  <div>
-                    <Switch>
-                      <Route path="/" component={SearchPage} exact />
-                      <Route path="/search" component={SearchPage} />
-                      <Route path="/preview" component={Preview} />
-                    </Switch>
-                  </div>
-                </BrowserRouter>
-              </ResultsContextProvider>
-            </QueryContextProvider>
-          </LicenceContextProvider>
-        </MuiPickersUtilsProvider>
-      </ThemeProvider>
-    </StylesProvider>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <LicenceChecker />
+      <TopMenu />
+      <div>
+        <Switch>
+          <Route path="/" exact>
+            <Redirect to="/search" />
+          </Route>
+          <Route path="/search" component={SearchPage} />
+          <Route path="/preview" component={Preview} />
+        </Switch>
+      </div>
+    </BrowserRouter>
   );
 }
 
@@ -108,7 +97,20 @@ function App() {
     <Suspense fallback="loading">
       <APIEndpointsContextProvider>
         <UserContextProvider>
-          <Main />
+          <StylesProvider jss={jss}>
+            <ThemeProvider theme={defaultTheme}>
+              <CssBaseline />
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <LicenceContextProvider>
+                  <QueryContextProvider>
+                    <ResultsContextProvider>
+                      <Main />
+                    </ResultsContextProvider>
+                  </QueryContextProvider>
+                </LicenceContextProvider>
+              </MuiPickersUtilsProvider>
+            </ThemeProvider>
+          </StylesProvider>
         </UserContextProvider>
       </APIEndpointsContextProvider>
     </Suspense>

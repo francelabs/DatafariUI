@@ -1,19 +1,28 @@
 import { useContext, useEffect, useCallback } from 'react';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 
-import { QueryContext } from '../Contexts/query-context';
+import { QueryContext, FILL_FROM_URL_PARAMS } from '../Contexts/query-context';
 import {
   ResultsContext,
   SET_RESULTS,
   DEFAULT_RESULT,
 } from '../Contexts/results-context';
 import useHttp from './useHttp';
+import produce from 'immer';
+import qs from 'qs';
+import { useHistory, useLocation } from 'react-router';
 
 const useDatafari = () => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const baseURL = apiEndpointsContext.searchURL;
-  const { buildSearchQueryString } = useContext(QueryContext);
+  const {
+    dispatch: queryDispatch,
+    buildSearchQueryString,
+    buildParamsForURL,
+  } = useContext(QueryContext);
   const { dispatch: resultsDispatch } = useContext(ResultsContext);
+  const history = useHistory();
+  const location = useLocation();
 
   const { isLoading, error, data, sendRequest } = useHttp();
 
@@ -22,9 +31,26 @@ const useDatafari = () => {
    * object change, effectively matking this function geeing rebuilt too.
    */
   const makeRequest = useCallback(() => {
+    let urlParamsString = qs.stringify(buildParamsForURL(), {
+      addQueryPrefix: true,
+    });
+    if (history.location.search !== urlParamsString) {
+      const newLocation = produce(history.location, (locationDraft) => {
+        locationDraft.search = urlParamsString;
+        locationDraft.pathname = '/search';
+      });
+      console.log(newLocation);
+      history.push(newLocation);
+    }
     const queryString = buildSearchQueryString();
     sendRequest(baseURL + '/select?' + queryString, 'GET', null);
-  }, [buildSearchQueryString, sendRequest, baseURL]);
+  }, [
+    history,
+    buildSearchQueryString,
+    sendRequest,
+    baseURL,
+    buildParamsForURL,
+  ]);
 
   const prepareAndSetQueryFacets = useCallback(
     (queryFacetsResult, newResults) => {
@@ -47,7 +73,7 @@ const useDatafari = () => {
    * Everytime the makeRequest function changes, we need to execute the
    * new available request. But to avoid unnecessary request calls (some
    * UI intercation may lead to several query changes not happening in one
-   * update of the search object), we wait 150ms before sending off the request.
+   * update of the query object), we wait 150ms before sending off the request.
    * If the query object is changed during that time, the makeRequest function will
    * change too, effectively calling this effect again, cancelling the previous
    * timeout and setting up a new one.
@@ -59,6 +85,29 @@ const useDatafari = () => {
     return () => clearTimeout(newRequest);
   }, [makeRequest]);
 
+  useEffect(() => {
+    if (location.pathname === '/search') {
+      let urlParamsString = qs.stringify(buildParamsForURL(), {
+        addQueryPrefix: true,
+      });
+      if (urlParamsString === '?') {
+        urlParamsString = '';
+      }
+      if (location.search !== urlParamsString) {
+        queryDispatch({
+          type: FILL_FROM_URL_PARAMS,
+          params: qs.parse(location.search, { ignoreQueryPrefix: true }),
+        });
+      }
+    }
+    // I explicitly want this effect to happen only when the URL changes.
+    // It is made to update internal states upon URL changes when applicable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
+
+  /**
+   * Effect getting the results from the request and managing the loading state.
+   */
   useEffect(() => {
     let newResults = {};
     newResults.isLoading = isLoading;

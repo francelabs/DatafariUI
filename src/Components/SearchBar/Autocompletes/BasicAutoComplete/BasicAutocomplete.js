@@ -47,7 +47,7 @@ const SimpleAutocomplete = (props) => {
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (!data.error && data.spellcheck.collations) {
+      if (!data.error && data.spellcheck && data.spellcheck.collations) {
         const newSuggestions = data.spellcheck.collations
           .filter((element) => {
             return element && element !== 'collation' && element.collationQuery;
