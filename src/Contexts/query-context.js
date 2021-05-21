@@ -13,25 +13,8 @@ export const SET_FILTERS = 'SET_FILTERS';
 export const REGISTER_FILTER = 'REGISTER_FILTER';
 export const UNREGISTER_FILTER = 'UNREGISTER_FILTER';
 export const SET_ELEMENTS_NO_RESET = 'SET_ELEMENTS_NO_RESET';
-export const SET_QUERY = 'SET_QUERY';
 export const FILL_FROM_URL_PARAMS = 'FILL_FROM_URL_PARAMS';
 export const SET_OP = 'SET_OP';
-
-const resetFacetSelection = (fieldFacets, queryFacets) => {
-  const newFieldFacets = { ...fieldFacets };
-  for (const key in newFieldFacets) {
-    newFieldFacets[key] = { ...fieldFacets[key] };
-    newFieldFacets[key].selected = null;
-    delete newFieldFacets[key].selected;
-  }
-  const newQueryFacets = { ...queryFacets };
-  for (const key in newQueryFacets) {
-    newQueryFacets[key] = { ...queryFacets[key] };
-    newQueryFacets[key].selected = null;
-    delete newQueryFacets[key].selected;
-  }
-  return [newFieldFacets, newQueryFacets];
-};
 
 const defaultQuery = {
   fieldFacets: {},
@@ -368,11 +351,11 @@ const QueryContextProvider = (props) => {
         `{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`
       );
       if (
-        query.fieldFacets[key].selected &&
-        query.fieldFacets[key].selected.length > 0
+        query.selectedFieldFacets[key] &&
+        query.selectedFieldFacets[key].length > 0
       ) {
         selectedFieldFacets.push(
-          query.fieldFacets[key].selected.reduce(
+          query.selectedFieldFacets[key].reduce(
             (accu, element, index, array) => {
               let next = accu + `${query.fieldFacets[key].field}:${element}`;
               if (index < array.length - 1) {
@@ -388,17 +371,17 @@ const QueryContextProvider = (props) => {
       }
     }
     return [fieldFacetsParams, selectedFieldFacets];
-  }, [query.fieldFacets]);
+  }, [query.fieldFacets, query.selectedFieldFacets]);
 
   const prepareFieldFacetsForAlerts = useCallback(() => {
     const selectedFieldFacets = [];
     for (const key in query.fieldFacets) {
       if (
-        query.fieldFacets[key].selected &&
-        query.fieldFacets[key].selected.length > 0
+        query.selectedFieldFacets[key] &&
+        query.selectedFieldFacets[key].length > 0
       ) {
         selectedFieldFacets.push(
-          query.fieldFacets[key].selected.reduce(
+          query.selectedFieldFacets[key].reduce(
             (accu, element, index, array) => {
               let next = accu + `${query.fieldFacets[key].field}:${element}`;
               if (index < array.length - 1) {
@@ -414,7 +397,7 @@ const QueryContextProvider = (props) => {
       }
     }
     return selectedFieldFacets;
-  }, [query.fieldFacets]);
+  }, [query.fieldFacets, query.selectedFieldFacets]);
 
   const prepareQueryFacets = useCallback(() => {
     let queryFacetsParams = [];
@@ -433,10 +416,10 @@ const QueryContextProvider = (props) => {
         );
         queryFacetsParams = queryFacetsParams.concat(currentQueryFacetParams);
         if (
-          query.queryFacets[key].selected &&
-          query.queryFacets[key].selected.length > 0
+          query.selectedQueryFacets[key] &&
+          query.selectedQueryFacets[key].length > 0
         ) {
-          const currentSelectedQueries = query.queryFacets[key].selected
+          const currentSelectedQueries = query.selectedQueryFacets[key]
             .filter(
               (label) => query.queryFacets[key].labels.indexOf(label) !== -1
             )
@@ -451,7 +434,7 @@ const QueryContextProvider = (props) => {
       }
     }
     return [queryFacetsParams, selectedQueryFacets];
-  }, [query.queryFacets]);
+  }, [query.queryFacets, query.selectedQueryFacets]);
 
   const prepareQueryFacetsForAlerts = useCallback(() => {
     let selectedQueryFacets = [];
@@ -463,10 +446,10 @@ const QueryContextProvider = (props) => {
           query.queryFacets[key].labels.length
       ) {
         if (
-          query.queryFacets[key].selected &&
-          query.queryFacets[key].selected.length > 0
+          query.selectedQueryFacets[key] &&
+          query.selectedQueryFacets[key].length > 0
         ) {
-          const currentSelectedQueries = query.queryFacets[key].selected
+          const currentSelectedQueries = query.selectedQueryFacets[key]
             .filter(
               (label) => query.queryFacets[key].labels.indexOf(label) !== -1
             )
@@ -481,7 +464,7 @@ const QueryContextProvider = (props) => {
       }
     }
     return selectedQueryFacets;
-  }, [query.queryFacets]);
+  }, [query.queryFacets, query.selectedQueryFacets]);
 
   const prepareOtherFilters = useCallback(() => {
     let otherFilters = [];
@@ -612,12 +595,9 @@ const QueryContextProvider = (props) => {
   const runQueryFromSavedSearch = useCallback(
     (savedSearchQuery) => {
       let params = new URLSearchParams(savedSearchQuery);
-      const newQuery = produce(query, (draft) => {
-        const [newFieldFacets, newQueryFacets] = resetFacetSelection(
-          draft.fieldFacets,
-          draft.queryFacets
-        );
-        draft.filters = {};
+      const newQuery = produce(defaultQuery, (draft) => {
+        draft.queryFacets = query.queryFacets;
+        draft.fieldFacets = query.fieldFacets;
         // regexfq matches fqs from datafariUI and fqs for query facets from
         // the legacy UI.
         // eslint-disable-next-line no-useless-escape
@@ -636,19 +616,19 @@ const QueryContextProvider = (props) => {
             if (regexResults !== null) {
               const tag = regexResults[1];
               const filterInfo = regexResults[2];
-              if (newFieldFacets[tag]) {
+              if (draft.fieldFacets[tag]) {
                 // It is a field facet from datafariui as the tag matches
                 let fieldFacetResult = regexFieldFacet.exec(filterInfo);
                 if (
-                  newFieldFacets[tag].selected === null ||
-                  newFieldFacets[tag].selected === undefined
+                  draft.selectedFieldFacets[tag] === null ||
+                  draft.selectedFieldFacets[tag] === undefined
                 ) {
-                  newFieldFacets[tag].selected = [];
+                  draft.selectedFieldFacets[tag] = [];
                 }
                 while (fieldFacetResult) {
-                  newFieldFacets[tag].selected = newFieldFacets[
+                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[
                     tag
-                  ].selected.concat(fieldFacetResult[2]);
+                  ].concat(fieldFacetResult[2]);
                   fieldFacetResult = regexFieldFacet.exec(filterInfo);
                 }
               } else {
@@ -656,24 +636,23 @@ const QueryContextProvider = (props) => {
                 const regexQueryFacetResults = regexQueryFacet.exec(tag);
                 if (
                   regexQueryFacetResults !== null &&
-                  newQueryFacets[regexQueryFacetResults[1]]
+                  draft.queryFacets[regexQueryFacetResults[1]]
                 ) {
                   // It is a query facet
                   const facetName = regexQueryFacetResults[1];
                   const selectedIndex = regexQueryFacetResults[2];
-                  if (newQueryFacets[facetName].labels[selectedIndex]) {
+                  if (draft.queryFacets[facetName].labels[selectedIndex]) {
                     if (
-                      newQueryFacets[facetName].selected === null ||
-                      newQueryFacets[facetName].selected === undefined
+                      draft.selectedQueryFacets[facetName] === null ||
+                      draft.selectedQueryFacets[facetName] === undefined
                     ) {
-                      newQueryFacets[facetName].selected = [];
+                      draft.selectedQueryFacets[facetName] = [];
                     }
                     // It is correctly defined and references an existing query lets use it
-                    newQueryFacets[facetName].selected = newQueryFacets[
-                      facetName
-                    ].selected.concat(
-                      newQueryFacets[facetName].labels[selectedIndex]
-                    );
+                    draft.selectedQueryFacets[facetName] =
+                      draft.selectedQueryFacets[facetName].concat(
+                        draft.queryFacets[facetName].labels[selectedIndex]
+                      );
                   } else {
                     // index out of range, put it in other filters
                     draft.filters[`${facetName}_${index}`] = {
@@ -697,20 +676,20 @@ const QueryContextProvider = (props) => {
               let regexFieldFacetResult = regexFieldFacet.exec(element);
               if (regexFieldFacetResult) {
                 const field = regexFieldFacetResult[1];
-                if (newFieldFacets[field]) {
+                if (draft.fieldFacets[field]) {
                   if (
-                    newFieldFacets[field].selected === null ||
-                    newFieldFacets[field].selected === undefined
+                    draft.selectedFieldFacets[field] === null ||
+                    draft.selectedFieldFacets[field] === undefined
                   ) {
-                    newFieldFacets[field].selected = [];
+                    draft.selectedFieldFacets[field] = [];
                   }
                   while (regexFieldFacetResult) {
                     let value = regexFieldFacetResult[2];
                     if (value[0] === '"' && value[value.length - 1] === '"') {
                       value = value.substring(1, value.length - 1);
                     }
-                    newFieldFacets[field].selected =
-                      newFieldFacets[field].selected.concat(value);
+                    draft.selectedFieldFacets[field] =
+                      draft.selectedFieldFacets[field].concat(value);
                     regexFieldFacetResult = regexFieldFacet.exec(element);
                   }
                 }
@@ -728,10 +707,8 @@ const QueryContextProvider = (props) => {
         } else {
           draft.elements = params.get('q');
         }
-        draft.fieldFacets = newFieldFacets;
-        draft.queryFacets = newQueryFacets;
       });
-      queryDispatcher({ type: SET_QUERY, query: newQuery });
+      queryDispatcher({ type: FILL_FROM_URL_PARAMS, params: newQuery });
     },
     [query]
   );
