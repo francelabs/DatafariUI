@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -28,26 +28,26 @@ const PrivacySettingsModal = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const MAIL_SUBJECT = 'Datafari Privacy Settings Question';
-  const DEFAULT_QUESTION_TEXT = t('I want to know ...');
-  const DEFAULT_CONTACT_TEXT = `${t('Email')}: my.email@work
+  const DEFAULT_QUESTION_TEXT = useMemo(() => t('I want to know ...'), [t]);
+  const DEFAULT_CONTACT_TEXT = useMemo(
+    () => `${t('Email')}: my.email@work
 ${t('Phone')}: 123456789
-${t('or any means')}`;
+${t('or any means')}`,
+    [t]
+  );
   const [questionText, setQuestionText] = useState(DEFAULT_QUESTION_TEXT);
   const [contactText, setContactText] = useState(DEFAULT_CONTACT_TEXT);
   const [emailAddress, setEmailAddress] = useState('');
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getEmailsAdmin,
-  } = useEmailsAdmin();
+  const { isLoading, data, error, reqIdentifier, getEmailsAdmin } =
+    useEmailsAdmin();
 
   useEffect(() => {
     if (props.open) {
       getEmailsAdmin(fetchQueryID);
+      setQuestionText(DEFAULT_QUESTION_TEXT);
+      setContactText(DEFAULT_CONTACT_TEXT);
     }
-  }, [getEmailsAdmin, props.open]);
+  }, [DEFAULT_CONTACT_TEXT, DEFAULT_QUESTION_TEXT, getEmailsAdmin, props.open]);
 
   useEffect(() => {
     if (reqIdentifier === fetchQueryID) {
@@ -71,10 +71,8 @@ ${t('or any means')}`;
   }, [data, error, isLoading, reqIdentifier]);
 
   const handleClose = useCallback(() => {
-    setQuestionText(DEFAULT_QUESTION_TEXT);
-    setContactText(DEFAULT_CONTACT_TEXT);
     props.onClose();
-  }, [DEFAULT_CONTACT_TEXT, DEFAULT_QUESTION_TEXT, props]);
+  }, [props]);
 
   const questionTextChange = useCallback((event) => {
     setQuestionText(event.target.value);
