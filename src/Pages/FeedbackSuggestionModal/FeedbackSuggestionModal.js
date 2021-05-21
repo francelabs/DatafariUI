@@ -34,19 +34,21 @@ ${t('or any means')}`;
   const [suggestionText, setSuggestionText] = useState(DEFAULT_SUGGESTION_TEXT);
   const [contactText, setContactText] = useState(DEFAULT_CONTACT_TEXT);
   const [emailAddress, setEmailAddress] = useState('');
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getEmailsAdmin,
-  } = useEmailsAdmin();
+  const { isLoading, data, error, reqIdentifier, getEmailsAdmin } =
+    useEmailsAdmin();
 
   useEffect(() => {
     if (props.open) {
       getEmailsAdmin(fetchQueryID);
+      setSuggestionText(DEFAULT_SUGGESTION_TEXT);
+      setContactText(DEFAULT_CONTACT_TEXT);
     }
-  }, [getEmailsAdmin, props.open]);
+  }, [
+    DEFAULT_CONTACT_TEXT,
+    DEFAULT_SUGGESTION_TEXT,
+    getEmailsAdmin,
+    props.open,
+  ]);
 
   useEffect(() => {
     if (reqIdentifier === fetchQueryID) {
@@ -68,10 +70,8 @@ ${t('or any means')}`;
   }, [data, error, isLoading, reqIdentifier]);
 
   const handleClose = useCallback(() => {
-    setSuggestionText(DEFAULT_SUGGESTION_TEXT);
-    setContactText(DEFAULT_CONTACT_TEXT);
     props.onClose();
-  }, [DEFAULT_CONTACT_TEXT, DEFAULT_SUGGESTION_TEXT, props]);
+  }, [props]);
 
   const suggestionTextChange = useCallback((event) => {
     setSuggestionText(event.target.value);

@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -28,25 +34,25 @@ const FeedbackDocumentNotFoundModal = (props) => {
   const { query } = useContext(QueryContext);
   const classes = useStyles();
   const MAIL_SUBJECT = 'Datafari document not found';
-  const DEFAULT_DOCUMENT_TEXT = `${t('file name')}: abc.docx
+  const DEFAULT_DOCUMENT_TEXT = useMemo(
+    () => `${t('file name')}: abc.docx
 ${t('title')}: abc report
-${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
+${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`,
+    [t]
+  );
   const [documentText, setDocumentText] = useState(DEFAULT_DOCUMENT_TEXT);
   const [queryText, setQueryText] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getEmailsAdmin,
-  } = useEmailsAdmin();
+  const { isLoading, data, error, reqIdentifier, getEmailsAdmin } =
+    useEmailsAdmin();
 
   useEffect(() => {
     if (props.open) {
       getEmailsAdmin(fetchQueryID);
+      setDocumentText(DEFAULT_DOCUMENT_TEXT);
+      setQueryText(query.elements);
     }
-  }, [getEmailsAdmin, props.open]);
+  }, [DEFAULT_DOCUMENT_TEXT, getEmailsAdmin, props.open, query.elements]);
 
   useEffect(() => {
     if (reqIdentifier === fetchQueryID) {
@@ -72,16 +78,12 @@ ${t('url')}: mynetworkdrive\\path\\to\\the\\file\\abc.docx`;
   }, [query.elements]);
 
   const sendFeedback = useCallback(() => {
-    setDocumentText(DEFAULT_DOCUMENT_TEXT);
-    setQueryText(query.elements);
     props.onClose();
-  }, [DEFAULT_DOCUMENT_TEXT, props, query.elements]);
+  }, [props]);
 
   const handleClose = useCallback(() => {
-    setDocumentText(DEFAULT_DOCUMENT_TEXT);
-    setQueryText(query.elements);
     props.onClose();
-  }, [DEFAULT_DOCUMENT_TEXT, props, query.elements]);
+  }, [props]);
 
   const queryTextChange = useCallback((event) => {
     setQueryText(event.target.value);

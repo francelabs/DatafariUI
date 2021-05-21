@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -27,26 +27,29 @@ const FeedbackCommentModal = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const MAIL_SUBJECT = 'Datafari comment';
-  const DEFAULT_COMMENT_TEXT = t('I think it would be much easier to ...');
-  const DEFAULT_CONTACT_TEXT = `${t('Email')}: my.email@work
+  const DEFAULT_COMMENT_TEXT = useMemo(
+    () => t('I think it would be much easier to ...'),
+    [t]
+  );
+  const DEFAULT_CONTACT_TEXT = useMemo(
+    () => `${t('Email')}: my.email@work
   ${t('Phone')}: 123456789
-  ${t('or any means')}`;
+  ${t('or any means')}`,
+    [t]
+  );
   const [commentText, setCommentText] = useState(DEFAULT_COMMENT_TEXT);
   const [contactText, setContactText] = useState(DEFAULT_CONTACT_TEXT);
   const [emailAddress, setEmailAddress] = useState('');
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getEmailsAdmin,
-  } = useEmailsAdmin();
+  const { isLoading, data, error, reqIdentifier, getEmailsAdmin } =
+    useEmailsAdmin();
 
   useEffect(() => {
     if (props.open) {
       getEmailsAdmin(fetchQueryID);
+      setCommentText(DEFAULT_COMMENT_TEXT);
+      setContactText(DEFAULT_CONTACT_TEXT);
     }
-  }, [getEmailsAdmin, props.open]);
+  }, [DEFAULT_COMMENT_TEXT, DEFAULT_CONTACT_TEXT, getEmailsAdmin, props.open]);
 
   useEffect(() => {
     if (reqIdentifier === fetchQueryID) {
@@ -76,16 +79,12 @@ const FeedbackCommentModal = (props) => {
   }, []);
 
   const sendFeedback = useCallback(() => {
-    setCommentText(DEFAULT_COMMENT_TEXT);
-    setContactText(DEFAULT_CONTACT_TEXT);
     props.onClose();
-  }, [DEFAULT_COMMENT_TEXT, DEFAULT_CONTACT_TEXT, props]);
+  }, [props]);
 
   const handleClose = useCallback(() => {
-    setCommentText(DEFAULT_COMMENT_TEXT);
-    setContactText(DEFAULT_CONTACT_TEXT);
     props.onClose();
-  }, [DEFAULT_COMMENT_TEXT, DEFAULT_CONTACT_TEXT, props]);
+  }, [props]);
 
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">

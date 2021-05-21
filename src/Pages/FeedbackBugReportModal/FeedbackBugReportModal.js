@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,30 +26,33 @@ const useStyles = makeStyles((theme) => ({
 const FeedbackBugReportModal = (props) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const DEFAULT_ACTION_TEXT = `${t('Browser')}: Firefox 85
+  const DEFAULT_ACTION_TEXT = useMemo(
+    () => `${t('Browser')}: Firefox 85
 ${t('Operating System')}: Windows 10
 ${t('I was clicking advanced search after doing a first search...')}
-${t('Or any other details')}`;
-  const DEFAULT_BUG_TEXT = `${t('Date and time')}: 25/12/2020 at 23:59 GMT+1
+${t('Or any other details')}`,
+    [t]
+  );
+  const DEFAULT_BUG_TEXT = useMemo(
+    () => `${t('Date and time')}: 25/12/2020 at 23:59 GMT+1
 ${t('The advanced search interface did not show up...')}
-${t('Or any other details')}`;
+${t('Or any other details')}`,
+    [t]
+  );
   const MAIL_SUBJECT = 'Datafari%20Bug%20Report';
   const [actionText, setActionText] = useState(DEFAULT_ACTION_TEXT);
   const [bugText, setBugText] = useState(DEFAULT_BUG_TEXT);
   const [emailAddress, setEmailAddress] = useState('');
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getEmailsAdmin,
-  } = useEmailsAdmin();
+  const { isLoading, data, error, reqIdentifier, getEmailsAdmin } =
+    useEmailsAdmin();
 
   useEffect(() => {
     if (props.open) {
       getEmailsAdmin(fetchQueryID);
+      setActionText(DEFAULT_ACTION_TEXT);
+      setBugText(DEFAULT_BUG_TEXT);
     }
-  }, [getEmailsAdmin, props.open]);
+  }, [DEFAULT_ACTION_TEXT, DEFAULT_BUG_TEXT, getEmailsAdmin, props.open]);
 
   useEffect(() => {
     if (reqIdentifier === fetchQueryID) {
@@ -71,10 +74,8 @@ ${t('Or any other details')}`;
   }, [data, error, isLoading, reqIdentifier]);
 
   const sendFeedback = useCallback(() => {
-    setActionText(DEFAULT_ACTION_TEXT);
-    setBugText(DEFAULT_BUG_TEXT);
     props.onClose();
-  }, [DEFAULT_ACTION_TEXT, DEFAULT_BUG_TEXT, props]);
+  }, [props]);
 
   const actionTextChange = useCallback((event) => {
     const newValue = event.target.value;
@@ -90,10 +91,8 @@ ${t('Or any other details')}`;
   );
 
   const handleClose = useCallback(() => {
-    setActionText(DEFAULT_ACTION_TEXT);
-    setBugText(DEFAULT_BUG_TEXT);
     props.onClose();
-  }, [DEFAULT_ACTION_TEXT, DEFAULT_BUG_TEXT, props]);
+  }, [props]);
 
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
