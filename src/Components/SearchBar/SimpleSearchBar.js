@@ -104,7 +104,7 @@ const SimpleSearchBar = (props) => {
     (event) => {
       event.stopPropagation();
       const params = {
-        elements: queryText,
+        elements: queryText === '' ? undefined : queryText,
       };
       const newLocation = {
         pathname: '/search',
