@@ -23,6 +23,7 @@ const DEFAULT_ENDPOINTS = {
   getPrivacyPolicyURL: '',
   getEmailsAdminURL: '',
   licenceURL: '',
+  logoutURL: '',
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
@@ -107,6 +108,7 @@ const APIEndpointsContextProvider = (props) => {
       restAPIBaseURL
     ),
     licenceURL: new URL(`${restAPIBaseURL.pathname}/licence`, restAPIBaseURL),
+    logoutURL: new URL(`${datafariBaseURL.pathname}/logout`, datafariBaseURL),
   });
   return (
     <APIEndpointsContext.Provider value={value}>

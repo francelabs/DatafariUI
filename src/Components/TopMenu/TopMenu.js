@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SimpleSearchBar from '../SearchBar/SimpleSearchBar';
 import Avatar from '@material-ui/core/Avatar';
@@ -26,6 +26,7 @@ import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
 import HelpMenu from '../HelpMenu/HelpMenu';
 import SettingsMenu from '../SettingsMenu/SettingsMenu';
 import { Link } from '@material-ui/core';
+import useHttp from '../../Hooks/useHttp';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -109,6 +110,8 @@ const TopMenu = () => {
   const [settingsMenuAnchorEl, setSettingsMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { state: userState } = useContext(UserContext);
+  const { isLoading, data, error, sendRequest, clear } = useHttp();
+  const history = useHistory();
   const { t } = useTranslation();
 
   const isMenuOpen = Boolean(anchorEl);
@@ -118,14 +121,14 @@ const TopMenu = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
+  const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
-  };
+  }, []);
 
-  const handleMenuClose = () => {
+  const handleMenuClose = useCallback(() => {
     setAnchorEl(null);
     handleMobileMenuClose();
-  };
+  }, [handleMobileMenuClose]);
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -163,6 +166,22 @@ const TopMenu = () => {
     setSettingsMenuAnchorEl(event.currentTarget);
   };
 
+  const handleLogout = useCallback(
+    (event) => {
+      sendRequest(apiEndpointsContext.logoutURL, 'GET');
+      handleMenuClose();
+    },
+    [apiEndpointsContext.logoutURL, handleMenuClose, sendRequest]
+  );
+
+  // handle response to logout request
+  useEffect(() => {
+    if (!isLoading && (data || error)) {
+      clear();
+      history.go(0);
+    }
+  }, [clear, data, error, history, isLoading]);
+
   const loginURL = new URL(apiEndpointsContext.authURL);
   loginURL.search =
     '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
@@ -185,7 +204,7 @@ const TopMenu = () => {
         horizontal: 'center',
       }}
     >
-      <MenuItem onClick={handleMenuClose}>{t('Logout')}</MenuItem>
+      <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
       {userState.user &&
         userState.user.roles &&
         (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
@@ -221,7 +240,7 @@ const TopMenu = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleMobileMenuClose}>{t('Logout')}</MenuItem>
+      <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
       {userState.user &&
         userState.user.roles &&
         (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||

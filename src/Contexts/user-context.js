@@ -28,8 +28,6 @@ export const UserContext = React.createContext({
   },
   actions: {
     autoConnect: () => {},
-    login: (login, password) => {},
-    logout: () => {},
   },
 });
 
@@ -53,8 +51,6 @@ const UserContextProvider = (props) => {
   const actions = useMemo(() => {
     return {
       autoConnect: autoConnect,
-      login: (login, password) => {},
-      logout: () => {},
     };
   }, [autoConnect]);
 
