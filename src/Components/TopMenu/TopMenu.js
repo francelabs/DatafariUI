@@ -98,6 +98,9 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  menuLink: {
+    color: 'inherit',
+  },
 }));
 
 const TopMenu = () => {
@@ -214,6 +217,7 @@ const TopMenu = () => {
             component={Link}
             href={apiEndpointsContext.adminURL}
             target="_blank"
+            className={classes.menuLink}
           >
             {t('Admin')}
           </MenuItem>
@@ -223,6 +227,7 @@ const TopMenu = () => {
         component={Link}
         href={apiEndpointsContext.datafariBaseURL}
         target="_blank"
+        className={classes.menuLink}
       >
         {t('Go to the legacy Datafari UI')}
       </MenuItem>
