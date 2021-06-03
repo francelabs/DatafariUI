@@ -256,7 +256,7 @@ const Preview = (props) => {
   let nextDocument = null;
   let previousDocument = null;
   let document = null;
-  if (documents && documents.length > 1) {
+  if (documents && documents.length >= 1) {
     const docPos = parseInt(urlParams.get('docPos'));
     if (docPos === 0) {
       document = documents[0];
