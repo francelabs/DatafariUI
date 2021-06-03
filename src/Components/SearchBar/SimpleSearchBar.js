@@ -117,6 +117,8 @@ const SimpleSearchBar = (props) => {
 
   const handleSuggestSelect = useCallback(
     (suggestion) => {
+      setTextState({ queryText: suggestion, triggerSuggestion: false });
+      setQuerySuggestion(false);
       const params = {
         elements: suggestion,
       };
