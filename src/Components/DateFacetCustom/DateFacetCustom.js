@@ -35,10 +35,12 @@ const DateFacetCustom = (props) => {
   const classes = useStyles();
 
   const handleFromDateChange = (date) => {
+    date.setHours(0, 0, 0);
     setSelectedFromDate(date);
   };
 
   const handleToDateChange = (date) => {
+    date.setHours(23, 59, 59);
     setSelectedToDate(date);
   };
 
