@@ -13,7 +13,6 @@ import SimpleSearchBar from '../SearchBar/SimpleSearchBar';
 import Avatar from '@material-ui/core/Avatar';
 
 import topLeftLogo from '../../Icons/top_left_logo.svg';
-import SettingsIcon from '@material-ui/icons/Settings';
 import LanguageIcon from '@material-ui/icons/Language';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
@@ -24,9 +23,9 @@ import SvgIcon from '@material-ui/icons/AccountCircle';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
 import HelpMenu from '../HelpMenu/HelpMenu';
-import SettingsMenu from '../SettingsMenu/SettingsMenu';
 import { Link } from '@material-ui/core';
 import useHttp from '../../Hooks/useHttp';
+import UserMenu from '../UserMenu/UserMenu';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -106,35 +105,37 @@ const useStyles = makeStyles((theme) => ({
 const TopMenu = () => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
   const [feedbacksMenuAnchorEl, setFeedbacksMenuAnchorEl] = useState(null);
   const [helpMenuAnchorEl, setHelpMenuAnchorEl] = useState(null);
-  const [settingsMenuAnchorEl, setSettingsMenuAnchorEl] = useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const { state: userState } = useContext(UserContext);
   const { isLoading, data, error, sendRequest, clear } = useHttp();
   const history = useHistory();
   const { t } = useTranslation();
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleMobileMenuClose = useCallback(() => {
     setMobileMoreAnchorEl(null);
   }, []);
 
   const handleMenuClose = useCallback(() => {
-    setAnchorEl(null);
+    handleCloseUserMenu();
     handleMobileMenuClose();
   }, [handleMobileMenuClose]);
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setUserMenuAnchorEl(null);
+  };
+
+  const handleOpenUserMenu = (event) => {
+    setUserMenuAnchorEl(event.currentTarget);
   };
 
   const handleCloseLangMenu = () => {
@@ -161,14 +162,6 @@ const TopMenu = () => {
     setHelpMenuAnchorEl(event.currentTarget);
   };
 
-  const handleCloseSettingsMenu = () => {
-    setSettingsMenuAnchorEl(null);
-  };
-
-  const handleOpenSettingsMenu = (event) => {
-    setSettingsMenuAnchorEl(event.currentTarget);
-  };
-
   const handleLogout = useCallback(
     (event) => {
       sendRequest(apiEndpointsContext.logoutURL, 'GET');
@@ -190,49 +183,6 @@ const TopMenu = () => {
     '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
 
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      id={menuId}
-      keepMounted
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-      getContentAnchorEl={null}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}
-    >
-      <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
-      {userState.user &&
-        userState.user.roles &&
-        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
-          userState.user.roles.indexOf('SearchExpert') !== -1) && (
-          <MenuItem
-            onClick={handleMenuClose}
-            component={Link}
-            href={apiEndpointsContext.adminURL}
-            target="_blank"
-            className={classes.menuLink}
-          >
-            {t('Admin')}
-          </MenuItem>
-        )}
-      <MenuItem
-        onClick={handleMenuClose}
-        component={Link}
-        href={apiEndpointsContext.datafariBaseURL}
-        target="_blank"
-        className={classes.menuLink}
-      >
-        {t('Go to the legacy Datafari UI')}
-      </MenuItem>
-    </Menu>
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -305,13 +255,6 @@ const TopMenu = () => {
             >
               <HelpOutlineIcon fontSize="large" />
             </IconButton>
-            <IconButton
-              aria-label={t('Settings')}
-              color="inherit"
-              onClick={handleOpenSettingsMenu}
-            >
-              <SettingsIcon fontSize="large" />
-            </IconButton>
             {userState.user === null ? (
               <IconButton
                 edge="end"
@@ -328,7 +271,7 @@ const TopMenu = () => {
                 aria-label="account of current user"
                 aria-controls={menuId}
                 aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
+                onClick={handleOpenUserMenu}
                 color="inherit"
               >
                 <Avatar fontSize="small">
@@ -363,7 +306,6 @@ const TopMenu = () => {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
       <LangSelectionMenu
         open={Boolean(langMenuAnchorEl)}
         anchorEl={langMenuAnchorEl}
@@ -382,11 +324,11 @@ const TopMenu = () => {
         onClose={handleCloseHelpMenu}
         id="help-menu"
       />
-      <SettingsMenu
-        open={Boolean(settingsMenuAnchorEl)}
-        anchorEl={settingsMenuAnchorEl}
-        onClose={handleCloseSettingsMenu}
-        id="settings-menu"
+      <UserMenu
+        open={Boolean(userMenuAnchorEl)}
+        anchorEl={userMenuAnchorEl}
+        onClose={handleCloseUserMenu}
+        id="user-menu"
       />
     </>
   );
