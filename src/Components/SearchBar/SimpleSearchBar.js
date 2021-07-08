@@ -100,6 +100,12 @@ const SimpleSearchBar = (props) => {
     [setTextState]
   );
 
+  const handleSubmit = (e) => {
+    setQuerySuggestion(false);
+    e.preventDefault();
+    search(e);
+  };
+
   const search = useCallback(
     (event) => {
       event.stopPropagation();
@@ -137,13 +143,7 @@ const SimpleSearchBar = (props) => {
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          setQuerySuggestion(false);
-          e.preventDefault();
-          search(e);
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <FormControl fullWidth className={classes.search}>
           <InputBase
             fullWidth
@@ -158,19 +158,17 @@ const SimpleSearchBar = (props) => {
             type="text"
             value={queryText}
             onChange={handleChange}
-            startAdornment={
-              <InputAdornment className={classes.searchIcon}>
-                <SearchIcon />
-              </InputAdornment>
-            }
             endAdornment={
-              queryText && (
-                <InputAdornment position="end">
+              <InputAdornment position="end">
+                {queryText && (
                   <IconButton onClick={handleClear}>
                     <ClearIcon />
                   </IconButton>
-                </InputAdornment>
-              )
+                )}
+                <IconButton onClick={handleSubmit}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
             }
           />
         </FormControl>
