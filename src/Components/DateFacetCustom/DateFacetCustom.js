@@ -63,6 +63,7 @@ const DateFacetCustom = (props) => {
       queryDispatch({
         type: REGISTER_FILTER,
         filter: newFilter,
+        overrideIfExist: true,
       });
     } else {
       handleResetClick();

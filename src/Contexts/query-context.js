@@ -131,7 +131,7 @@ const newQueryReducer = produce((queryDraft, action) => {
       break;
     case REGISTER_FILTER:
       if (action.filter && action.filter.id && action.filter.value) {
-        if (!queryDraft.filters[action.filter.id]) {
+        if (action.overrideIfExist || !queryDraft.filters[action.filter.id]) {
           // No filter with this id, we can add it
           queryDraft.filters[action.filter.id] = {
             value: action.filter.value,
