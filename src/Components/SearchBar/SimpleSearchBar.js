@@ -153,7 +153,7 @@ const SimpleSearchBar = (props) => {
               input: classes.inputInput,
               focused: classes.inputFocused,
             }}
-            inputProps={{ 'aria-label': 'search' }}
+            inputProps={{ 'aria-label': 'search', autocomplete: 'off' }}
             id="datafari-search-input"
             type="text"
             value={queryText}
