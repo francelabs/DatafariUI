@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
   innerList: {
     paddingLeft: theme.spacing(2),
   },
+  dateFields: {
+    overflowWrap: 'break-word',
+  },
 }));
 
 const PreviewProperties = (props) => {
@@ -172,7 +175,7 @@ const PreviewProperties = (props) => {
 
   const prepareCreationDate = () => {
     if (props.document) {
-      let creationDate = `(${t('Unknown')})`;
+      let creationDate = [`(${t('Unknown')})`];
       if (
         props.document.creation_date !== undefined &&
         props.document.creation_date !== null
@@ -181,12 +184,12 @@ const PreviewProperties = (props) => {
       }
       return creationDate;
     }
-    return '';
+    return [''];
   };
 
   const prepareLastModifiedDate = () => {
     if (props.document) {
-      let lastModified = `(${t('Unknown')})`;
+      let lastModified = [`(${t('Unknown')})`];
       if (
         props.document.last_modified !== undefined &&
         props.document.last_modified !== null
@@ -195,7 +198,7 @@ const PreviewProperties = (props) => {
       }
       return lastModified;
     }
-    return '';
+    return [''];
   };
 
   return (
@@ -343,7 +346,21 @@ const PreviewProperties = (props) => {
                     <DateRangeIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t('Creation date')}: ${prepareCreationDate()}`}
+                    className={classes.dateFields}
+                    primary={
+                      <>
+                        <>{t('Creation date')}:</>
+                        <List className={classes.dateFields}>
+                          {prepareCreationDate().map((date) => {
+                            return (
+                              <ListItem>
+                                <ListItemText primary={date} />
+                              </ListItem>
+                            );
+                          })}
+                        </List>
+                      </>
+                    }
                   />
                 </ListItem>
                 <ListItem>
@@ -351,9 +368,20 @@ const PreviewProperties = (props) => {
                     <DateRangeIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t(
-                      'Last modified'
-                    )}: ${prepareLastModifiedDate()}`}
+                    primary={
+                      <>
+                        <>{t('Last modified')}:</>
+                        <List className={classes.dateFields}>
+                          {prepareLastModifiedDate().map((date) => {
+                            return (
+                              <ListItem>
+                                <ListItemText primary={date} />
+                              </ListItem>
+                            );
+                          })}
+                        </List>
+                      </>
+                    }
                   />
                 </ListItem>
               </List>
