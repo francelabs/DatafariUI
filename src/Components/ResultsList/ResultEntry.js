@@ -303,7 +303,7 @@ const ResultEntry = (props) => {
           src={fileIcon}
           alt={`${props.extension} icon`}
         />
-        <Link component={RouterLink} to={preparePreviewURL()} target="new">
+        <Link component={RouterLink} to={preparePreviewURL()} target="_blank">
           <IconButton aria-label="preview" className={classes.previewIcon}>
             <SvgIcon
               className={classes.previewIconSvg}
@@ -315,7 +315,7 @@ const ResultEntry = (props) => {
       </ListItemIcon>
       <ListItemText
         primary={
-          <Link color="secondary" href={prepareDocURL()} target="new">
+          <Link color="secondary" href={prepareDocURL()} target="_blank">
             {prepareTitle()}
           </Link>
         }
@@ -334,7 +334,7 @@ const ResultEntry = (props) => {
                   <Link
                     color="secondary"
                     href={prepareFolderURL()}
-                    target="new"
+                    target="_blank"
                   >
                     {t('Open Folder')}
                   </Link>

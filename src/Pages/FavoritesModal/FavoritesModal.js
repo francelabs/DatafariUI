@@ -268,7 +268,7 @@ const FavortiesModal = (props) => {
                           <Link
                             color="secondary"
                             href={row.id}
-                            target="new"
+                            target="_blank"
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
