@@ -67,6 +67,13 @@ const Search = (props) => {
                 dividerClassName={classes.facetDivider}
                 minShow={5}
               />
+              <FieldFacet
+                title={t('Source')}
+                field="repo_source"
+                op="OR"
+                dividerClassName={classes.facetDivider}
+                minShow={5}
+              />
               <QueryFacet
                 title={t('Creation Date')}
                 queries={[
