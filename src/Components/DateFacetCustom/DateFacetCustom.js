@@ -4,14 +4,26 @@ import {
   makeStyles,
   ThemeProvider,
 } from '@material-ui/core';
-import { KeyboardDatePicker } from '@material-ui/pickers';
-import React, { useContext, useEffect } from 'react';
+import frLocale from 'date-fns/locale/fr';
+import enLocale from 'date-fns/locale/en-US';
+import deLocale from 'date-fns/locale/de';
+import ptLocale from 'date-fns/locale/pt';
+import itLocale from 'date-fns/locale/it';
+import ruLocale from 'date-fns/locale/ru';
+import esLocale from 'date-fns/locale/es';
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   QueryContext,
   REGISTER_FILTER,
   UNREGISTER_FILTER,
 } from '../../Contexts/query-context';
+import { DATE_RANGE } from '../../Hooks/useFilterFormater';
 
 const FILTER_ID = 'customDateRange';
 
@@ -31,7 +43,7 @@ const DateFacetCustom = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const [selectedFromDate, setSelectedFromDate] = React.useState(null);
   const [selectedToDate, setSelectedToDate] = React.useState(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const classes = useStyles();
 
   const handleFromDateChange = (date) => {
@@ -44,6 +56,31 @@ const DateFacetCustom = (props) => {
     setSelectedToDate(date);
   };
 
+  const getLocale = useCallback(() => {
+    if (i18n.language) {
+      switch (i18n.language) {
+        case 'fr':
+          return frLocale;
+        case 'de':
+          return deLocale;
+        case 'it':
+          return itLocale;
+        case 'ru':
+          return ruLocale;
+        case 'es':
+          return esLocale;
+        case 'pt':
+        case 'pt_br':
+          return ptLocale;
+        case 'en':
+        default:
+          return enLocale;
+      }
+    } else {
+      return enLocale;
+    }
+  }, [i18n.language]);
+
   const handleGoClick = () => {
     if (selectedToDate || selectedFromDate) {
       const fromDateString = selectedFromDate
@@ -54,6 +91,7 @@ const DateFacetCustom = (props) => {
       const newFilter = {
         value: `${field}:[${fromDateString} TO ${toDateString}]`,
         extra: {
+          type: DATE_RANGE,
           from: selectedFromDate,
           to: selectedToDate,
           field: field,
@@ -108,39 +146,41 @@ const DateFacetCustom = (props) => {
         }
       >
         <div className={classes.containerSpacing}>
-          <KeyboardDatePicker
-            autoOk={true}
-            variant="inline"
-            margin="dense"
-            id="from-date-picker-dialog"
-            label={t('From')}
-            format="MM/dd/yyyy"
-            value={selectedFromDate}
-            onChange={handleFromDateChange}
-            KeyboardButtonProps={{
-              'aria-label': 'change start date',
-            }}
-            size="small"
-            className={classes.dateSelectors}
-          />
-          <KeyboardDatePicker
-            autoOk={true}
-            variant="inline"
-            margin="dense"
-            id="to-date-picker-dialog"
-            label={t('To')}
-            format="MM/dd/yyyy"
-            value={selectedToDate}
-            onChange={handleToDateChange}
-            KeyboardButtonProps={{
-              'aria-label': 'change end date',
-            }}
-            size="small"
-            className={classes.dateSelectors}
-          />
-          <Button size="small" color="primary" onClick={handleGoClick}>
-            {t('Go')}
-          </Button>
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={getLocale()}>
+            <KeyboardDatePicker
+              format="P"
+              autoOk={true}
+              variant="inline"
+              margin="dense"
+              id="from-date-picker-dialog"
+              label={t('From')}
+              value={selectedFromDate}
+              onChange={handleFromDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change start date',
+              }}
+              size="small"
+              className={classes.dateSelectors}
+            />
+            <KeyboardDatePicker
+              format="P"
+              autoOk={true}
+              variant="inline"
+              margin="dense"
+              id="to-date-picker-dialog"
+              label={t('To')}
+              value={selectedToDate}
+              onChange={handleToDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change end date',
+              }}
+              size="small"
+              className={classes.dateSelectors}
+            />
+            <Button size="small" color="primary" onClick={handleGoClick}>
+              {t('Go')}
+            </Button>
+          </MuiPickersUtilsProvider>
         </div>
       </ThemeProvider>
     </>

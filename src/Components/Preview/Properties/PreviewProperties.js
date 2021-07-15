@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   makeStyles,
   List,
@@ -19,6 +19,14 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import { useTranslation } from 'react-i18next';
 import { isArray } from '@material-ui/data-grid';
+import frLocale from 'date-fns/locale/fr';
+import enLocale from 'date-fns/locale/en-US';
+import deLocale from 'date-fns/locale/de';
+import ptLocale from 'date-fns/locale/pt';
+import itLocale from 'date-fns/locale/it';
+import ruLocale from 'date-fns/locale/ru';
+import esLocale from 'date-fns/locale/es';
+import { format } from 'date-fns-tz';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
@@ -43,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 const PreviewProperties = (props) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(true);
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const menuAnchorRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [titleOpen, setTitleOpen] = useState(true);
@@ -51,6 +59,31 @@ const PreviewProperties = (props) => {
   const [mimeOpen, setMimeOpen] = useState(true);
   const [authorsOpen, setAuthorsOpen] = useState(true);
   const [datesOpen, setDatesOpen] = useState(true);
+
+  const getDateLocale = useCallback(() => {
+    if (i18n.language) {
+      switch (i18n.language) {
+        case 'fr':
+          return frLocale;
+        case 'de':
+          return deLocale;
+        case 'it':
+          return itLocale;
+        case 'ru':
+          return ruLocale;
+        case 'es':
+          return esLocale;
+        case 'pt':
+        case 'pt_br':
+          return ptLocale;
+        case 'en':
+        default:
+          return enLocale;
+      }
+    } else {
+      return enLocale;
+    }
+  }, [i18n.language]);
 
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
@@ -180,7 +213,11 @@ const PreviewProperties = (props) => {
         props.document.creation_date !== undefined &&
         props.document.creation_date !== null
       ) {
-        creationDate = props.document.creation_date;
+        creationDate = props.document.creation_date.map((date) =>
+          format(new Date(date), 'P p', {
+            locale: getDateLocale(),
+          })
+        );
       }
       return creationDate;
     }
@@ -194,7 +231,11 @@ const PreviewProperties = (props) => {
         props.document.last_modified !== undefined &&
         props.document.last_modified !== null
       ) {
-        lastModified = props.document.last_modified;
+        lastModified = props.document.last_modified.map((date) =>
+          format(new Date(date), 'P p', {
+            locale: getDateLocale(),
+          })
+        );
       }
       return lastModified;
     }

@@ -21,6 +21,7 @@ import SortIcon from '@material-ui/icons/Sort';
 import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
 import ResultCountInformation from './ResultCountInformation';
 import produce from 'immer';
+import useFilterFormater from '../../Hooks/useFilterFormater';
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {
@@ -39,6 +40,7 @@ const SearchInformation = (props) => {
   const classes = useStyles();
   const sortMenuAnchorRef = useRef(null);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [filterFormat] = useFilterFormater();
 
   const handleOpenSortMenu = (event) => {
     setSortMenuOpen(true);
@@ -172,7 +174,7 @@ const SearchInformation = (props) => {
         </Typography>
         {Object.keys(query.filters).map((key) => (
           <FilterEntry
-            value={query.filters[key].value}
+            value={filterFormat(query.filters[key])}
             onClick={handleClearFilter(key)}
           />
         ))}
