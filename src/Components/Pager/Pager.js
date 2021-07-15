@@ -94,10 +94,11 @@ const Pager = (props) => {
     } else {
       pages.push(<Button onClick={onClickHandler(1)}>1</Button>);
       pages.push(<Button disabled>...</Button>);
-      for (let i = query.page - 1; i <= query.page + 1; i++) {
+      let pageNum = parseInt(query.page, 10);
+      for (let i = pageNum - 1; i <= pageNum + 1; i++) {
         pages.push(
           <Button
-            className={query.page === i && classes.currentPage}
+            className={pageNum === i && classes.currentPage}
             onClick={onClickHandler(i)}
           >
             {i}
