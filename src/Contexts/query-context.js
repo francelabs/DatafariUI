@@ -122,11 +122,13 @@ const newQueryReducer = produce((queryDraft, action) => {
     case SET_FIELD_FACET_SELECTED:
       if (action.facetId && action.selected) {
         queryDraft.selectedFieldFacets[action.facetId] = action.selected;
+        queryDraft.page = 1;
       }
       break;
     case SET_QUERY_FACET_SELECTED:
       if (action.facetId && action.selected) {
         queryDraft.selectedQueryFacets[action.facetId] = action.selected;
+        queryDraft.page = 1;
       }
       break;
     case REGISTER_FILTER:
@@ -137,14 +139,16 @@ const newQueryReducer = produce((queryDraft, action) => {
             value: action.filter.value,
             extra: action.filter.extra,
           };
-          // If a filter with the same id already exists we do nothing
+          queryDraft.page = 1;
         }
+        // If a filter with the same id already exists we do nothing unless override was requested
       }
       break;
     case UNREGISTER_FILTER:
       if (action.id && queryDraft.filters[action.id]) {
         // Delete the existing filter with the provided id
         delete queryDraft.filters[action.id];
+        queryDraft.page = 1;
       }
       // If no filter with the id exists, just do nothing
       break;
