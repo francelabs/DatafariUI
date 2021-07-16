@@ -179,92 +179,6 @@ const newQueryReducer = produce((queryDraft, action) => {
   }
 });
 
-// const queryReducer = (query, action) => {
-//   const [newFieldFacets, newQueryFacets] = resetFacetSelection(
-//     query.fieldFacets,
-//     query.queryFacets
-//   );
-//   switch (action.type) {
-//     case SET_FIELD_FACETS:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.fieldFacets = produce(action.fieldFacets, (draft) => {});
-//       });
-//     case SET_QUERY_FACETS:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.queryFacets = produce(action.queryFacets, (draft) => {});
-//       });
-//     case SET_ROWS:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.rows = action.row;
-//       });
-//     case SET_PAGE:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = action.page;
-//       });
-//     case SET_ELEMENTS:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.elements = action.elements;
-//         queryDraft.queryFacets = newQueryFacets;
-//         queryDraft.fieldFacets = newFieldFacets;
-//         queryDraft.filters = {};
-//         queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
-//           ? action.spellcheckOriginalQuery
-//           : undefined;
-//       });
-//     case SET_ELEMENTS_NO_RESET:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.elements = action.elements;
-//       });
-//     case SET_SORT:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.sort = produce(action.sort, (draft) => {});
-//       });
-//     case RESET_FACETS_SELECTION:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.queryFacets = newQueryFacets;
-//         queryDraft.fieldFacets = newFieldFacets;
-//         queryDraft.filters = {};
-//       });
-//     case SET_FILTERS:
-//       return produce(query, (queryDraft) => {
-//         queryDraft.page = 1;
-//         queryDraft.filters = action.filters;
-//       });
-//     case SET_QUERY:
-//       return produce(action.query, (draft) => {});
-//     default:
-//       return produce(query, (queryDraft) => {});
-//   }
-// };
-/*
- {
-   fieldFacets: {
-     extension: {
-       field: 'extension',
-       tag: 'extention',
-       selected: ['pdf', 'doc'],
-       op: 'OR',
-     }
-   },
-   queryFacets: {
-     date: {
-       labels: ['Less than a month', 'Less than a year'],
-       queries: ['last_modified:[NOW-1MONTH TO NOW]', 'last_modified:[NOW-1YEAR TO NOW]'],
-       op: 'OR',
-       selected: ['Less than a month'],
-     }
-   }
-   elements: "some query here",
-   rows: 10,
-   page: 1,
- }
- */
-
 export const QueryContext = React.createContext({
   query: defaultQuery,
   dispatch: () => {},
@@ -276,17 +190,6 @@ export const QueryContext = React.createContext({
 });
 
 const QueryContextProvider = (props) => {
-  // const [query, queryDispatcher] = useReducer(queryReducer, {
-  //   fieldFacets: {},
-  //   queryFacets: {},
-  //   filters: {},
-  //   elements: '',
-  //   rows: 10,
-  //   page: 1,
-  //   op: 'AND',
-  //   sort: { label: 'Relevance', value: 'score desc' },
-  // });
-
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
