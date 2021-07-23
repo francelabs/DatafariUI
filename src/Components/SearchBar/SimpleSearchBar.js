@@ -11,6 +11,8 @@ import {
   IconButton,
   ClickAwayListener,
   InputBase,
+  Divider,
+  Button,
 } from '@material-ui/core';
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
@@ -37,14 +39,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: 0,
   },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  clearButton: {
+    borderRight: 'solid 1px rgba(0,0,0,0.12)',
+    borderRadius: '0',
   },
   inputRoot: {
     color: 'inherit',
@@ -161,13 +158,17 @@ const SimpleSearchBar = (props) => {
             endAdornment={
               <InputAdornment position="end">
                 {queryText && (
-                  <IconButton onClick={handleClear}>
+                  <Button
+                    onClick={handleClear}
+                    size="small"
+                    className={classes.clearButton}
+                  >
                     <ClearIcon />
-                  </IconButton>
+                  </Button>
                 )}
-                <IconButton onClick={handleSubmit}>
+                <Button onClick={handleSubmit} size="small" color="secondary">
                   <SearchIcon />
-                </IconButton>
+                </Button>
               </InputAdornment>
             }
           />
