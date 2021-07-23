@@ -8,10 +8,8 @@ import {
   FormControl,
   InputAdornment,
   MenuList,
-  IconButton,
   ClickAwayListener,
   InputBase,
-  Divider,
   Button,
 } from '@material-ui/core';
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
