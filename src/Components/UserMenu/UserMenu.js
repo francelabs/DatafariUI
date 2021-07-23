@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 const UserMenu = (props) => {
   const classes = useStyles();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(undefined);
   const { isLoading, data, error, sendRequest, clear } = useHttp();
   const apiEndpointsContext = useContext(APIEndpointsContext);
@@ -44,6 +44,9 @@ const UserMenu = (props) => {
     }
   }, [clear, data, error, history, isLoading]);
 
+  const adminURL = new URL(apiEndpointsContext.adminURL);
+  adminURL.search = `?lang=${i18n.language}`;
+
   return (
     <Menu
       id={props.id}
@@ -69,7 +72,7 @@ const UserMenu = (props) => {
           <MenuItem
             onClick={props.onClose}
             component={Link}
-            href={apiEndpointsContext.adminURL}
+            href={adminURL}
             target="_blank"
             className={classes.menuLink}
           >

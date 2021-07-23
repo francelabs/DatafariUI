@@ -113,7 +113,7 @@ const TopMenu = () => {
   const { state: userState } = useContext(UserContext);
   const { isLoading, data, error, sendRequest, clear } = useHttp();
   const history = useHistory();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -181,6 +181,8 @@ const TopMenu = () => {
   const loginURL = new URL(apiEndpointsContext.authURL);
   loginURL.search =
     '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
+  const adminURL = new URL(apiEndpointsContext.adminURL);
+  adminURL.search = `?lang=${i18n.language}`;
 
   const menuId = 'primary-search-account-menu';
 
@@ -203,7 +205,7 @@ const TopMenu = () => {
           <MenuItem
             onClick={handleMobileMenuClose}
             component={Link}
-            href={apiEndpointsContext.adminURL}
+            href={adminURL}
             target="_blank"
           >
             {t('Admin')}
