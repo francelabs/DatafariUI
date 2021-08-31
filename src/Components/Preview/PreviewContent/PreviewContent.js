@@ -35,7 +35,7 @@ const PreviewContent = (props) => {
           }
         }
         let display = props.textSplit.map((textPart) => {
-          let result = textPart;
+          let result = textPart.replace(/(\s*\n){2,}/gm, '\n\n');
           highlighting.forEach((highlightTerm) => {
             if (textPart.match(highlightTerm.regex)) {
               if (highlightTerm.index === highlightTerm.highlightedIndex) {
@@ -58,7 +58,7 @@ const PreviewContent = (props) => {
         });
         return display;
       }
-      return props.textSplit.join('');
+      return props.textSplit.join('').replace(/(\s*\n){2,}/gm, '\n\n');
     }
     return null;
   };
