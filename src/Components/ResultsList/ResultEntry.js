@@ -134,11 +134,15 @@ const ResultEntry = (props) => {
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
    * Used to decode html entities from the highlighted content returned by Solr.
+   * Also remove the replacement character (question mark in a losange) from the
+   * the exerpt of text.
    */
   const decode = (text) => {
-    return text.replace(/&#x?([\dA-F]+);/g, function (match, dec) {
-      return String.fromCharCode(dec);
-    });
+    return text
+      .replace(/&#x?([\dA-F]+);/g, function (match, dec) {
+        return String.fromCharCode(dec);
+      })
+      .replace(/\uFFFD/g, '');
   };
 
   /*
