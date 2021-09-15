@@ -14,6 +14,7 @@ import useDatafari from '../../Hooks/useDatafari';
 import { Grid, makeStyles, Hidden } from '@material-ui/core';
 import SearchInformation from '../../Components/SearchInformation/SearchInformation';
 import DateFacetCustom from '../../Components/DateFacetCustom/DateFacetCustom';
+import HierarchicalFacet from '../../Components/HierarchicalFacet/HierarchicalFacet';
 
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
@@ -96,6 +97,11 @@ const Search = (props) => {
               >
                 <DateFacetCustom />
               </QueryFacet>
+              <HierarchicalFacet
+                field="urlHierarchy"
+                title="hierarchical facet"
+                separator="/"
+              />
             </div>
           </Hidden>
         </Grid>
