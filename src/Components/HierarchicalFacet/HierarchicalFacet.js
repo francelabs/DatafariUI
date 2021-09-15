@@ -72,7 +72,7 @@ const HierarchicalFacet = (props) => {
     [getItemDepthAndName]
   );
 
-  const hierarchyToFacet = useCallback(
+  const getSelectedListForFacet = useCallback(
     (hierarchy) => {
       let selected = [];
       // Ensure we are using the expected format and retrieve the lowest level
@@ -208,12 +208,18 @@ const HierarchicalFacet = (props) => {
           queryDispatch({
             type: SET_FIELD_FACET_SELECTED,
             facetId: field,
-            selected: hierarchyToFacet(hierarchyStateDraft),
+            selected: getSelectedListForFacet(hierarchyStateDraft),
           });
         });
       });
     },
-    [field, getItemDepthAndName, hierarchyToFacet, queryDispatch, separator]
+    [
+      field,
+      getItemDepthAndName,
+      getSelectedListForFacet,
+      queryDispatch,
+      separator,
+    ]
   );
 
   const renderTreeItem = useCallback(
@@ -264,6 +270,31 @@ const HierarchicalFacet = (props) => {
   }, [field, queryDispatch, title]);
 
   useEffect(() => {
+    // Checks if an ancestor of a particular item is selected
+    const ancestorInList = (item, list) => {
+      const itemName = getItemDepthAndName(item.original)[1];
+      const resultsList = list.map((selectedItemID) => {
+        const selectedItemName = getItemDepthAndName(selectedItemID)[1];
+        return itemName.includes(selectedItemName);
+      });
+      return resultsList.reduce(
+        (previous, current) => previous || current,
+        false
+      );
+    };
+
+    // Checks if a descendent of a particular item is selected
+    const descendentInList = (item, list) => {
+      const itemName = getItemDepthAndName(item.original)[1];
+      const resultsList = list.map((selectedItemID) => {
+        const selectedItemName = getItemDepthAndName(selectedItemID)[1];
+        return selectedItemName.includes(itemName);
+      });
+      return resultsList.reduce(
+        (previous, current) => previous || current,
+        false
+      );
+    };
     // Build a hierarchy map from the results to be displayed
     const hierarchyMap = {};
     // Used to initialize items when they need to be created
@@ -271,10 +302,14 @@ const HierarchicalFacet = (props) => {
       children: [],
       nb: 0,
       original: '',
-      checked: 'unchecked',
+      checked: UNCHECKED_STATE,
     };
     if (results.fieldFacets[field]) {
       const data = results.fieldFacets[field];
+
+      const selected = query.selectedFieldFacets[field]
+        ? query.selectedFieldFacets[field]
+        : [];
       // sorl facet structure is an array, odd indexes are labels, even indexes are the numbers of document matching the previous index label
       for (let i = 0; i < data.length; i += 2) {
         const solrFacetLabel = data[i];
@@ -335,10 +370,59 @@ const HierarchicalFacet = (props) => {
             }
           );
         }
+
+        if (
+          hierarchyMap['level' + itemDepth][itemName].checked ===
+            UNCHECKED_STATE &&
+          selected.includes(
+            hierarchyMap['level' + itemDepth][itemName].original
+          )
+        ) {
+          hierarchyMap['level' + itemDepth][itemName] = produce(
+            hierarchyMap['level' + itemDepth][itemName],
+            (item) => {
+              item.checked = CHECKED_STATE;
+            }
+          );
+        } else {
+          // So the current item is not directly in the selected list.
+          // We need to check if an ancestor or a descendent is.
+          if (
+            ancestorInList(
+              hierarchyMap['level' + itemDepth][itemName],
+              selected
+            )
+          ) {
+            hierarchyMap['level' + itemDepth][itemName] = produce(
+              hierarchyMap['level' + itemDepth][itemName],
+              (item) => {
+                item.checked = CHECKED_STATE;
+              }
+            );
+          } else if (
+            descendentInList(
+              hierarchyMap['level' + itemDepth][itemName],
+              selected
+            )
+          ) {
+            hierarchyMap['level' + itemDepth][itemName] = produce(
+              hierarchyMap['level' + itemDepth][itemName],
+              (item) => {
+                item.checked = UNDETERMINATE_STATE;
+              }
+            );
+          }
+        }
       }
     }
     setHierarchyState(produce(hierarchyMap, (draft) => {}));
-  }, [field, results.fieldFacets, separator]);
+  }, [
+    field,
+    getItemDepthAndName,
+    query.selectedFieldFacets,
+    results.fieldFacets,
+    separator,
+  ]);
   return (
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
