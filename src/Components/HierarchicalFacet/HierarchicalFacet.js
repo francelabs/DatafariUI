@@ -1,5 +1,18 @@
-import { makeStyles } from '@material-ui/core';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  Divider,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@material-ui/core';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   QueryContext,
@@ -10,6 +23,8 @@ import TreeView from '@material-ui/lab/TreeView';
 import { ResultsContext } from '../../Contexts/results-context';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import produce from 'immer';
 import CustomTreeItem from './CustomTreeItem';
 
@@ -17,15 +32,86 @@ export const CHECKED_STATE = 'checked';
 export const UNCHECKED_STATE = 'unchecked';
 export const UNDETERMINATE_STATE = 'undeterminate';
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+  facetTitleText: {
+    flexGrow: 1,
+  },
+  facetHeader: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  showMore: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
+  },
+}));
 
 const HierarchicalFacet = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const classes = useStyles();
   const { field, separator, title } = props;
   const { results } = useContext(ResultsContext);
   const [hierarchyState, setHierarchyState] = useState({});
+  const [expanded, setExpanded] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuAnchorRef = useRef(null);
+
+  const handleExpandClick = () => {
+    setExpanded((previous) => !previous);
+  };
+
+  const handleOpenMenu = (event) => {
+    setMenuOpen(true);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuOpen(false);
+  };
+
+  // Removes all facet entry selection
+  const handleClearFilterClick = () => {
+    queryDispatch({
+      type: SET_FIELD_FACET_SELECTED,
+      facetId: field,
+      selected: [],
+    });
+    setMenuOpen(false);
+  };
+
+  // Select all facet entries
+  const handleSelectAllClick = () => {
+    // Should select all lowest level items
+    const selected = [];
+    // Ensure we are using the expected format and retrieve the lowest level
+    let lowestDepth = undefined;
+    const levelRegex = /^level[0-9]+$/;
+    Object.getOwnPropertyNames(hierarchyState).forEach((levelName) => {
+      if (levelRegex.test(levelName)) {
+        const currentLevel = parseInt(levelName.substring(5), 10);
+        if (lowestDepth === undefined || currentLevel < lowestDepth) {
+          lowestDepth = currentLevel;
+        }
+      }
+    });
+    // For any item at the lowest level, add it to the selected list
+    if (lowestDepth !== undefined) {
+      Object.getOwnPropertyNames(hierarchyState[`level${lowestDepth}`]).forEach(
+        (itemName) => {
+          selected.push(
+            hierarchyState[`level${lowestDepth}`][itemName].original
+          );
+        }
+      );
+    }
+
+    queryDispatch({
+      type: SET_FIELD_FACET_SELECTED,
+      facetId: field,
+      selected: selected,
+    });
+    setMenuOpen(false);
+  };
 
   const getItemDepthAndName = useCallback(
     (itemID) => {
@@ -423,23 +509,56 @@ const HierarchicalFacet = (props) => {
     results.fieldFacets,
     separator,
   ]);
-  return (
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-    >
-      {hierarchyState['level0'] &&
-        Object.getOwnPropertyNames(hierarchyState['level0']).map(
-          (hierearchyItemName) => {
-            return renderTreeItem(
-              hierarchyState['level0'][hierearchyItemName],
-              hierearchyItemName,
-              hierarchyState
-            );
-          }
-        )}
-    </TreeView>
-  );
+  return Object.getOwnPropertyNames(hierarchyState).length > 0 ? (
+    <>
+      <div className={classes.facetHeader}>
+        <IconButton onClick={handleOpenMenu}>
+          <MoreVertIcon
+            aria-controls={`${field}-facet-menu`}
+            aria-haspopup="true"
+            ref={menuAnchorRef}
+          />
+        </IconButton>
+        <Menu
+          id={`${field}-facet-menu`}
+          anchorEl={menuAnchorRef.current}
+          open={menuOpen}
+          onClose={handleCloseMenu}
+        >
+          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
+          <MenuItem onClick={handleClearFilterClick}>
+            {t('Clear Filter')}
+          </MenuItem>
+        </Menu>
+        <Typography color="secondary" className={classes.facetTitleText}>
+          {props.title}
+        </Typography>
+        <IconButton onClick={handleExpandClick}>
+          {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </IconButton>
+      </div>
+      {expanded && (
+        <>
+          <TreeView
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpandIcon={<ChevronRightIcon />}
+          >
+            {hierarchyState['level0'] &&
+              Object.getOwnPropertyNames(hierarchyState['level0']).map(
+                (hierearchyItemName) => {
+                  return renderTreeItem(
+                    hierarchyState['level0'][hierearchyItemName],
+                    hierearchyItemName,
+                    hierarchyState
+                  );
+                }
+              )}
+          </TreeView>
+        </>
+      )}
+      <Divider className={props.dividerClassName} />
+    </>
+  ) : null;
 };
 
 export default HierarchicalFacet;

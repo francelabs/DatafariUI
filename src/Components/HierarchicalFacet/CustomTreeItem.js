@@ -1,7 +1,6 @@
 import { Checkbox, makeStyles, Typography } from '@material-ui/core';
 import React, { useCallback } from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
-import produce from 'immer';
 import { CHECKED_STATE, UNDETERMINATE_STATE } from './HierarchicalFacet';
 
 const useStyles = makeStyles((theme) => ({
