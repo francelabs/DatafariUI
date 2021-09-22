@@ -76,7 +76,10 @@ const SimpleAutocomplete = (props) => {
       <Spinner />
     ) : (
       <>
-        <ListSubheader className={classes.autocompleteTitleContainer}>
+        <ListSubheader
+          className={classes.autocompleteTitleContainer}
+          disableSticky={true}
+        >
           <Typography className={classes.autocompleteTitle}>
             {t('SUGGESTED QUERIES')}
           </Typography>

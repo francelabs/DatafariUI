@@ -183,7 +183,10 @@ const EntityAutocomplete = (props) => {
       <Spinner />
     ) : (
       <>
-        <ListSubheader className={classes.autocompleteTitleContainer}>
+        <ListSubheader
+          className={classes.autocompleteTitleContainer}
+          disableSticky={true}
+        >
           <Typography className={classes.autocompleteTitle}>
             {t('Suggested {{entityType}}', {
               entityType: entityType,
