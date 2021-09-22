@@ -54,12 +54,21 @@ const SimpleAutocomplete = (props) => {
           })
           .map((element) => {
             return element.collationQuery;
-          });
+          })
+          .slice(0, props.maxSuggestion ? props.maxSuggestion : -1);
         setSuggestions(newSuggestions);
       }
       setLoading(false);
     }
-  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID]);
+  }, [
+    data,
+    error,
+    isLoading,
+    setSuggestions,
+    reqIdentifier,
+    queryID,
+    props.maxSuggestion,
+  ]);
 
   return (
     props.active &&
