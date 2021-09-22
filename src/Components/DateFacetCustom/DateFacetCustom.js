@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     width: '16ch',
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(3),
   },
   containerSpacing: {
     marginLeft: theme.spacing(1),

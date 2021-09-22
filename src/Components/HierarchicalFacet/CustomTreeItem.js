@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'inherit',
     color: 'inherit',
   },
+  caption: {},
 }));
 
 const CustomTreeItem = (props) => {
@@ -60,7 +61,9 @@ const CustomTreeItem = (props) => {
           <Typography variant="body2" className={classes.labelText}>
             {label}
           </Typography>
-          <Typography variant="caption">{number}</Typography>
+          <Typography variant="body2" className={classes.caption}>
+            {number}
+          </Typography>
         </div>
       }
     >
