@@ -68,9 +68,8 @@ const AdvancedSearchModal = (props) => {
   const [exactFieldsList, setExactFieldsList] = useState(undefined);
   const [autocompleteFields, setAutocompleteFields] = useState(undefined);
   const [fixedValuesFields, setFixedValuesFields] = useState(undefined);
-  const [mappingFieldNameValues, setMappingFieldNameValues] = useState(
-    undefined
-  );
+  const [mappingFieldNameValues, setMappingFieldNameValues] =
+    useState(undefined);
   const [baseSearch, setBaseSearch] = useState({
     all_words_value: undefined,
     exact_expression_value: undefined,
@@ -95,14 +94,18 @@ const AdvancedSearchModal = (props) => {
       let none_of_these_words_value = '';
 
       // Regex that will match every 'AND expression' (ie [word] AND [word])
-      const andExpressionRegex = /[^\s\[\(\]\)\-\"(AND|OR)]+\sAND\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
+      const andExpressionRegex =
+        /[^\s\[\(\]\)\-\"(AND|OR)]+\sAND\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
       // Regex that will match every 'OR expression' (ie [word] OR [word])
-      const orExpressionRegex = /[^\s\[\(\]\)\-\"(AND|OR)]+\sOR\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
+      const orExpressionRegex =
+        /[^\s\[\(\]\)\-\"(AND|OR)]+\sOR\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
 
       // Regex that will match any remaining 'AND [word]'
-      const cleanANDRegex = /(AND\s(?:(?![^\s\[\(]+AND)[^\s\[\(]+)\s?|[^\s\[\(]+\sAND)/g;
+      const cleanANDRegex =
+        /(AND\s(?:(?![^\s\[\(]+AND)[^\s\[\(]+)\s?|[^\s\[\(]+\sAND)/g;
       // Regex that will match any remaining 'OR [word]'
-      const cleanORRegex = /(OR\s(?:(?![^\s\[\(]+OR)[^\s\[\(]+)\s?|[^\s\[\(]+\sOR)/g;
+      const cleanORRegex =
+        /(OR\s(?:(?![^\s\[\(]+OR)[^\s\[\(]+)\s?|[^\s\[\(]+\sOR)/g;
 
       if (!text.startsWith('(') && !isBasicSearchText) {
         // The filter value is a direct value, no needs to apply complex treatment
@@ -377,9 +380,7 @@ const AdvancedSearchModal = (props) => {
 
   const determineFieldType = useCallback(
     (fieldName) => {
-      const field = availableFields.field.find(
-        (field) => field.name === fieldName
-      );
+      const field = availableFields.find((field) => field.name === fieldName);
       let fieldType = field ? field.type : undefined;
       if (fieldType === 'tdate' || fieldType === 'date') {
         fieldType = 'date';
@@ -423,7 +424,8 @@ const AdvancedSearchModal = (props) => {
 
     // Exact expression baseSearch regex
     let baseExactExprVal = '';
-    const baseExactExprRegEx = /\((exactContent|exactTitle):[^)]* OR (exactContent|exactTitle):[^)]*\)/g;
+    const baseExactExprRegEx =
+      /\((exactContent|exactTitle):[^)]* OR (exactContent|exactTitle):[^)]*\)/g;
     const baseExactExpr = baseQuery.match(baseExactExprRegEx);
     const exactContentRegEx = /exactContent:(?:(?!( AND | OR ))[^)(])+/g;
     const exactTitleRegEx = /exactTitle:(?:(?!( AND | OR ))[^)(])+/g;
@@ -470,7 +472,8 @@ const AdvancedSearchModal = (props) => {
     // is not empty
     if (baseQuery !== '' && baseQuery !== '*' && baseQuery !== '*:*') {
       // Regex that matches every field expression (ie 'AND/OR [field]:[value]')
-      const superFieldsRegEx = /(AND\s|OR\s)*[^\s\(\[\:]+:(\[[^\]]+\]|\([^\)]+\)|\"[^\"]+\"|[^\s\(\]]+)/g;
+      const superFieldsRegEx =
+        /(AND\s|OR\s)*[^\s\(\[\:]+:(\[[^\]]+\]|\([^\)]+\)|\"[^\"]+\"|[^\s\(\]]+)/g;
       // Put the matches of the regex in a variable
       const fields = baseQuery.match(superFieldsRegEx);
       // Object which will contain the last found field filter that corresponds
@@ -778,15 +781,17 @@ const AdvancedSearchModal = (props) => {
               exactNgtExprIndex
             ) === ' '
           ) {
-            none_of_these_words_line_value = none_of_these_words_line_value.replace(
-              ' ' + exactNegativeExpression,
-              ''
-            );
+            none_of_these_words_line_value =
+              none_of_these_words_line_value.replace(
+                ' ' + exactNegativeExpression,
+                ''
+              );
           } else {
-            none_of_these_words_line_value = none_of_these_words_line_value.replace(
-              exactNegativeExpression,
-              ''
-            );
+            none_of_these_words_line_value =
+              none_of_these_words_line_value.replace(
+                exactNegativeExpression,
+                ''
+              );
           }
         }
       }
@@ -968,7 +973,7 @@ const AdvancedSearchModal = (props) => {
   useEffect(() => {
     if (reqIdentifier === 'GetFieldsInfo') {
       if (!isLoading && data && !error) {
-        setAvailableFields(data);
+        setAvailableFields(data.content.fields);
       }
     }
   }, [isLoading, error, data, reqIdentifier]);
@@ -976,18 +981,18 @@ const AdvancedSearchModal = (props) => {
   useEffect(() => {
     if (reqIdentifier === 'GetExactFields') {
       if (!isLoading && data && !error) {
-        if (data.code === 0) {
+        if (data.status === 'OK') {
           const newExactFieldsList = {};
           // Construct the exactFieldsList using a fieldname as key and
           // [fieldname]_exact as the corresponding value that represents the Solr
           // fieldname for exact match queries
           for (
             var cptExactFields = 0;
-            cptExactFields < data.exactFieldsList.length;
+            cptExactFields < data.content.exactFieldsList.length;
             cptExactFields++
           ) {
-            newExactFieldsList[data.exactFieldsList[cptExactFields]] =
-              data.exactFieldsList[cptExactFields] + '_exact';
+            newExactFieldsList[data.content.exactFieldsList[cptExactFields]] =
+              data.content.exactFieldsList[cptExactFields] + '_exact';
           }
           setExactFieldsList(newExactFieldsList);
         }
@@ -999,15 +1004,12 @@ const AdvancedSearchModal = (props) => {
     if (reqIdentifier === 'GetAutocompleteAdvancedFields') {
       if (!isLoading && data && !error) {
         if (
-          data.code === 0 &&
-          data.autocompleteFields !== undefined &&
-          data.autocompleteFields !== null &&
-          data.autocompleteFields !== ''
+          data.status === 'OK' &&
+          data.content.autocompleteFields !== undefined &&
+          data.content.autocompleteFields !== null
         ) {
-          try {
-            const newAutocompleteFields = JSON.parse(data.autocompleteFields);
-            setAutocompleteFields(newAutocompleteFields);
-          } catch {}
+          const newAutocompleteFields = data.content.autocompleteFields;
+          setAutocompleteFields(newAutocompleteFields);
         }
       }
     }
@@ -1016,11 +1018,9 @@ const AdvancedSearchModal = (props) => {
   useEffect(() => {
     if (reqIdentifier === 'GetFixedValuesAdvancedFields') {
       if (!isLoading && data && !error) {
-        if (data.code === 0) {
-          try {
-            const newFixedValuesFields = JSON.parse(data.fixedValuesFields);
-            setFixedValuesFields(newFixedValuesFields);
-          } catch {}
+        if (data.status === 'OK') {
+          const newFixedValuesFields = data.content.fixedValuesFields;
+          setFixedValuesFields(newFixedValuesFields);
         }
       }
     }
@@ -1029,13 +1029,9 @@ const AdvancedSearchModal = (props) => {
   useEffect(() => {
     if (reqIdentifier === 'GetLabeledAdvancedFields') {
       if (!isLoading && data && !error) {
-        if (data.code === 0) {
-          try {
-            const newMappingFieldNameValues = JSON.parse(
-              data.mappingFieldNameValues
-            );
-            setMappingFieldNameValues(newMappingFieldNameValues);
-          } catch {}
+        if (data.status === 'OK') {
+          const newMappingFieldNameValues = data.content.mappingFieldNameValues;
+          setMappingFieldNameValues(newMappingFieldNameValues);
         }
       }
     }
@@ -1196,7 +1192,7 @@ const AdvancedSearchModal = (props) => {
               <AdvancedSearchField
                 field={field}
                 id={index}
-                fieldList={availableFields.field}
+                fieldList={availableFields}
                 dispatch={dispatch}
                 determineFieldType={determineFieldType}
                 mappingFieldNameValues={mappingFieldNameValues}

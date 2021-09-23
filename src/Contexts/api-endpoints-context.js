@@ -74,24 +74,24 @@ const APIEndpointsContextProvider = (props) => {
       restAPIBaseURL
     ),
     getAutocompleteAdvancedFieldsURL: new URL(
-      `${datafariBaseURL.pathname}/GetAutocompleteAdvancedFields`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/fields/autocomplete`,
+      restAPIBaseURL
     ),
     getFixedValuesAdvancedFieldsURL: new URL(
-      `${datafariBaseURL.pathname}/GetFixedValuesAdvancedFields`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/fields/fixedvalues`,
+      restAPIBaseURL
     ),
     getLabeledAdvancedFieldsURL: new URL(
-      `${datafariBaseURL.pathname}/GetLabeledAdvancedFields`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/fields/label`,
+      restAPIBaseURL
     ),
     getFieldsInfoURL: new URL(
-      `${datafariBaseURL.pathname}/GetFieldsInfo`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/fields/info`,
+      restAPIBaseURL
     ),
     getExactFieldsURL: new URL(
-      `${datafariBaseURL.pathname}/GetExactFields`,
-      datafariBaseURL
+      `${restAPIBaseURL.pathname}/fields/exact`,
+      restAPIBaseURL
     ),
     favoritesStatusURL: new URL(
       `${restAPIBaseURL.pathname}/status/features/favorites`,
