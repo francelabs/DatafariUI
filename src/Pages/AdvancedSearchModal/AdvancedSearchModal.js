@@ -30,11 +30,17 @@ import AdvancedSearchTextField from './AdvancedSearchTextField';
 import AdvancedSearchDateField from './AdvancedSearchDateField';
 import AdvancedSearchNumField from './AdvancedSearchNumField';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import AdvancedSearchFixedValuesField from './AdvancedSearchFixedValuesField';
 
 const OPERATOR = 'OPERATOR';
 const FIELD = 'FIELD';
 const VALUES = 'VALUES';
 const REMOVE = 'REMOVE';
+
+const DATE_TYPE = 'date';
+const FIXED_VALUES_TYPE = 'fixedvalues';
+const NUMBER_TYPE = 'num';
+const TEXT_TYPE = 'text';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -380,27 +386,32 @@ const AdvancedSearchModal = (props) => {
 
   const determineFieldType = useCallback(
     (fieldName) => {
-      const field = availableFields.find((field) => field.name === fieldName);
-      let fieldType = field ? field.type : undefined;
-      if (fieldType === 'tdate' || fieldType === 'date') {
-        fieldType = 'date';
-      } else if (
-        fieldType === 'int' ||
-        fieldType === 'long' ||
-        fieldType === 'float' ||
-        fieldType === 'double' ||
-        fieldType === 'tint' ||
-        fieldType === 'tlong' ||
-        fieldType === 'tfloat' ||
-        fieldType === 'tdouble'
-      ) {
-        fieldType = 'num';
+      let fieldType = undefined;
+      if (fixedValuesFields[fieldName]) {
+        fieldType = FIXED_VALUES_TYPE;
       } else {
-        fieldType = 'text';
+        const field = availableFields.find((field) => field.name === fieldName);
+        fieldType = field ? field.type : undefined;
+        if (fieldType === 'tdate' || fieldType === 'date') {
+          fieldType = DATE_TYPE;
+        } else if (
+          fieldType === 'int' ||
+          fieldType === 'long' ||
+          fieldType === 'float' ||
+          fieldType === 'double' ||
+          fieldType === 'tint' ||
+          fieldType === 'tlong' ||
+          fieldType === 'tfloat' ||
+          fieldType === 'tdouble'
+        ) {
+          fieldType = NUMBER_TYPE;
+        } else {
+          fieldType = TEXT_TYPE;
+        }
       }
       return fieldType;
     },
-    [availableFields]
+    [availableFields, fixedValuesFields]
   );
 
   const buildStartingAdditionalFields = useCallback(() => {
@@ -566,7 +577,7 @@ const AdvancedSearchModal = (props) => {
 
           // Extract filters values
           let extractedValues = null;
-          if (fieldType === 'text') {
+          if (fieldType === TEXT_TYPE) {
             extractedValues = extractFilterFromText(
               fieldExpression,
               negativeExpression,
@@ -582,6 +593,8 @@ const AdvancedSearchModal = (props) => {
                 exactFilter
               ).trim();
             }
+          } else if (fieldType === FIXED_VALUES_TYPE) {
+            extractedValues = { value: fieldExpression };
           } else {
             // If the field type is not text but a number or a date then the
             // filter value can only have two shapes : a single value or a range
@@ -665,6 +678,13 @@ const AdvancedSearchModal = (props) => {
     query.elements,
     determineFieldType,
   ]);
+
+  const getFixedValueFilter = useCallback((field) => {
+    let filter = '';
+    const value = field.extractedValues.value;
+    filter = `${field.fieldname}:${value}`;
+    return filter;
+  }, []);
 
   const getNumberAndDateFilter = useCallback((field) => {
     const fromValue = field.extractedValues.fromValue;
@@ -879,7 +899,7 @@ const AdvancedSearchModal = (props) => {
     const field = {
       extractedValues: { ...baseSearch },
       fieldNameExactExpr: fieldNameExactExpr,
-      type: 'text',
+      type: TEXT_TYPE,
     };
     return getTextFieldFilter(field);
   }, [baseSearch, getTextFieldFilter]);
@@ -899,12 +919,15 @@ const AdvancedSearchModal = (props) => {
           let filter = undefined;
           if (currentField.type) {
             switch (currentField.type) {
-              case 'text':
+              case TEXT_TYPE:
                 filter = getTextFieldFilter(currentField);
                 break;
-              case 'num':
-              case 'date':
+              case NUMBER_TYPE:
+              case DATE_TYPE:
                 filter = getNumberAndDateFilter(currentField);
+                break;
+              case FIXED_VALUES_TYPE:
+                filter = getFixedValueFilter(currentField);
                 break;
               default:
                 break;
@@ -924,6 +947,7 @@ const AdvancedSearchModal = (props) => {
   }, [
     additionalFields,
     exactFieldsList,
+    getFixedValueFilter,
     getNumberAndDateFilter,
     getTextFieldFilter,
     prepareBaseQuery,
@@ -1196,6 +1220,7 @@ const AdvancedSearchModal = (props) => {
                 dispatch={dispatch}
                 determineFieldType={determineFieldType}
                 mappingFieldNameValues={mappingFieldNameValues}
+                fixedValuesFields={fixedValuesFields}
               />
             );
           })}
@@ -1259,25 +1284,34 @@ const AdvancedSearchField = (props) => {
 
   const buildField = () => {
     switch (props.field.type) {
-      case 'num':
+      case NUMBER_TYPE:
         return (
           <AdvancedSearchNumField
             values={props.field.extractedValues}
             onChange={handleFieldValuesChange}
           />
         );
-      case 'date':
+      case DATE_TYPE:
         return (
           <AdvancedSearchDateField
             values={props.field.extractedValues}
             onChange={handleFieldValuesChange}
           />
         );
-      case 'text':
+      case TEXT_TYPE:
         return (
           <AdvancedSearchTextField
             values={props.field.extractedValues}
             onChange={handleFieldValuesChange}
+          />
+        );
+      case FIXED_VALUES_TYPE:
+        return (
+          <AdvancedSearchFixedValuesField
+            values={props.field.extractedValues}
+            onChange={handleFieldValuesChange}
+            fixedValues={props.fixedValuesFields[props.field.fieldname]}
+            id={props.id}
           />
         );
       default:
