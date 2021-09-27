@@ -1221,6 +1221,7 @@ const AdvancedSearchModal = (props) => {
                 determineFieldType={determineFieldType}
                 mappingFieldNameValues={mappingFieldNameValues}
                 fixedValuesFields={fixedValuesFields}
+                autocompleteFields={autocompleteFields}
               />
             );
           })}
@@ -1303,6 +1304,11 @@ const AdvancedSearchField = (props) => {
           <AdvancedSearchTextField
             values={props.field.extractedValues}
             onChange={handleFieldValuesChange}
+            suggester={
+              props.autocompleteFields
+                ? props.autocompleteFields[props.field.fieldname]
+                : undefined
+            }
           />
         );
       case FIXED_VALUES_TYPE:

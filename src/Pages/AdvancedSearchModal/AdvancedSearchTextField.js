@@ -1,21 +1,44 @@
-import { TextField } from '@material-ui/core';
-import React from 'react';
+import { makeStyles, TextField } from '@material-ui/core';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import AutocompleteContainer from '../../Components/SearchBar/Autocompletes/AutocompleteContainer/AutocompleteContainer';
+import CustomSuggesterAutocomplete from '../../Components/SearchBar/Autocompletes/CustomSuggesterAutocomplete/CustomSuggesterAutocomplete';
+
+const useStyles = makeStyles((theme) => ({
+  textFiledDiv: {
+    position: 'relative',
+  },
+}));
 
 const AdvancedSearchTextField = (props) => {
+  const classes = useStyles();
   const { t } = useTranslation();
 
-  const handleChange = (fieldName) => {
-    return (event) => {
-      const values = { ...props.values };
-      values[fieldName] = event.target.value;
-      props.onChange(values);
-    };
-  };
+  const handleSuggestSelect = useCallback(
+    (fieldName) => {
+      return (suggestion) => {
+        const values = { ...props.values };
+        values[fieldName] = suggestion;
+        props.onChange(values);
+      };
+    },
+    [props]
+  );
+
+  const handleChange = useCallback(
+    (fieldName) => {
+      return (event) => {
+        const values = { ...props.values };
+        values[fieldName] = event.target.value;
+        props.onChange(values);
+      };
+    },
+    [props]
+  );
 
   return (
     <>
-      <div>
+      <div className={classes.textFiledDiv}>
         <TextField
           label={t('All words')}
           helperText={t('Will search for ALL the terms listed')}
@@ -26,8 +49,19 @@ const AdvancedSearchTextField = (props) => {
           onChange={handleChange('all_words_value')}
           color="secondary"
         />
+        {props.suggester && (
+          <AutocompleteContainer queryText={props.values.all_words_value}>
+            <CustomSuggesterAutocomplete
+              onSelect={handleSuggestSelect('all_words_value')}
+              queryText={props.values.all_words_value}
+              op="AND"
+              suggester={props.suggester}
+              maxSuggestion={5}
+            />
+          </AutocompleteContainer>
+        )}
       </div>
-      <div>
+      <div className={classes.textFiledDiv}>
         <TextField
           label={t('Exact expression')}
           helperText={t('Will search for EXACTLY the sentence you entered')}
@@ -40,8 +74,21 @@ const AdvancedSearchTextField = (props) => {
           onChange={handleChange('exact_expression_value')}
           color="secondary"
         />
+        {props.suggester && (
+          <AutocompleteContainer
+            queryText={props.values.exact_expression_value}
+          >
+            <CustomSuggesterAutocomplete
+              onSelect={handleSuggestSelect('exact_expression_value')}
+              queryText={props.values.exact_expression_value}
+              op="AND"
+              suggester={props.suggester}
+              maxSuggestion={5}
+            />
+          </AutocompleteContainer>
+        )}
       </div>
-      <div>
+      <div className={classes.textFiledDiv}>
         <TextField
           label={t('At least one word')}
           helperText={t(
@@ -56,8 +103,21 @@ const AdvancedSearchTextField = (props) => {
           onChange={handleChange('at_least_one_word_value')}
           color="secondary"
         />
+        {props.suggester && (
+          <AutocompleteContainer
+            queryText={props.values.at_least_one_word_value}
+          >
+            <CustomSuggesterAutocomplete
+              onSelect={handleSuggestSelect('at_least_one_word_value')}
+              queryText={props.values.at_least_one_word_value}
+              op="AND"
+              suggester={props.suggester}
+              maxSuggestion={5}
+            />
+          </AutocompleteContainer>
+        )}
       </div>
-      <div>
+      <div className={classes.textFiledDiv}>
         <TextField
           label={t('Not these words')}
           helperText={t(
@@ -72,6 +132,19 @@ const AdvancedSearchTextField = (props) => {
           onChange={handleChange('none_of_these_words_value')}
           color="secondary"
         />
+        {props.suggester && (
+          <AutocompleteContainer
+            queryText={props.values.none_of_these_words_value}
+          >
+            <CustomSuggesterAutocomplete
+              onSelect={handleSuggestSelect('none_of_these_words_value')}
+              queryText={props.values.none_of_these_words_value}
+              op="AND"
+              suggester={props.suggester}
+              maxSuggestion={5}
+            />
+          </AutocompleteContainer>
+        )}
       </div>
     </>
   );
