@@ -17,6 +17,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import { useHistory } from 'react-router';
 import qs from 'qs';
+import EntityAutocomplete from './Autocompletes/EntityAutocomplete/EntityAutocomplete';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -60,6 +62,7 @@ const SimpleSearchBar = (props) => {
   const classes = useStyles();
   const { query } = useContext(QueryContext);
   const history = useHistory();
+  const { t } = useTranslation();
 
   const [querySuggestion, setQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
@@ -185,6 +188,30 @@ const SimpleSearchBar = (props) => {
               onSelect={handleSuggestSelect}
               queryText={queryText}
               op={query.op}
+            />
+            <EntityAutocomplete
+              active={querySuggestion}
+              onSelect={handleSuggestSelect}
+              queryText={queryText}
+              op={query.op}
+              suggester="suggestAuthors"
+              entityType={t('Author')}
+              dictionary="suggesterEntityAuthors"
+              field="authorTokens"
+              maxSuggestion={3}
+              asFacet={true}
+            />
+            <EntityAutocomplete
+              active={querySuggestion}
+              onSelect={handleSuggestSelect}
+              queryText={queryText}
+              op={query.op}
+              suggester="suggestAuthors"
+              entityType={t('Author')}
+              dictionary="suggesterEntityAuthors"
+              field="authorTokens"
+              maxSuggestion={3}
+              asFacet={false}
             />
           </MenuList>
         </ClickAwayListener>
