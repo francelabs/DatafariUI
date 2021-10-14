@@ -1,4 +1,5 @@
 import { Checkbox, makeStyles, Typography } from '@material-ui/core';
+import { orange } from '@material-ui/core/colors';
 import React, { useCallback } from 'react';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { CHECKED_STATE, UNDETERMINATE_STATE } from './HierarchicalFacet';
@@ -11,6 +12,12 @@ const useStyles = makeStyles((theme) => ({
   },
   labelCheckbox: {
     marginRight: theme.spacing(1),
+  },
+  undeterminateCheckBox: {
+    color: orange[800],
+    '&.Mui-checked': {
+      color: orange[800],
+    },
   },
   labelText: {
     fontWeight: 'inherit',
@@ -51,12 +58,17 @@ const CustomTreeItem = (props) => {
       label={
         <div className={classes.labelRoot} onClick={labelClick}>
           <Checkbox
-            className={classes.labelCheckbox}
+            className={`${classes.labelCheckbox} ${
+              checked === UNDETERMINATE_STATE
+                ? classes.undeterminateCheckBox
+                : ''
+            }`}
             checked={
               checked === CHECKED_STATE || checked === UNDETERMINATE_STATE
             }
             indeterminate={checked === UNDETERMINATE_STATE}
             onClick={checkboxClick}
+            color={checked === UNDETERMINATE_STATE ? 'warning' : 'secondary'}
           />
           <Typography variant="body2" className={classes.labelText}>
             {label}
