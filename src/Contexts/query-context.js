@@ -264,7 +264,7 @@ const QueryContextProvider = (props) => {
         selectedFieldFacets.push(
           query.selectedFieldFacets[key].reduce(
             (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:${element}`;
+              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
               if (index < array.length - 1) {
                 next += ` ${query.fieldFacets[key].op} `;
               } else {
@@ -290,7 +290,7 @@ const QueryContextProvider = (props) => {
         selectedFieldFacets.push(
           query.selectedFieldFacets[key].reduce(
             (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:${element}`;
+              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
               if (index < array.length - 1) {
                 next += ` ${query.fieldFacets[key].op} `;
               } else {

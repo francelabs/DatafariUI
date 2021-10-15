@@ -355,6 +355,7 @@ const HierarchicalFacet = (props) => {
     queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
   }, [field, queryDispatch, title]);
 
+  // Build the hierarchy from the result context
   useEffect(() => {
     // Checks if an ancestor of a particular item is selected
     const ancestorInList = (item, list) => {

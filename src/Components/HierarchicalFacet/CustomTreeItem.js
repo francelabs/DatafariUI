@@ -68,7 +68,6 @@ const CustomTreeItem = (props) => {
             }
             indeterminate={checked === UNDETERMINATE_STATE}
             onClick={checkboxClick}
-            color={checked === UNDETERMINATE_STATE ? 'warning' : 'secondary'}
           />
           <Typography variant="body2" className={classes.labelText}>
             {label}
