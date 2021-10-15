@@ -182,38 +182,38 @@ const EntityAutocomplete = (props) => {
     (loading ? (
       <Spinner />
     ) : (
-      <>
-        <ListSubheader
-          className={classes.autocompleteTitleContainer}
-          disableSticky={true}
-        >
-          <Typography className={classes.autocompleteTitle}>
-            {t('Suggested {{entityType}}', {
-              entityType: entityType,
-            })}
-          </Typography>
-          <Typography>
-            {t('Proposed entity to add to your query', {
-              entityType: entityType,
-            })}
-          </Typography>
-        </ListSubheader>
-        <Divider />
-        {suggestions &&
-          suggestions.length > 0 &&
-          suggestions.map((element) => (
-            <MenuItem
-              onClick={
-                asFacet ? onClickForFacet(element) : onClickClassic(element)
-              }
-            >
-              {element}
-            </MenuItem>
-          ))}
-        {(!suggestions || suggestions.length === 0) && (
-          <MenuItem>{t('No suggestions')}</MenuItem>
-        )}
-      </>
+      suggestions &&
+      suggestions.length !== 0 && (
+        <>
+          <ListSubheader
+            className={classes.autocompleteTitleContainer}
+            disableSticky={true}
+          >
+            <Typography className={classes.autocompleteTitle}>
+              {t('Suggested {{entityType}}', {
+                entityType: entityType,
+              })}
+            </Typography>
+            <Typography>
+              {t('Proposed entity to add to your query', {
+                entityType: entityType,
+              })}
+            </Typography>
+          </ListSubheader>
+          <Divider />
+          {suggestions &&
+            suggestions.length > 0 &&
+            suggestions.map((element) => (
+              <MenuItem
+                onClick={
+                  asFacet ? onClickForFacet(element) : onClickClassic(element)
+                }
+              >
+                {element}
+              </MenuItem>
+            ))}
+        </>
+      )
     ))
   );
 };

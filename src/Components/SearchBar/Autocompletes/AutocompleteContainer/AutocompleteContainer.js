@@ -15,8 +15,14 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     width: '100%',
     zIndex: theme.zIndex.drawer,
+    borderRadius: '5px',
+  },
+  menulist: {
     border: 'solid 1px',
     borderRadius: '5px',
+    '&:empty': {
+      display: 'none',
+    },
   },
 }));
 
@@ -61,7 +67,7 @@ const AutocompleteContainer = ({ children, queryText, className }) => {
       }}
     >
       <ClickAwayListener onClickAway={() => setQuerySuggestion(false)}>
-        <MenuList>
+        <MenuList classes={{ root: classes.menulist }}>
           {Children.map(children, (child) => {
             if (isValidElement(child)) {
               return cloneElement(child, {

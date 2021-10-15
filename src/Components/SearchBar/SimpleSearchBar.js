@@ -7,8 +7,6 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import {
   FormControl,
   InputAdornment,
-  MenuList,
-  ClickAwayListener,
   InputBase,
   Button,
 } from '@material-ui/core';
@@ -19,16 +17,9 @@ import { useHistory } from 'react-router';
 import qs from 'qs';
 import EntityAutocomplete from './Autocompletes/EntityAutocomplete/EntityAutocomplete';
 import { useTranslation } from 'react-i18next';
+import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
 
 const useStyles = makeStyles((theme) => ({
-  autocomplete: {
-    backgroundColor: theme.palette.primary.main,
-    position: 'absolute',
-    width: '100%',
-    zIndex: theme.zIndex.drawer,
-    border: 'solid 1px',
-    borderRadius: '5px',
-  },
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -175,47 +166,38 @@ const SimpleSearchBar = (props) => {
           />
         </FormControl>
       </form>
-      <div
-        className={classes.autocomplete}
-        style={{
-          visibility: querySuggestion ? 'visible' : 'hidden',
-        }}
-      >
-        <ClickAwayListener onClickAway={() => setQuerySuggestion(false)}>
-          <MenuList>
-            <BasicAutocomplete
-              active={querySuggestion}
-              onSelect={handleSuggestSelect}
-              queryText={queryText}
-              op={query.op}
-            />
-            <EntityAutocomplete
-              active={querySuggestion}
-              onSelect={handleSuggestSelect}
-              queryText={queryText}
-              op={query.op}
-              suggester="suggestAuthors"
-              entityType={t('Author')}
-              dictionary="suggesterEntityAuthors"
-              field="authorTokens"
-              maxSuggestion={3}
-              asFacet={true}
-            />
-            <EntityAutocomplete
-              active={querySuggestion}
-              onSelect={handleSuggestSelect}
-              queryText={queryText}
-              op={query.op}
-              suggester="suggestAuthors"
-              entityType={t('Author')}
-              dictionary="suggesterEntityAuthors"
-              field="authorTokens"
-              maxSuggestion={3}
-              asFacet={false}
-            />
-          </MenuList>
-        </ClickAwayListener>
-      </div>
+      <AutocompleteContainer queryText={queryText}>
+        <BasicAutocomplete
+          active={querySuggestion}
+          onSelect={handleSuggestSelect}
+          queryText={queryText}
+          op={query.op}
+        />
+        <EntityAutocomplete
+          active={querySuggestion}
+          onSelect={handleSuggestSelect}
+          queryText={queryText}
+          op={query.op}
+          suggester="suggestAuthors"
+          entityType={t('Author')}
+          dictionary="suggesterEntityAuthors"
+          field="authorTokens"
+          maxSuggestion={3}
+          asFacet={true}
+        />
+        <EntityAutocomplete
+          active={querySuggestion}
+          onSelect={handleSuggestSelect}
+          queryText={queryText}
+          op={query.op}
+          suggester="suggestAuthors"
+          entityType={t('Author')}
+          dictionary="suggesterEntityAuthors"
+          field="authorTokens"
+          maxSuggestion={3}
+          asFacet={false}
+        />
+      </AutocompleteContainer>
     </div>
   );
 };

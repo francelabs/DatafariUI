@@ -75,36 +75,36 @@ const SimpleAutocomplete = (props) => {
     (loading ? (
       <Spinner />
     ) : (
-      <>
-        <ListSubheader
-          className={classes.autocompleteTitleContainer}
-          disableSticky={true}
-        >
-          <Typography className={classes.autocompleteTitle}>
-            {t('SUGGESTED QUERIES')}
-          </Typography>
-          <Typography>
-            {t('Queries extending your current query terms')}
-          </Typography>
-        </ListSubheader>
-        <Divider />
-        {suggestions &&
-          suggestions.length > 0 &&
-          suggestions.map((element) => (
-            <MenuItem
-              onClick={() => {
-                if (props.onSelect) {
-                  props.onSelect(element);
-                }
-              }}
-            >
-              {element}
-            </MenuItem>
-          ))}
-        {(!suggestions || suggestions.length === 0) && (
-          <MenuItem>{t('No suggestions')}</MenuItem>
-        )}
-      </>
+      suggestions &&
+      suggestions.length !== 0 && (
+        <>
+          <ListSubheader
+            className={classes.autocompleteTitleContainer}
+            disableSticky={true}
+          >
+            <Typography className={classes.autocompleteTitle}>
+              {t('SUGGESTED QUERIES')}
+            </Typography>
+            <Typography>
+              {t('Queries extending your current query terms')}
+            </Typography>
+          </ListSubheader>
+          <Divider />
+          {suggestions &&
+            suggestions.length > 0 &&
+            suggestions.map((element) => (
+              <MenuItem
+                onClick={() => {
+                  if (props.onSelect) {
+                    props.onSelect(element);
+                  }
+                }}
+              >
+                {element}
+              </MenuItem>
+            ))}
+        </>
+      )
     ))
   );
 };
