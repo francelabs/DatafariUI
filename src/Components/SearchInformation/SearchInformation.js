@@ -41,8 +41,9 @@ const SearchInformation = (props) => {
   const sortMenuAnchorRef = useRef(null);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const [filterFormat] = useFilterFormater();
+  const displayData = Array.isArray(props.data) ? props.data : [];
 
-  const handleOpenSortMenu = (event) => {
+  const handleOpenSortMenu = () => {
     setSortMenuOpen(true);
   };
 
@@ -124,62 +125,66 @@ const SearchInformation = (props) => {
   };
 
   const filters = [];
-  for (const key in query.fieldFacets) {
-    if (
-      query.selectedFieldFacets[key] &&
-      query.selectedFieldFacets[key].length > 0
-    ) {
+  if (displayData.includes('facets')) {
+    for (const key in query.fieldFacets) {
+      if (
+        query.selectedFieldFacets[key] &&
+        query.selectedFieldFacets[key].length > 0
+      ) {
+        filters.push(
+          <Typography component="span">
+            <Typography component="span" color="secondary">
+              {query.fieldFacets[key].title}:&nbsp;
+            </Typography>
+            {query.selectedFieldFacets[key].map((entry) => (
+              <FilterEntry
+                value={entry}
+                onClick={handleClearFieldFacet(key, entry)}
+              />
+            ))}
+          </Typography>
+        );
+      }
+    }
+
+    for (const key in query.queryFacets) {
+      if (
+        query.selectedQueryFacets[key] &&
+        query.selectedQueryFacets[key].length > 0
+      ) {
+        filters.push(
+          <Typography component="span">
+            <Typography component="span" color="secondary">
+              {query.queryFacets[key].title}:&nbsp;
+            </Typography>
+            {query.selectedQueryFacets[key].map((entry) => (
+              <FilterEntry
+                value={entry}
+                onClick={handleClearQueryFacet(key, entry)}
+              />
+            ))}
+          </Typography>
+        );
+      }
+    }
+  }
+
+  if (displayData.includes('filters')) {
+    if (Object.keys(query.filters).length > 0) {
       filters.push(
         <Typography component="span">
           <Typography component="span" color="secondary">
-            {query.fieldFacets[key].title}:&nbsp;
+            Other filters:&nbsp;
           </Typography>
-          {query.selectedFieldFacets[key].map((entry) => (
+          {Object.keys(query.filters).map((key) => (
             <FilterEntry
-              value={entry}
-              onClick={handleClearFieldFacet(key, entry)}
+              value={filterFormat(query.filters[key])}
+              onClick={handleClearFilter(key)}
             />
           ))}
         </Typography>
       );
     }
-  }
-
-  for (const key in query.queryFacets) {
-    if (
-      query.selectedQueryFacets[key] &&
-      query.selectedQueryFacets[key].length > 0
-    ) {
-      filters.push(
-        <Typography component="span">
-          <Typography component="span" color="secondary">
-            {query.queryFacets[key].title}:&nbsp;
-          </Typography>
-          {query.selectedQueryFacets[key].map((entry) => (
-            <FilterEntry
-              value={entry}
-              onClick={handleClearQueryFacet(key, entry)}
-            />
-          ))}
-        </Typography>
-      );
-    }
-  }
-
-  if (Object.keys(query.filters).length > 0) {
-    filters.push(
-      <Typography component="span">
-        <Typography component="span" color="secondary">
-          Other filters:&nbsp;
-        </Typography>
-        {Object.keys(query.filters).map((key) => (
-          <FilterEntry
-            value={filterFormat(query.filters[key])}
-            onClick={handleClearFilter(key)}
-          />
-        ))}
-      </Typography>
-    );
   }
 
   return (

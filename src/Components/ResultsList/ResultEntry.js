@@ -124,12 +124,21 @@ const extension_list = [
   'zip',
 ];
 
+const dataNames = {
+  title: 'title',
+  url: 'url',
+  logo: 'logo',
+  previewButton: 'previewButton',
+  snippet: 'extract',
+};
+
 const ResultEntry = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
   const { t } = useTranslation();
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
+  const data = Array.isArray(props.data) ? props.data : [];
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -300,37 +309,54 @@ const ResultEntry = (props) => {
       key={props.url}
       className={classes.resultContainer}
     >
-      <ListItemIcon>
-        <Avatar
-          className={classes.fileIcon}
-          variant="square"
-          src={fileIcon}
-          alt={`${props.extension} icon`}
-        />
-        <Link component={RouterLink} to={preparePreviewURL()} target="_blank">
-          <IconButton aria-label="preview" className={classes.previewIcon}>
-            <SvgIcon
-              className={classes.previewIconSvg}
-              component={PreviewIcon}
-              alt="preview icon"
+      {(data.includes(dataNames.logo) ||
+        data.includes(dataNames.previewButton)) && (
+        <ListItemIcon>
+          {data.includes(dataNames.logo) && (
+            <Avatar
+              className={classes.fileIcon}
+              variant="square"
+              src={fileIcon}
+              alt={`${props.extension} icon`}
             />
-          </IconButton>
-        </Link>
-      </ListItemIcon>
+          )}
+          {data.includes(dataNames.previewButton) && (
+            <Link
+              component={RouterLink}
+              to={preparePreviewURL()}
+              target="_blank"
+            >
+              <IconButton aria-label="preview" className={classes.previewIcon}>
+                <SvgIcon
+                  className={classes.previewIconSvg}
+                  component={PreviewIcon}
+                  alt="preview icon"
+                />
+              </IconButton>
+            </Link>
+          )}
+        </ListItemIcon>
+      )}
       <ListItemText
         primary={
-          <Link color="secondary" href={prepareDocURL()} target="_blank">
-            {prepareTitle()}
-          </Link>
+          data.includes(dataNames.title) ? (
+            <Link color="secondary" href={prepareDocURL()} target="_blank">
+              {prepareTitle()}
+            </Link>
+          ) : null
         }
         secondary={
           <>
-            <div>
-              <span>{prepareSnippet()}</span>
-            </div>
-            <div className={classes.urlContainer}>
-              <span className={classes.url}>{prepareUrl()}</span>
-            </div>
+            {data.includes(dataNames.snippet) && (
+              <div>
+                <span>{prepareSnippet()}</span>
+              </div>
+            )}
+            {data.includes(dataNames.url) && (
+              <div className={classes.urlContainer}>
+                <span className={classes.url}>{prepareUrl()}</span>
+              </div>
+            )}
             {props['folderLinkSources'] &&
               props['folderLinkSources'].indexOf(props['repo_source']) !==
                 -1 && (

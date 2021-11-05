@@ -21,7 +21,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ResultsList = (porps) => {
+const ResultsList = (props) => {
+  const defaultData = ['filters', 'facets', 'search', 'spellcheck'];
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
   const {
@@ -39,6 +40,8 @@ const ResultsList = (porps) => {
   const [favorites, setFavorites] = useState([]);
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
   const [folderLinkSources] = useFolderLinkSources();
+  const displayData =
+    props.data && Array.isArray(props.data) ? props.data : defaultData;
 
   // Retrieve favorite status on mount (getFavortiesStatus should be constant)
   useEffect(() => {
@@ -189,6 +192,7 @@ const ResultsList = (porps) => {
                       )
                 }
                 folderLinkSources={folderLinkSources}
+                data={displayData}
               />
               <Divider variant="inset" component="li" />
             </React.Fragment>
