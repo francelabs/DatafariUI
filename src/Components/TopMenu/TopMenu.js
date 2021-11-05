@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import SimpleSearchBar from '../SearchBar/SimpleSearchBar';
 import Avatar from '@material-ui/core/Avatar';
 
-import topLeftLogo from '../../Icons/top_left_logo.svg';
 import LanguageIcon from '@material-ui/icons/Language';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
@@ -220,8 +219,8 @@ const TopMenu = () => {
         <Toolbar>
           <NavLink to="/search" className={classes.logo}>
             <img
-              src={topLeftLogo}
-              alt="datafari logo"
+              src={`${process.env.PUBLIC_URL}/images/logo.png`}
+              alt="logo"
               style={{ height: '50px' }}
             />
           </NavLink>
