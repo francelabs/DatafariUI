@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import {
@@ -7,24 +7,10 @@ import {
   DialogContent,
   Button,
   Divider,
-  makeStyles,
 } from '@material-ui/core';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
-import Spinner from '../../Components/Spinner/Spinner';
-import useHelp from '../../Hooks/useHelp';
-
-const fetchQueryID = 'FETCH_HELP';
-
-const useStyles = makeStyles((theme) => ({
-  spinnerContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-  },
-}));
 
 const AboutModal = (props) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const handleClose = () => {
