@@ -996,7 +996,7 @@ const AdvancedSearchModal = (props) => {
 
   useEffect(() => {
     if (reqIdentifier === 'GetFieldsInfo') {
-      if (!isLoading && data && !error) {
+      if (!isLoading && data && !error && data.content) {
         setAvailableFields(data.content.fields);
       }
     }

@@ -112,7 +112,7 @@ const useDatafari = () => {
     let newResults = {};
     newResults.isLoading = isLoading;
     newResults.error = error;
-    if (!isLoading && !error && data) {
+    if (!isLoading && !error && data && data.response) {
       newResults = { ...newResults, ...DEFAULT_RESULT };
       if (data.response.docs && data.response.docs.length > 0) {
         if (data.response.docs && data.response.docs.map) {

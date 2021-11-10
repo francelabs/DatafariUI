@@ -3,6 +3,7 @@ import { Menu, MenuItem } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import PrivacyPolicyModal from '../../Pages/PrivacyPolicyModal/PrivacyPolicyModal';
 import HelpModal from '../../Pages/HelpModal/HelpModal';
+import AboutModal from '../../Pages/AboutModal/AboutModal';
 
 const HelpMenu = (props) => {
   const { t } = useTranslation();
@@ -15,6 +16,11 @@ const HelpMenu = (props) => {
 
   const privacyClick = () => {
     setOpen('privacy');
+    props.onClose();
+  };
+
+  const aboutClick = () => {
+    setOpen('about');
     props.onClose();
   };
 
@@ -37,17 +43,24 @@ const HelpMenu = (props) => {
     >
       <MenuItem onClick={howToSearchClick}>{t('How to search')}</MenuItem>
       <MenuItem onClick={privacyClick}>{t('Privacy Policy')}</MenuItem>
+      {/* 
+      <MenuItem onClick={() => props.onClose()}>{t('Contact us')}</MenuItem>
+      */}
+      <MenuItem onClick={aboutClick}>{t('About DatafariUI')}</MenuItem>
       <PrivacyPolicyModal
         open={open === 'privacy'}
         onClose={() => {
           setOpen(undefined);
         }}
       />
-      {/* 
-      <MenuItem onClick={() => props.onClose()}>{t('Contact us')}</MenuItem>
-      <MenuItem onClick={() => props.onClose()}>{t('About Datafari')}</MenuItem> */}
       <HelpModal
         open={open === 'helpModal'}
+        onClose={() => {
+          setOpen(undefined);
+        }}
+      />
+      <AboutModal
+        open={open === 'about'}
         onClose={() => {
           setOpen(undefined);
         }}
