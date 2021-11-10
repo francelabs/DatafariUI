@@ -36,9 +36,7 @@ const AboutModal = (props) => {
       <DialogTitle onClose={handleClose}>{t('About DatafariUI')}</DialogTitle>
       <Divider />
       <DialogContent>
-        Version {process.env.REACT_APP_DATAFARIUI_VERSION}{' '}
-        {process.env.REACT_APP_FOO} - commit
-        {process.env.REACT_APP_DATAFARIUI_VERSION}
+        Version {process.env.REACT_APP_DATAFARIUI_VERSION} - commit
         {process.env.REACT_APP_DATAFARIUI_COMMIT}
       </DialogContent>
       <DialogActions>
