@@ -13,13 +13,7 @@ import { create } from 'jss';
 import rtl from 'jss-rtl';
 
 import SearchPage from './Pages/Search/Search';
-import {
-  StylesProvider,
-  createMuiTheme,
-  ThemeProvider,
-  CssBaseline,
-  jssPreset,
-} from '@material-ui/core';
+import { StylesProvider, CssBaseline, jssPreset } from '@material-ui/core';
 
 import 'fontsource-montserrat/300.css';
 import 'fontsource-montserrat';
@@ -30,32 +24,9 @@ import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
 import LicenceContextProvider from './Contexts/licence-context';
 import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
 import { useTranslation } from 'react-i18next';
+import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
-const defaultTheme = createMuiTheme({
-  overrides: {
-    MuiFilledInput: {
-      root: {
-        backgroundColor: '#fafafa',
-      },
-    },
-  },
-  typography: {
-    fontFamily: 'montserrat, Helvetica, Arial, sans-serif',
-  },
-  palette: {
-    primary: {
-      light: '#ffffff',
-      main: '#ffffff',
-      dark: '#fafafa',
-    },
-    secondary: {
-      light: '#99cc33',
-      main: '#679439',
-      dark: '#648542',
-    },
-  },
-});
 
 function Main() {
   const { actions: userActions } = useContext(UserContext);
@@ -98,7 +69,7 @@ function App() {
       <APIEndpointsContextProvider>
         <UserContextProvider>
           <StylesProvider jss={jss}>
-            <ThemeProvider theme={defaultTheme}>
+            <CustomThemeProvider>
               <CssBaseline />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <LicenceContextProvider>
@@ -109,7 +80,7 @@ function App() {
                   </QueryContextProvider>
                 </LicenceContextProvider>
               </MuiPickersUtilsProvider>
-            </ThemeProvider>
+            </CustomThemeProvider>
           </StylesProvider>
         </UserContextProvider>
       </APIEndpointsContextProvider>

@@ -107,11 +107,11 @@ const DEFAULT_UI = {
 
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.background.default,
   },
 
   facetsSection: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.paper,
     borderRadius: '5px',
     margin: theme.spacing(2),
     padding: theme.spacing(2),

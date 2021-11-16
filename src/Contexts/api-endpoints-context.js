@@ -25,6 +25,7 @@ const DEFAULT_ENDPOINTS = {
   licenceURL: '',
   logoutURL: '',
   getUIDefinitionURL: '',
+  getThemeURL: '',
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
@@ -112,6 +113,10 @@ const APIEndpointsContextProvider = (props) => {
     logoutURL: new URL(`${datafariBaseURL.pathname}/logout`, datafariBaseURL),
     getUIDefinitionURL: new URL(
       `${process.env.PUBLIC_URL}/ui-config.json`,
+      window.location.href
+    ),
+    getThemeURL: new URL(
+      `${process.env.PUBLIC_URL}/theme.json`,
       window.location.href
     ),
   });

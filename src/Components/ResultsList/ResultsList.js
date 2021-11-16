@@ -9,7 +9,7 @@ import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.paper,
     margin: theme.spacing(2),
     padding: theme.spacing(2),
     borderRadius: '5px',

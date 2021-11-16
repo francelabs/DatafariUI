@@ -1,0 +1,22 @@
+{
+  "palette": {
+    "type": "light",
+    "primary": {
+      "main": "#ffffff",
+      "dark": "#fafafa",
+      "contrastText": "#000000"
+    },
+    "secondary": {
+      "light": "#99cc33",
+      "main": "#679439",
+      "dark": "#648542"
+    },
+    "background": {
+      "default": "#ffffff",
+      "paper": "#fafafa"
+    }
+  },
+  "typography": {
+    "fontFamily": "Montserrat, Helvetica, Arial, sans-serif"
+  }
+}
