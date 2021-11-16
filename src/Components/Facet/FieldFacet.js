@@ -206,7 +206,9 @@ const FieldFacet = (props) => {
               align="right"
               className={classes.showMore}
             >
-              {t('Show More')} &gt;&gt;
+              <Typography variant="caption">
+                {t('Show More')} &gt;&gt;
+              </Typography>
             </Link>
           )}
           {showMore && (
@@ -217,7 +219,9 @@ const FieldFacet = (props) => {
               align="right"
               className={classes.showMore}
             >
-              {t('Show Less')} &lt;&lt;
+              <Typography variant="caption">
+                {t('Show Less')} &lt;&lt;
+              </Typography>
             </Link>
           )}
         </>
