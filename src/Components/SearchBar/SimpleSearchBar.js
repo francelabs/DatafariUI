@@ -3,12 +3,13 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { QueryContext } from '../../Contexts/query-context';
 
 import './SimpleSearchBar.css';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   FormControl,
   InputAdornment,
   InputBase,
   Button,
+  alpha,
 } from '@material-ui/core';
 import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
 import SearchIcon from '@material-ui/icons/Search';
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.primary.dark,
     '&:hover': {
-      backgroundColor: fade(theme.palette.common.black, 0.05),
+      backgroundColor: alpha(theme.palette.common.black, 0.05),
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   inputFocused: {
-    backgroundColor: fade(theme.palette.common.black, 0.05),
+    backgroundColor: alpha(theme.palette.common.black, 0.05),
   },
 }));
 
