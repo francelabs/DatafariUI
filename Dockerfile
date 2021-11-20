@@ -17,5 +17,6 @@ RUN sudo apt-get install -y nodejs
 
 WORKDIR ./DatafariUI
 COPY . .
+RUN COMMIT_NUMBER=$(git rev-parse --short HEAD) && echo $COMMIT_NUMBER && echo COMMIT_NUMBER=$COMMIT_NUMBER > .env.production
 RUN npm install
 RUN npm run build
