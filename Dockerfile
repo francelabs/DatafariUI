@@ -20,3 +20,4 @@ COPY . .
 RUN COMMIT_NUMBER=$(git rev-parse --short HEAD) && echo $COMMIT_NUMBER && echo COMMIT_NUMBER=$COMMIT_NUMBER > .env.production
 RUN npm install
 RUN npm run build
+RUN tar cfvz datafariui.tar.gz build && mkdir -p /var/binaries/ && mv datafariui.tar.gz /var/binaries/
