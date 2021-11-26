@@ -11,6 +11,7 @@ import {
   Divider,
   Grid,
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   pagerContainer: {
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Pager = (props) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
@@ -43,8 +45,11 @@ const Pager = (props) => {
 
   if (query.page > 1) {
     pages.push(
-      <IconButton onClick={onClickHandler(query.page - 1)}>
-        <ChevronLeftIcon alt="previous page" />
+      <IconButton
+        onClick={onClickHandler(query.page - 1)}
+        aria-label={t('Previous page')}
+      >
+        <ChevronLeftIcon />
       </IconButton>
     );
   }
@@ -111,8 +116,11 @@ const Pager = (props) => {
   }
   if (query.page < maxPage) {
     pages.push(
-      <IconButton onClick={onClickHandler(query.page + 1)}>
-        <ChevronRightIcon alt="Next page" />
+      <IconButton
+        onClick={onClickHandler(query.page + 1)}
+        aria-label={t('Next page')}
+      >
+        <ChevronRightIcon />
       </IconButton>
     );
   }

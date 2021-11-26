@@ -3,17 +3,14 @@
     "type": "light",
     "primary": {
       "main": "#ffffff",
-      "dark": "#fafafa",
       "contrastText": "#000000"
     },
     "secondary": {
-      "light": "#99cc33",
-      "main": "#679439",
-      "dark": "#648542"
+      "main": "#679439"
     },
     "background": {
-      "default": "#ffffff",
-      "paper": "#fafafa"
+      "default": "#fafafa",
+      "paper": "#ffffff"
     }
   },
   "typography": {

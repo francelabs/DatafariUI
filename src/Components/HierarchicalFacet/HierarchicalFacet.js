@@ -513,12 +513,15 @@ const HierarchicalFacet = (props) => {
   return Object.getOwnPropertyNames(hierarchyState).length > 0 ? (
     <>
       <div className={classes.facetHeader}>
-        <IconButton onClick={handleOpenMenu}>
-          <MoreVertIcon
-            aria-controls={`${field}-facet-menu`}
-            aria-haspopup="true"
-            ref={menuAnchorRef}
-          />
+        <IconButton
+          onClick={handleOpenMenu}
+          aria-controls={`${field}-facet-menu`}
+          aria-haspopup="true"
+          aria-label={t(`Open {{ facetTitle }} facet menu`, {
+            facetTitle: t(props.title),
+          })}
+        >
+          <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
         <Menu
           id={`${field}-facet-menu`}
@@ -532,9 +535,17 @@ const HierarchicalFacet = (props) => {
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
-          {props.title}
+          {t(props.title)}
         </Typography>
-        <IconButton onClick={handleExpandClick}>
+        <IconButton
+          onClick={handleExpandClick}
+          aria-label={t(
+            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
+            {
+              facetTitle: t(props.title),
+            }
+          )}
+        >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>

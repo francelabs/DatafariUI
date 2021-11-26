@@ -172,6 +172,9 @@ const QueryFacet = (props) => {
           aria-controls={`${id}-facet-menu`}
           aria-haspopup="true"
           ref={menuAnchorRef}
+          aria-label={t(`Open {{ facetTitle }} facet menu`, {
+            facetTitle: t(props.title),
+          })}
         >
           <MoreVertIcon />
         </IconButton>
@@ -191,9 +194,17 @@ const QueryFacet = (props) => {
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
-          {props.title}
+          {t(props.title)}
         </Typography>
-        <IconButton onClick={handleExpandClick}>
+        <IconButton
+          onClick={handleExpandClick}
+          aria-label={t(
+            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
+            {
+              facetTitle: t(props.title),
+            }
+          )}
+        >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
