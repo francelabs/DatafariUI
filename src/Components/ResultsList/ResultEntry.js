@@ -164,13 +164,19 @@ const ResultEntry = (props) => {
         return (
           accumulator +
           props.highlighting[hlKey].reduce((innerAccu, value) => {
-            return innerAccu + value;
+            let formattedValue = value
+              .replace(/\uFFFD/g, ' ')
+              .replace(/(\s*\n){2,}/gm, '\n\n');
+            return innerAccu + formattedValue;
           }, '')
         );
       }, '');
 
       if (snippet === '') {
-        snippet = props.preview_content[0].substring(0, 200);
+        snippet = props.preview_content[0]
+          .substring(0, 200)
+          .replace(/\uFFFD/g, ' ')
+          .replace(/(\s*\n){2,}/gm, '\n\n');
       } else {
         const highlightExtract = /<span class="em">(.*?)<\/span>/gm;
         let match;
