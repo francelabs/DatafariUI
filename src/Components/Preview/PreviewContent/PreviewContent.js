@@ -35,28 +35,33 @@ const PreviewContent = (props) => {
           }
         }
         let display = props.textSplit.map((textPart) => {
-          let result = textPart
-            .replace(/\uFFFD/g, ' ')
-            .replace(/(\s*\n){2,}/gm, '\n\n');
-          highlighting.forEach((highlightTerm) => {
-            if (textPart.match(highlightTerm.regex)) {
-              if (highlightTerm.index === highlightTerm.highlightedIndex) {
-                result = (
-                  <span
-                    className={[classes.highlighted, classes.current].join(' ')}
-                  >
-                    {textPart}
-                  </span>
-                );
-              } else {
-                result = (
-                  <span className={classes.highlighted}>{textPart}</span>
-                );
+          if (textPart) {
+            let result = textPart
+              .replace(/\uFFFD/g, ' ')
+              .replace(/(\s*\n){2,}/gm, '\n\n');
+            highlighting.forEach((highlightTerm) => {
+              if (textPart.match(highlightTerm.regex)) {
+                if (highlightTerm.index === highlightTerm.highlightedIndex) {
+                  result = (
+                    <span
+                      className={[classes.highlighted, classes.current].join(
+                        ' '
+                      )}
+                    >
+                      {textPart}
+                    </span>
+                  );
+                } else {
+                  result = (
+                    <span className={classes.highlighted}>{textPart}</span>
+                  );
+                }
+                highlightTerm.index = highlightTerm.index + 1;
               }
-              highlightTerm.index = highlightTerm.index + 1;
-            }
-          });
-          return result;
+            });
+            return result;
+          }
+          return null;
         });
         return display;
       }
