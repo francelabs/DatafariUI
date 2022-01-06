@@ -139,6 +139,7 @@ const ResultEntry = (props) => {
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
   const data = Array.isArray(props.data) ? props.data : [];
+  const docLinkTarget = props.openDocInNewTab ? '_blank' : undefined;
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -346,7 +347,11 @@ const ResultEntry = (props) => {
       <ListItemText
         primary={
           data.includes(dataNames.title) ? (
-            <Link color="secondary" href={prepareDocURL()} target="_blank">
+            <Link
+              color="secondary"
+              href={prepareDocURL()}
+              target={docLinkTarget}
+            >
               {prepareTitle()}
             </Link>
           ) : null
