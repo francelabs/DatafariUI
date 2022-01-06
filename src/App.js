@@ -25,12 +25,14 @@ import LicenceContextProvider from './Contexts/licence-context';
 import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
 import { useTranslation } from 'react-i18next';
 import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
+import useTitleUpdater from './Hooks/useTitleUpdater';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
 function Main() {
   const { actions: userActions } = useContext(UserContext);
   const { t } = useTranslation();
+  useTitleUpdater();
 
   useEffect(() => {
     userActions.autoConnect();
