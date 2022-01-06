@@ -17,6 +17,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { useHistory } from 'react-router';
 import qs from 'qs';
 import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
+import useBasicAutocomplete from './Autocompletes/BasicAutoComplete/useBasicAutocomplete';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -52,13 +54,26 @@ const SimpleSearchBar = (props) => {
   const classes = useStyles();
   const { query } = useContext(QueryContext);
   const history = useHistory();
-
+  const { t } = useTranslation();
+  const basicAutocomplete = useBasicAutocomplete(
+    query.op,
+    5,
+    t('SUGGESTED QUERIES'),
+    t('Queries extending your current query terms')
+  );
+  const [suggesters, setSuggesters] = useState(null);
   const [querySuggestion, setQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
     queryText: '',
     triggerSuggestion: false,
   });
   const { queryText, triggerSuggestion } = textState;
+
+  useEffect(() => {
+    if (suggesters === null) {
+      setSuggesters([basicAutocomplete]);
+    }
+  }, [basicAutocomplete, suggesters]);
 
   useEffect(() => {
     setQuerySuggestion(false);
@@ -164,7 +179,11 @@ const SimpleSearchBar = (props) => {
           />
         </FormControl>
       </form>
-      <AutocompleteContainer queryText={queryText}>
+      <AutocompleteContainer
+        queryText={queryText}
+        onSelect={handleSuggestSelect}
+        suggesters={suggesters}
+      >
         <BasicAutocomplete
           active={querySuggestion}
           onSelect={handleSuggestSelect}
