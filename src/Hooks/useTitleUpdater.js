@@ -10,7 +10,10 @@ const useTitleUpdater = () => {
   useEffect(() => {
     const newTitle =
       query.elements && query.elements.length > 0
-        ? `${query.elements} - ${t('Datafari Enterprise Search')}`
+        ? `${query.elements.substring(
+            0,
+            query.elements.length > 2048 ? 2048 : query.elements.length
+          )} - ${t('Datafari Enterprise Search')}`
         : `${t('Datafari Enterprise Search')}`;
     document.title = newTitle;
   }, [query, t]);
