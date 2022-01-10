@@ -82,12 +82,14 @@ const SimpleSearchBar = (props) => {
 
   const handleChange = useCallback(
     (event) => {
+      console.log(event);
       setTextState({ queryText: event.target.value, triggerSuggestion: true });
     },
     [setTextState]
   );
 
   const handleSubmit = (e) => {
+    setTextState({ queryText: textState.queryText, triggerSuggestion: false });
     setQuerySuggestion(false);
     e.preventDefault();
     search(e);
@@ -128,6 +130,10 @@ const SimpleSearchBar = (props) => {
     setTextState({ queryText: '', triggerSuggestion: false });
   };
 
+  const handleAutocompleteClickAway = () => {
+    setQuerySuggestion(false);
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -164,7 +170,10 @@ const SimpleSearchBar = (props) => {
           />
         </FormControl>
       </form>
-      <AutocompleteContainer queryText={queryText}>
+      <AutocompleteContainer
+        handleClickAway={handleAutocompleteClickAway}
+        querySuggestion={querySuggestion}
+      >
         <BasicAutocomplete
           active={querySuggestion}
           onSelect={handleSuggestSelect}

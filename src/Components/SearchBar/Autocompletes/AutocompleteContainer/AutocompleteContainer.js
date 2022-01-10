@@ -26,35 +26,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AutocompleteContainer = ({ children, queryText, className }) => {
+const AutocompleteContainer = ({
+  children,
+  className,
+  querySuggestion,
+  handleClickAway,
+}) => {
   const classes = useStyles();
-  const [querySuggestion, setQuerySuggestion] = useState(false);
-  const firstUpdate = useRef(true);
-
-  useEffect(() => {
-    let timer = undefined;
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-    } else {
-      setQuerySuggestion(false);
-      if (queryText) {
-        timer = setTimeout(() => {
-          setQuerySuggestion(true);
-        }, 500);
-      }
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [setQuerySuggestion, queryText]);
 
   const buildOnSelect = useCallback((onSelectFn) => {
     return (suggestion) => {
-      setQuerySuggestion(false);
-      firstUpdate.current = true;
       onSelectFn(suggestion);
     };
   }, []);
@@ -66,19 +47,8 @@ const AutocompleteContainer = ({ children, queryText, className }) => {
         visibility: querySuggestion ? 'visible' : 'hidden',
       }}
     >
-      <ClickAwayListener onClickAway={() => setQuerySuggestion(false)}>
-        <MenuList classes={{ root: classes.menulist }}>
-          {Children.map(children, (child) => {
-            if (isValidElement(child)) {
-              return cloneElement(child, {
-                active: querySuggestion,
-                onSelect: buildOnSelect(child.props.onSelect),
-              });
-            }
-
-            return child;
-          })}
-        </MenuList>
+      <ClickAwayListener onClickAway={() => handleClickAway()}>
+        <MenuList classes={{ root: classes.menulist }}>{children}</MenuList>
       </ClickAwayListener>
     </div>
   );
