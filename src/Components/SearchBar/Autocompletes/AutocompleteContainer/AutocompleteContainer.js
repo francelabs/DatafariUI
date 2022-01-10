@@ -1,13 +1,5 @@
 import { ClickAwayListener, makeStyles, MenuList } from '@material-ui/core';
-import React, {
-  Children,
-  cloneElement,
-  isValidElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -33,13 +25,6 @@ const AutocompleteContainer = ({
   handleClickAway,
 }) => {
   const classes = useStyles();
-
-  const buildOnSelect = useCallback((onSelectFn) => {
-    return (suggestion) => {
-      onSelectFn(suggestion);
-    };
-  }, []);
-
   return (
     <div
       className={className ? className : classes.autocomplete}
