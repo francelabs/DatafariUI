@@ -26,6 +26,7 @@ import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
 import { useTranslation } from 'react-i18next';
 import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
 import useTitleUpdater from './Hooks/useTitleUpdater';
+import HomePage from './Pages/HomePage/HomePage';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
@@ -42,15 +43,20 @@ function Main() {
 
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <LicenceChecker />
-      <TopMenu />
       <div>
         <Switch>
           <Route path="/" exact>
-            <Redirect to="/search" />
+            <Redirect to="/home" />
           </Route>
-          <Route path="/search" component={SearchPage} />
-          <Route path="/preview" component={Preview} />
+          <Route path="/home" component={HomePage} />
+          <Route path={['/search', '/preview']}>
+            <LicenceChecker />
+            <TopMenu />
+            <Switch>
+              <Route path="/search" component={SearchPage} />
+              <Route path="/preview" component={Preview} />
+            </Switch>
+          </Route>
         </Switch>
       </div>
     </BrowserRouter>
