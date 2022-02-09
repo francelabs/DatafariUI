@@ -1,9 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouteMatch } from 'react-router-dom';
 
 import { Grid, makeStyles, Paper } from '@material-ui/core';
-import useHttp from '../../Hooks/useHttp';
 import SimpleSearchBar from '../../Components/SearchBar/SimpleSearchBar';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +44,7 @@ const HomePage = (props) => {
         <SimpleSearchBar></SimpleSearchBar>
       </Grid>
       {[1, 2, 3].map((value) => (
-        <Grid key={value} item xs={10} md={3}>
+        <Grid key={value} item xs={10} lg={3}>
           <Paper
             className={classes.card}
             dangerouslySetInnerHTML={{ __html: t(`homepage column ${value}`) }}
