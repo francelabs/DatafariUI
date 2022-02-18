@@ -1,23 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react';
-import {
-  MenuItem,
-  ListSubheader,
-  Typography,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
-import useHttp from '../../../../Hooks/useHttp';
-import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
-import { useTranslation } from 'react-i18next';
+import React, { useContext, useEffect, useState } from "react";
+import { MenuItem, ListSubheader, Typography, Divider, makeStyles } from "@material-ui/core";
+import useHttp from "../../../../Hooks/useHttp";
+import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme) => ({
   autocompleteTitleContainer: {
-    display: 'flex',
+    display: "flex"
   },
 
   autocompleteTitle: {
-    flexGrow: 1,
-  },
+    flexGrow: 1
+  }
 }));
 
 const SimpleAutocomplete = (props) => {
@@ -37,7 +31,7 @@ const SimpleAutocomplete = (props) => {
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.searchURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
-        'GET',
+        "GET",
         null,
         newQueryID
       );
@@ -49,7 +43,7 @@ const SimpleAutocomplete = (props) => {
       if (!data.error && data.spellcheck && data.spellcheck.collations) {
         const newSuggestions = data.spellcheck.collations
           .filter((element) => {
-            return element && element !== 'collation' && element.collationQuery;
+            return element && element !== "collation" && element.collationQuery;
           })
           .map((element) => {
             return element.collationQuery;
@@ -59,15 +53,7 @@ const SimpleAutocomplete = (props) => {
       }
       setLoading(false);
     }
-  }, [
-    data,
-    error,
-    isLoading,
-    setSuggestions,
-    reqIdentifier,
-    queryID,
-    props.maxSuggestion,
-  ]);
+  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID, props.maxSuggestion]);
 
   return (
     props.active &&
@@ -75,28 +61,21 @@ const SimpleAutocomplete = (props) => {
     suggestions &&
     suggestions.length !== 0 && (
       <>
-        <ListSubheader
-          className={classes.autocompleteTitleContainer}
-          disableSticky={true}
-        >
-          <Typography className={classes.autocompleteTitle}>
-            {t('SUGGESTED QUERIES')}
-          </Typography>
-          <Typography>
-            {t('Queries extending your current query terms')}
-          </Typography>
+        <ListSubheader className={classes.autocompleteTitleContainer} disableSticky={true}>
+          <Typography className={classes.autocompleteTitle}>{t("SUGGESTED QUERIES")}</Typography>
+          <Typography>{t("Queries extending your current query terms")}</Typography>
         </ListSubheader>
         <Divider />
         {suggestions &&
           suggestions.length > 0 &&
-          suggestions.map((element) => (
+          suggestions.map((element, index) => (
             <MenuItem
+              key={"SimpleAutocomplete_element_" + index}
               onClick={() => {
                 if (props.onSelect) {
                   props.onSelect(element);
                 }
-              }}
-            >
+              }}>
               {element}
             </MenuItem>
           ))}

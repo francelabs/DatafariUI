@@ -1,187 +1,175 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-
-import { QueryContext } from '../../Contexts/query-context';
-
-import './SimpleSearchBar.css';
-import { makeStyles } from '@material-ui/core/styles';
 import {
+  Button,
+  ClickAwayListener,
   FormControl,
   InputAdornment,
-  InputBase,
-  Button,
-  alpha,
-} from '@material-ui/core';
-import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
-import SearchIcon from '@material-ui/icons/Search';
-import ClearIcon from '@material-ui/icons/Clear';
-import { useHistory } from 'react-router';
-import qs from 'qs';
-import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
+  InputBase
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import ClearIcon from "@material-ui/icons/Clear";
+import SearchIcon from "@material-ui/icons/Search";
+import qs from "qs";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router";
+import { QueryContext } from "../../Contexts/query-context";
+import AutocompleteContainer from "./Autocompletes/AutocompleteContainer/AutocompleteContainer";
+import { BASIC_ID, CUSTOM_ID, ENTITY_ID } from "./Autocompletes/Suggester/useSuggesters";
+import "./SimpleSearchBar.css";
 
-const useStyles = makeStyles((theme) => ({
-  search: {
-    position: 'relative',
+const useStyles = makeStyles((theme) => {
+  const search = {
+    position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.black, 0.05),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.black, 0.1),
-    },
+    backgroundColor: theme.palette.grey[200],
     marginRight: theme.spacing(2),
     marginLeft: 0,
-  },
-  clearButton: {
-    borderRight: 'solid 1px rgba(0,0,0,0.12)',
-    borderRadius: '0',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-  },
-  inputFocused: {
-    backgroundColor: alpha(theme.palette.common.black, 0.05),
-  },
-}));
 
-const SimpleSearchBar = (props) => {
+    "&:hover": {
+      backgroundColor: theme.palette.grey[300]
+    }
+  };
+
+  return {
+    search,
+
+    searchWithSuggestion: {
+      ...search,
+      borderRadius: "none",
+      borderTopLeftRadius: theme.shape.borderRadius,
+      borderTopRightRadius: theme.shape.borderRadius
+    },
+
+    clearButton: {
+      borderRight: "solid 1px rgba(0,0,0,0.12)",
+      borderRadius: "0"
+    },
+
+    inputRoot: {
+      color: "inherit"
+    },
+
+    inputInput: {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      transition: theme.transitions.create("width"),
+      width: "100%"
+    }
+  };
+});
+
+const SimpleSearchBar = () => {
+  const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
+  const [textState, setTextState] = useState({
+    queryText: "",
+    triggerSuggestion: false
+  });
+
+  const { queryText, triggerSuggestion } = textState;
+
+  const { t } = useTranslation();
   const classes = useStyles();
   const { query } = useContext(QueryContext);
   const history = useHistory();
-
-  const [querySuggestion, setQuerySuggestion] = useState(false);
-  const [textState, setTextState] = useState({
-    queryText: '',
-    triggerSuggestion: false,
-  });
-  const { queryText, triggerSuggestion } = textState;
-
-  useEffect(() => {
-    setQuerySuggestion(false);
-    let timer = undefined;
-    if (queryText && triggerSuggestion) {
-      timer = setTimeout(() => {
-        setQuerySuggestion(true);
-      }, 500);
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [setQuerySuggestion, queryText, triggerSuggestion]);
+  const inputSearchRef = useRef();
 
   useEffect(() => {
     setTextState({ queryText: query.elements, triggerSuggestion: false });
   }, [query]);
 
   const handleChange = useCallback(
-    (event) => {
-      console.log(event);
-      setTextState({ queryText: event.target.value, triggerSuggestion: true });
+    (userText, triggerSuggestion = true) => {
+      setTextState({ queryText: userText, triggerSuggestion: triggerSuggestion });
+      setShowQuerySuggestion(true);
     },
     [setTextState]
   );
 
   const handleSubmit = (e) => {
     setTextState({ queryText: textState.queryText, triggerSuggestion: false });
-    setQuerySuggestion(false);
+    setShowQuerySuggestion(false);
+
     e.preventDefault();
-    search(e);
+    search(textState.queryText);
   };
 
   const search = useCallback(
-    (event) => {
-      event.stopPropagation();
-      const params = {
-        elements: queryText === '' ? undefined : queryText,
-      };
-      const newLocation = {
-        pathname: '/search',
-        search: qs.stringify(params, { addQueryPrefix: true }),
-      };
-      history.push(newLocation);
-    },
-    [history, queryText]
-  );
-
-  const handleSuggestSelect = useCallback(
     (suggestion) => {
-      setTextState({ queryText: suggestion, triggerSuggestion: false });
-      setQuerySuggestion(false);
+      // event.stopPropagation();
       const params = {
-        elements: suggestion,
+        elements: suggestion === "" ? undefined : suggestion
       };
       const newLocation = {
-        pathname: '/search',
-        search: qs.stringify(params, { addQueryPrefix: true }),
+        pathname: "/search",
+        search: qs.stringify(params, { addQueryPrefix: true })
       };
       history.push(newLocation);
+
+      setShowQuerySuggestion(false); // Hide suggestions
     },
     [history]
   );
 
   const handleClear = () => {
-    setTextState({ queryText: '', triggerSuggestion: false });
+    setTextState({ queryText: "", triggerSuggestion: false });
+    setShowQuerySuggestion(false);
   };
 
-  const handleAutocompleteClickAway = () => {
-    setQuerySuggestion(false);
+  const onClickSuggestion = (suggestion) => {
+    handleChange(suggestion, false);
+    search(suggestion);
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth className={classes.search}>
-          <InputBase
+    <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <FormControl
             fullWidth
-            placeholder="Search…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-              focused: classes.inputFocused,
-            }}
-            inputProps={{ 'aria-label': 'search', autocomplete: 'off' }}
-            id="datafari-search-input"
-            type="text"
-            value={queryText}
-            onChange={handleChange}
-            endAdornment={
-              <InputAdornment position="end">
-                {queryText && (
-                  <Button
-                    onClick={handleClear}
-                    size="small"
-                    className={classes.clearButton}
-                  >
-                    <ClearIcon />
+            className={showQuerySuggestion ? classes.searchWithSuggestion : classes.search}>
+            <InputBase
+              ref={inputSearchRef}
+              fullWidth
+              placeholder={t("Search")}
+              classes={{
+                root: classes.inputRoot,
+                input: classes.inputInput
+              }}
+              inputProps={{ "aria-label": "search", autocomplete: "off" }}
+              id="datafari-search-input"
+              type="text"
+              value={queryText}
+              onChange={(event) => handleChange(event.target.value)}
+              onFocus={() => setShowQuerySuggestion(true)}
+              endAdornment={
+                <InputAdornment position="end">
+                  {queryText && (
+                    <Button onClick={handleClear} size="small" className={classes.clearButton}>
+                      <ClearIcon />
+                    </Button>
+                  )}
+                  <Button onClick={handleSubmit} size="small" color="secondary">
+                    <SearchIcon />
                   </Button>
-                )}
-                <Button onClick={handleSubmit} size="small" color="secondary">
-                  <SearchIcon />
-                </Button>
-              </InputAdornment>
-            }
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+        </form>
+
+        {showQuerySuggestion ? (
+          <AutocompleteContainer
+            useAutocomplete={[BASIC_ID, ENTITY_ID, CUSTOM_ID]}
+            inputRef={inputSearchRef.current}
+            queryText={queryText}
+            triggerSuggestion={triggerSuggestion}
+            onSelect={handleChange}
+            onClick={onClickSuggestion}
           />
-        </FormControl>
-      </form>
-      <AutocompleteContainer
-        handleClickAway={handleAutocompleteClickAway}
-        querySuggestion={querySuggestion}
-      >
-        <BasicAutocomplete
-          active={querySuggestion}
-          onSelect={handleSuggestSelect}
-          queryText={queryText}
-          op={query.op}
-        />
-      </AutocompleteContainer>
-    </div>
+        ) : null}
+      </div>
+    </ClickAwayListener>
   );
 };
 
