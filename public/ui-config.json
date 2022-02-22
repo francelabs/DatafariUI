@@ -66,5 +66,29 @@
       "data": ["title", "url", "logo", "previewButton", "extract"]
     }
   ],
-  "right": []
+  "right": [],
+  "searchBar": {
+    "suggesters": [
+      {
+        "type": "BASIC",
+        "props": {
+          "maxSuggestion": 5,
+          "title": "SUGGESTED QUERIES",
+          "subtitle": "Queries extending your current query terms",
+        },
+      },
+      {
+        "type": "ENTITY",
+        "props": {
+          "field": "authorTokens",
+          "suggester": "suggestAuthors",
+          "dictionary": "suggesterEntityAuthors",
+          "asFacet": false,
+          "maxSuggestion": 5,
+          "title": "Entities suggested",
+          "subtitle": "Queries extending your current query terms"
+        }
+      }
+    ]
+  }
 }
