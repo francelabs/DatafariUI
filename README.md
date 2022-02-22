@@ -311,10 +311,10 @@ Query and Field facets are both defined as Components and can be used simply. Yo
 ### Search Bar
 
 The search bar is managed by components defined under `src/Components/SimpleSearchBar` folder.
-SimpleSearchBar is the main component that defines a input search with a list of suggesters. Suggester are predefined in `src/Hook/useSuggester` hook. At this time, there is 3 mains suggesters:
+SimpleSearchBar is the main component that defines a input search with a list of suggesters. Suggester are predefined in `src/Hook/useSuggester` hook. At this time, there is 3 mains suggesters available :
 
 - `BASIC` : basic suggester based on words
-- `ENTITY` : suggester based on authors names
+- `ENTITY` : suggester based on entities like authors names
 - `CUSTOM` : suggester based on user custom search
 
 #### SimpleSearchBar Composition
@@ -369,7 +369,7 @@ Here an exemple of suggesters configuration :
 Suggester types are limited to : `BASIC`, `ENTITY` and `CUSTOM`.
 For each one, you can configured props :
 
-- Some fields are mandatory to perfom suggestion request
+- Some fields are mandatory to perform suggestion request
 - `maxSuggestion` defined the number of results displayed in suggestions
 - `title` Key name for translation of the title suggester section
 - `subtitle` Key name for translation of the subtitle suggester section
