@@ -1,9 +1,17 @@
 import { makeStyles, MenuList } from "@material-ui/core";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { QueryContext } from "../../../../Contexts/query-context";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  SearchContext,
+  SearchContextActions,
+} from "../../../../Contexts/search-context";
 import AutocompleteSuggester from "../Suggester/AutocompleteSuggester";
-import useSuggesters, { BASIC_ID, ENTITY_ID } from "../Suggester/useSuggesters";
+import useSuggesters from "../Suggester/useSuggesters";
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -14,57 +22,52 @@ const useStyles = makeStyles((theme) => ({
     borderBottomRightRadius: theme.shape.borderRadius,
     zIndex: theme.zIndex.drawer,
     boxShadow: "0px 15px 15px -15px " + theme.palette.grey[500],
-    padding: "unset" // Padding is from MUI
-  }
+    padding: "unset", // Padding is from MUI
+  },
 }));
 
-const DEBOUCE_TIME_MS = 500;
-
-const AutocompleteContainer = ({
-  useAutocomplete = [BASIC_ID, ENTITY_ID],
-  inputRef,
-  queryText,
-  onSelect,
-  triggerSuggestion,
-  onClick
-}) => {
+const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
   // states
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [selection, setSelection] = useState();
-  const [autocompletePool, setAutocompletePool] = useState([]);
 
   // Hooks
   const classes = useStyles();
-  const { t } = useTranslation();
-  const { query } = useContext(QueryContext);
+  const { searchState, searchDispatch } = useContext(SearchContext);
 
   // Define suggesters
-  const [autocompleteById] = useSuggesters(query, t);
+  const [autocompletePool] = useSuggesters();
+  const autocompleteRefs = useRef({});
 
-  // Effect autocomplete pool
+  const getSuggesterKeyId = useCallback((type, index) => {
+    return `${type}-${index}`;
+  }, []);
+
+  const getSuggesterById = useCallback(
+    (type, index) => {
+      return autocompleteRefs.current[getSuggesterKeyId(type, index)];
+    },
+    [autocompleteRefs, getSuggesterKeyId]
+  );
+
+  // Effect to update suggesters on search context
   useEffect(() => {
-    setAutocompletePool(useAutocomplete.map((id) => autocompleteById[id]));
-  }, [autocompleteById, useAutocomplete]);
+    searchDispatch(
+      SearchContextActions.setSuggesters(
+        autocompletePool.map((suggester, index) =>
+          getSuggesterKeyId(suggester.type, index)
+        )
+      )
+    );
+  }, [autocompletePool, searchDispatch, getSuggesterKeyId]);
 
-  // Effect trigger suggestions
-  let timeoutId = useRef();
+  // Effect on searching
   useEffect(() => {
-    if (triggerSuggestion) {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
-      }
-
-      timeoutId.current = setTimeout(() => {
-        autocompletePool.forEach((suggester) => {
-          suggester.ref.current.triggerQuery(queryText);
-        });
-        setCurrentIndex(-1);
-        setSelection();
-      }, DEBOUCE_TIME_MS);
-
-      return () => clearTimeout(timeoutId.current);
+    if (searchState.isSearching) {
+      setCurrentIndex(-1);
+      setSelection();
     }
-  }, [autocompletePool, queryText, triggerSuggestion]);
+  }, [searchState]);
 
   // Effect on keydown events
   useEffect(() => {
@@ -74,15 +77,31 @@ const AutocompleteContainer = ({
           e.preventDefault();
           e.stopPropagation();
 
-          // Build root suggestions
+          // Build root suggestions based on each suggester and key/ID, with their suggestions and their corresponding index
+          // Result is like following :
+          // {id: 'BASIC-0', suggestion: 'enron', index: 0}
+          // {id: 'BASIC-0', suggestion: 'energy', index: 1}
+          // {id: 'BASIC-1', suggestion: 'enron', index: 0}
+          // {id: 'BASIC-1', suggestion: 'energy', index: 1}
+          // {id: 'BASIC-1', suggestion: 'end', index: 2}
+          // {id: 'ENTITY-2', suggestion: 'enron', index: 0}
+          // {id: 'ENTITY-2', suggestion: 'energy', index: 1}
+          // {id: 'ENTITY-2', suggestion: 'engineering', index: 2}
+          // {id: 'ENTITY-2', suggestion: 'end', index: 3}
+          // {id: 'ENTITY-2', suggestion: 'ener', index: 4}
+
           const rootSuggestions = autocompletePool
-            .map((suggester) =>
-              suggester.ref.current.getSuggestions().map((suggestion, index) => ({
-                id: suggester.ref.current.getId(),
+            .map((suggester, indexSuggester) => {
+              const suggesterRef = getSuggesterById(
+                suggester.type,
+                indexSuggester
+              );
+              return suggesterRef.getSuggestions().map((suggestion, index) => ({
+                id: getSuggesterKeyId(suggester.type, indexSuggester),
                 suggestion,
-                index
-              }))
-            )
+                index,
+              }));
+            })
             .flat();
 
           const index =
@@ -103,28 +122,32 @@ const AutocompleteContainer = ({
 
       return () => inputRef.removeEventListener("keydown", handleKeyDown);
     }
-  }, [currentIndex, autocompletePool, inputRef, onSelect]);
+  }, [
+    currentIndex,
+    autocompletePool,
+    getSuggesterById,
+    getSuggesterKeyId,
+    inputRef,
+    onSelect,
+  ]);
 
   return (
     <MenuList className={classes.autocomplete}>
-      {useAutocomplete.map((id) => {
-        if (autocompleteById[id]) {
-          const { suggester, suggesterProps, ref } = autocompleteById[id];
-
-          return (
-            <AutocompleteSuggester
-              key={id}
-              ref={ref}
-              id={id}
-              suggester={suggester}
-              suggesterProps={suggesterProps}
-              onClick={onClick}
-              selection={selection}
-            />
-          );
-        }
-
-        return null;
+      {autocompletePool.map((autocomplete, index) => {
+        const { type, suggester, suggesterProps } = autocomplete;
+        // To allow create multiple of the same suggester, they need different ID/key to be displayed
+        const keyId = getSuggesterKeyId(type, index);
+        return (
+          <AutocompleteSuggester
+            type={keyId}
+            key={keyId}
+            ref={(ref) => (autocompleteRefs.current[keyId] = ref)}
+            suggester={suggester}
+            suggesterProps={suggesterProps}
+            onClick={onClick}
+            selection={selection}
+          />
+        );
       })}
     </MenuList>
   );

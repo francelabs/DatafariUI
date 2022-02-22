@@ -4,7 +4,7 @@ import useHttp from "../../../../Hooks/useHttp";
 import {
   QueryContext,
   SET_ELEMENTS,
-  SET_FIELD_FACET_SELECTED
+  SET_FIELD_FACET_SELECTED,
 } from "../../../../Contexts/query-context";
 
 const useEntityAutocomplete = ({
@@ -15,7 +15,7 @@ const useEntityAutocomplete = ({
   asFacet,
   maxSuggestion,
   title,
-  subtitle
+  subtitle,
 }) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
@@ -61,7 +61,9 @@ const useEntityAutocomplete = ({
           data.suggest[dictionary][suggesterQueryText] &&
           data.suggest[dictionary][suggesterQueryText].suggestions
         ) {
-          const newSuggestions = data.suggest[dictionary][suggesterQueryText].suggestions
+          const newSuggestions = data.suggest[dictionary][
+            suggesterQueryText
+          ].suggestions
             .filter((element) => {
               return element && element.term;
             })
@@ -82,7 +84,7 @@ const useEntityAutocomplete = ({
     queryID,
     dictionary,
     queryText,
-    maxSuggestion
+    maxSuggestion,
   ]);
 
   // OnClick handler used when text must be added to the search bar.
@@ -91,7 +93,10 @@ const useEntityAutocomplete = ({
     (value, onSelect) => {
       return () => {
         if (onSelect) {
-          let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(" "));
+          let queryWithLastTermRemoved = queryText.substring(
+            0,
+            queryText.lastIndexOf(" ")
+          );
           queryWithLastTermRemoved =
             queryWithLastTermRemoved.length === 0
               ? queryWithLastTermRemoved
@@ -112,7 +117,10 @@ const useEntityAutocomplete = ({
           // will be only the one selected in the autocomplete list
           let selected = [value];
 
-          let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(" "));
+          let queryWithLastTermRemoved = queryText.substring(
+            0,
+            queryText.lastIndexOf(" ")
+          );
           // Treat the selection as a new search launching.
           // Keep the text entered before the entity as the search text
           // and add the entity as a facet selection.
@@ -125,12 +133,12 @@ const useEntityAutocomplete = ({
               : `${queryWithLastTermRemoved} `;
           queryDispatch({
             type: SET_ELEMENTS,
-            elements: queryWithLastTermRemoved
+            elements: queryWithLastTermRemoved,
           });
           queryDispatch({
             type: SET_FIELD_FACET_SELECTED,
             facetId: field,
-            selected: selected
+            selected: selected,
           });
         } else {
           // If facet style behavior is required whilst the facet is not declared, revert back to classic bahavior
@@ -155,10 +163,10 @@ const useEntityAutocomplete = ({
   return {
     querySuggestions,
     onSelect,
-    loading: isLoading,
+    isLoading,
     suggestions,
     title,
-    subtitle
+    subtitle,
   };
 };
 

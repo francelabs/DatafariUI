@@ -35,7 +35,9 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
         if (!data.error && data.spellcheck && data.spellcheck.collations) {
           newSuggestions = data.spellcheck.collations
             .filter((element) => {
-              return element && element !== "collation" && element.collationQuery;
+              return (
+                element && element !== "collation" && element.collationQuery
+              );
             })
             .map((element) => {
               return element.collationQuery;
@@ -45,7 +47,16 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
         setSuggestions(newSuggestions);
       }
     }
-  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID, queryText, maxSuggestion]);
+  }, [
+    data,
+    error,
+    isLoading,
+    setSuggestions,
+    reqIdentifier,
+    queryID,
+    queryText,
+    maxSuggestion,
+  ]);
 
   const onSelect = useCallback((value, onSelect) => {
     if (onSelect) {
@@ -56,10 +67,10 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
   return {
     querySuggestions: querySuggestions,
     onSelect: onSelect,
-    loading: isLoading,
+    isLoading,
     suggestions: suggestions,
     title: title,
-    subtitle: subtitle
+    subtitle: subtitle,
   };
 };
 

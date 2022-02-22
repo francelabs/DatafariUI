@@ -2,7 +2,13 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
 import useHttp from "../../../../Hooks/useHttp";
 
-const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, subtitle }) => {
+const useCustomSuggesterAutocomplete = ({
+  op,
+  suggester,
+  maxSuggestion,
+  title,
+  subtitle,
+}) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
@@ -30,7 +36,13 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
   // Handle response from querySuggestions
   useEffect(() => {
     if (!isLoading) {
-      if (!error && data && reqIdentifier === queryID && !data.error && data.suggest) {
+      if (
+        !error &&
+        data &&
+        reqIdentifier === queryID &&
+        !data.error &&
+        data.suggest
+      ) {
         const suggestObject = data.suggest;
         const suggestions = [];
         Object.entries(suggestObject).forEach(([, suggestionsObject]) => {
@@ -38,7 +50,9 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
             suggestionsObject[queryText] &&
             Array.isArray(suggestionsObject[queryText].suggestions)
           ) {
-            const extractedSuggestions = suggestionsObject[queryText].suggestions
+            const extractedSuggestions = suggestionsObject[
+              queryText
+            ].suggestions
               .filter((element) => {
                 return element.term && typeof element.term === "string";
               })
@@ -48,11 +62,23 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
             suggestions.push(...extractedSuggestions);
           }
         });
-        const newSuggestions = suggestions.slice(0, maxSuggestion ? maxSuggestion : -1);
+        const newSuggestions = suggestions.slice(
+          0,
+          maxSuggestion ? maxSuggestion : -1
+        );
         setSuggestions(newSuggestions);
       }
     }
-  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID, queryText, maxSuggestion]);
+  }, [
+    data,
+    error,
+    isLoading,
+    setSuggestions,
+    reqIdentifier,
+    queryID,
+    queryText,
+    maxSuggestion,
+  ]);
 
   const onSelect = useCallback((value, onSelect) => {
     if (onSelect) {
@@ -63,10 +89,10 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
   return {
     querySuggestions,
     onSelect,
-    loading: isLoading,
+    isLoading,
     suggestions,
     title,
-    subtitle
+    subtitle,
   };
 };
 

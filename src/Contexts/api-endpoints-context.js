@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 // Used for context creation, defines all the properties that will
 // be filled below in the provider.
 const DEFAULT_ENDPOINTS = {
-  datafariBaseURL: '',
-  restAPIBaseURL: '',
-  authURL: '',
-  adminURL: '',
-  currentUserURL: '',
-  currentUserAlertsURL: '',
-  currentUserFavoritesURL: '',
-  currentUserSavedSearchesURL: '',
-  searchURL: '',
-  getAutocompleteAdvancedFieldsURL: '',
-  getFixedValuesAdvancedFieldsURL: '',
-  getLabeledAdvancedFieldsURL: '',
-  getFieldsInfoURL: '',
-  getExactFieldsURL: '',
-  favoritesStatusURL: '',
-  docRedirectURL: '',
-  getHelpURL: '',
-  getPrivacyPolicyURL: '',
-  getEmailsAdminURL: '',
-  licenceURL: '',
-  logoutURL: '',
-  getUIDefinitionURL: '',
-  getThemeURL: '',
+  datafariBaseURL: "",
+  restAPIBaseURL: "",
+  authURL: "",
+  adminURL: "",
+  currentUserURL: "",
+  currentUserAlertsURL: "",
+  currentUserFavoritesURL: "",
+  currentUserSavedSearchesURL: "",
+  searchURL: "",
+  getAutocompleteAdvancedFieldsURL: "",
+  getFixedValuesAdvancedFieldsURL: "",
+  getLabeledAdvancedFieldsURL: "",
+  getFieldsInfoURL: "",
+  getExactFieldsURL: "",
+  favoritesStatusURL: "",
+  docRedirectURL: "",
+  getHelpURL: "",
+  getPrivacyPolicyURL: "",
+  getEmailsAdminURL: "",
+  licenceURL: "",
+  logoutURL: "",
+  getUIDefinitionURL: "",
+  getThemeURL: "",
 };
 
 export const APIEndpointsContext = React.createContext(DEFAULT_ENDPOINTS);
@@ -38,7 +38,7 @@ const APIEndpointsContextProvider = (props) => {
   const [datafariBaseURL] = useState(
     window.datafariBaseURL.pathname[
       window.datafariBaseURL.pathname.length - 1
-    ] === '/'
+    ] === "/"
       ? new URL(
           window.datafariBaseURL.pathname.substring(
             0,

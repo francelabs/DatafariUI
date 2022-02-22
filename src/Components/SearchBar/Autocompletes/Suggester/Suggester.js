@@ -1,4 +1,9 @@
-import { ListSubheader, makeStyles, MenuItem, Typography } from "@material-ui/core";
+import {
+  ListSubheader,
+  makeStyles,
+  MenuItem,
+  Typography,
+} from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles((theme) => ({
@@ -6,11 +11,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     borderBottom: "solid 1px " + theme.palette.grey[500],
     fontSize: theme.typography.fontSize,
-    paddingTop: 10
+    paddingTop: 10,
   },
 
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
 
   autocomplete: {
@@ -20,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: theme.shape.borderRadius,
     borderBottomRightRadius: theme.shape.borderRadius,
     zIndex: theme.zIndex.drawer,
-    boxShadow: "0px 15px 10px -15px " + theme.palette.grey[500]
+    boxShadow: "0px 15px 10px -15px " + theme.palette.grey[500],
   },
 
   suggestion: {
@@ -29,18 +34,25 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 3,
     "&:hover": {
       cursor: "pointer",
-      backgroundColor: theme.palette.grey[300]
-    }
+      backgroundColor: theme.palette.grey[300],
+    },
   },
 
   selection: {
     backgroundColor: theme.palette.grey[300],
     borderBottomLeftRadius: theme.shape.borderRadius,
-    borderBottomRightRadius: theme.shape.borderRadius
-  }
+    borderBottomRightRadius: theme.shape.borderRadius,
+  },
 }));
 
-const Suggester = ({ id, suggestions = [], title, subtitle, onClick, selection = {} }) => {
+const Suggester = ({
+  type,
+  suggestions = [],
+  title,
+  subtitle,
+  onClick,
+  selection = {},
+}) => {
   const classes = useStyles();
 
   const { id: idSelection, index: indexSelection } = selection;
@@ -55,10 +67,13 @@ const Suggester = ({ id, suggestions = [], title, subtitle, onClick, selection =
       {suggestions.map((suggestion, index) => (
         <MenuItem
           className={`${classes.suggestion} ${
-            id === idSelection && index === indexSelection ? classes.selection : ""
+            type === idSelection && index === indexSelection
+              ? classes.selection
+              : ""
           }`}
           key={"suggestion_" + index}
-          onClick={() => onClick(suggestion)}>
+          onClick={() => onClick(suggestion)}
+        >
           {suggestion}{" "}
         </MenuItem>
       ))}

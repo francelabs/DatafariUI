@@ -1,20 +1,32 @@
 import {
+  Box,
   Button,
+  CircularProgress,
   ClickAwayListener,
   FormControl,
   InputAdornment,
-  InputBase
+  InputBase,
+  LinearProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ClearIcon from "@material-ui/icons/Clear";
 import SearchIcon from "@material-ui/icons/Search";
 import qs from "qs";
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import { QueryContext } from "../../Contexts/query-context";
+import {
+  SearchContext,
+  SearchContextActions,
+} from "../../Contexts/search-context";
 import AutocompleteContainer from "./Autocompletes/AutocompleteContainer/AutocompleteContainer";
-import { BASIC_ID, CUSTOM_ID, ENTITY_ID } from "./Autocompletes/Suggester/useSuggesters";
 import "./SimpleSearchBar.css";
 
 const useStyles = makeStyles((theme) => {
@@ -26,8 +38,8 @@ const useStyles = makeStyles((theme) => {
     marginLeft: 0,
 
     "&:hover": {
-      backgroundColor: theme.palette.grey[300]
-    }
+      backgroundColor: theme.palette.grey[300],
+    },
   };
 
   return {
@@ -37,16 +49,20 @@ const useStyles = makeStyles((theme) => {
       ...search,
       borderRadius: "none",
       borderTopLeftRadius: theme.shape.borderRadius,
-      borderTopRightRadius: theme.shape.borderRadius
+      borderTopRightRadius: theme.shape.borderRadius,
+    },
+
+    suggestions: {
+      display: (props) => (props.showQuerySuggestion ? "block" : "none"),
     },
 
     clearButton: {
       borderRight: "solid 1px rgba(0,0,0,0.12)",
-      borderRadius: "0"
+      borderRadius: "0",
     },
 
     inputRoot: {
-      color: "inherit"
+      color: "inherit",
     },
 
     inputInput: {
@@ -54,40 +70,60 @@ const useStyles = makeStyles((theme) => {
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
       transition: theme.transitions.create("width"),
-      width: "100%"
-    }
+      width: "100%",
+    },
   };
 });
+
+const DEBOUCE_TIME_MS = 500;
 
 const SimpleSearchBar = () => {
   const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
     queryText: "",
-    triggerSuggestion: false
+    triggerSuggestion: false,
   });
 
-  const { queryText, triggerSuggestion } = textState;
+  const { queryText } = textState;
 
+  const inputSearchRef = useRef();
   const { t } = useTranslation();
-  const classes = useStyles();
+
+  const classes = useStyles({ showQuerySuggestion });
+
   const { query } = useContext(QueryContext);
   const history = useHistory();
-  const inputSearchRef = useRef();
+  const { searchState, searchDispatch } = useContext(SearchContext);
 
   useEffect(() => {
-    setTextState({ queryText: query.elements, triggerSuggestion: false });
+    setTextState({ queryText: query.elements });
   }, [query]);
+
+  let timeoutId = useRef();
 
   const handleChange = useCallback(
     (userText, triggerSuggestion = true) => {
-      setTextState({ queryText: userText, triggerSuggestion: triggerSuggestion });
+      setTextState({
+        queryText: userText,
+      });
+
       setShowQuerySuggestion(true);
+
+      if (triggerSuggestion) {
+        if (timeoutId.current) {
+          clearTimeout(timeoutId.current);
+        }
+
+        timeoutId.current = setTimeout(() => {
+          searchDispatch(SearchContextActions.setSearchingAction(userText));
+        }, DEBOUCE_TIME_MS);
+      }
     },
-    [setTextState]
+    [setTextState, searchDispatch]
   );
 
   const handleSubmit = (e) => {
-    setTextState({ queryText: textState.queryText, triggerSuggestion: false });
+    setTextState({ queryText: textState.queryText });
     setShowQuerySuggestion(false);
 
     e.preventDefault();
@@ -96,13 +132,12 @@ const SimpleSearchBar = () => {
 
   const search = useCallback(
     (suggestion) => {
-      // event.stopPropagation();
       const params = {
-        elements: suggestion === "" ? undefined : suggestion
+        elements: suggestion === "" ? undefined : suggestion,
       };
       const newLocation = {
         pathname: "/search",
-        search: qs.stringify(params, { addQueryPrefix: true })
+        search: qs.stringify(params, { addQueryPrefix: true }),
       };
       history.push(newLocation);
 
@@ -112,7 +147,7 @@ const SimpleSearchBar = () => {
   );
 
   const handleClear = () => {
-    setTextState({ queryText: "", triggerSuggestion: false });
+    setTextState({ queryText: "" });
     setShowQuerySuggestion(false);
   };
 
@@ -127,14 +162,19 @@ const SimpleSearchBar = () => {
         <form onSubmit={handleSubmit}>
           <FormControl
             fullWidth
-            className={showQuerySuggestion ? classes.searchWithSuggestion : classes.search}>
+            className={
+              showQuerySuggestion
+                ? classes.searchWithSuggestion
+                : classes.search
+            }
+          >
             <InputBase
               ref={inputSearchRef}
               fullWidth
               placeholder={t("Search")}
               classes={{
                 root: classes.inputRoot,
-                input: classes.inputInput
+                input: classes.inputInput,
               }}
               inputProps={{ "aria-label": "search", autocomplete: "off" }}
               id="datafari-search-input"
@@ -145,7 +185,11 @@ const SimpleSearchBar = () => {
               endAdornment={
                 <InputAdornment position="end">
                   {queryText && (
-                    <Button onClick={handleClear} size="small" className={classes.clearButton}>
+                    <Button
+                      onClick={handleClear}
+                      size="small"
+                      className={classes.clearButton}
+                    >
                       <ClearIcon />
                     </Button>
                   )}
@@ -158,16 +202,13 @@ const SimpleSearchBar = () => {
           </FormControl>
         </form>
 
-        {showQuerySuggestion ? (
+        <div className={classes.suggestions}>
           <AutocompleteContainer
-            useAutocomplete={[BASIC_ID, ENTITY_ID, CUSTOM_ID]}
             inputRef={inputSearchRef.current}
-            queryText={queryText}
-            triggerSuggestion={triggerSuggestion}
             onSelect={handleChange}
             onClick={onClickSuggestion}
           />
-        ) : null}
+        </div>
       </div>
     </ClickAwayListener>
   );

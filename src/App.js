@@ -1,32 +1,34 @@
-import React, { Suspense, useContext, useEffect } from 'react';
-import './App.css';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import React, { Suspense, useContext, useEffect } from "react";
+import "./App.css";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 
-import TopMenu from './Components/TopMenu/TopMenu';
-import QueryContextProvider from './Contexts/query-context';
-import ResultsContextProvider from './Contexts/results-context';
-import UserContextProvider, { UserContext } from './Contexts/user-context';
-import { create } from 'jss';
-import rtl from 'jss-rtl';
+import TopMenu from "./Components/TopMenu/TopMenu";
+import QueryContextProvider from "./Contexts/query-context";
+import ResultsContextProvider from "./Contexts/results-context";
+import UserContextProvider, { UserContext } from "./Contexts/user-context";
+import { create } from "jss";
+import rtl from "jss-rtl";
 
-import SearchPage from './Pages/Search/Search';
-import { StylesProvider, CssBaseline, jssPreset } from '@material-ui/core';
+import SearchPage from "./Pages/Search/Search";
+import { StylesProvider, CssBaseline, jssPreset } from "@material-ui/core";
 
-import 'fontsource-montserrat/300.css';
-import 'fontsource-montserrat';
-import 'fontsource-montserrat/500.css';
-import 'fontsource-montserrat/700.css';
-import Preview from './Pages/Preview/Preview';
-import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
-import LicenceContextProvider from './Contexts/licence-context';
-import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
-import { useTranslation } from 'react-i18next';
-import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
-import useTitleUpdater from './Hooks/useTitleUpdater';
-import HomePage from './Pages/HomePage/HomePage';
+import "fontsource-montserrat/300.css";
+import "fontsource-montserrat";
+import "fontsource-montserrat/500.css";
+import "fontsource-montserrat/700.css";
+import Preview from "./Pages/Preview/Preview";
+import APIEndpointsContextProvider from "./Contexts/api-endpoints-context";
+import LicenceContextProvider from "./Contexts/licence-context";
+import LicenceChecker from "./Components/LicenceChecker/LicenceChecker";
+import { useTranslation } from "react-i18next";
+import CustomThemeProvider from "./Components/CustomThemeProvider/CustomThemeProvider";
+import useTitleUpdater from "./Hooks/useTitleUpdater";
+import HomePage from "./Pages/HomePage/HomePage";
+import UIConfigContextProvider from "./Contexts/ui-config-context";
+import SearchContextProvider from "./Contexts/search-context";
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
@@ -39,7 +41,7 @@ function Main() {
     userActions.autoConnect();
   }, [userActions]);
 
-  document.title = t('Datafari Enterprise Search');
+  document.title = t("Datafari Enterprise Search");
 
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
@@ -49,7 +51,7 @@ function Main() {
             <Redirect to="/home" />
           </Route>
           <Route path="/home" component={HomePage} />
-          <Route path={['/search', '/preview']}>
+          <Route path={["/search", "/preview"]}>
             <LicenceChecker />
             <TopMenu />
             <Switch>
@@ -75,22 +77,26 @@ function App() {
   return (
     <Suspense fallback="loading">
       <APIEndpointsContextProvider>
-        <UserContextProvider>
-          <StylesProvider jss={jss}>
-            <CustomThemeProvider>
-              <CssBaseline />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <LicenceContextProvider>
-                  <QueryContextProvider>
-                    <ResultsContextProvider>
-                      <Main />
-                    </ResultsContextProvider>
-                  </QueryContextProvider>
-                </LicenceContextProvider>
-              </MuiPickersUtilsProvider>
-            </CustomThemeProvider>
-          </StylesProvider>
-        </UserContextProvider>
+        <UIConfigContextProvider>
+          <UserContextProvider>
+            <StylesProvider jss={jss}>
+              <CustomThemeProvider>
+                <CssBaseline />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LicenceContextProvider>
+                    <QueryContextProvider>
+                      <ResultsContextProvider>
+                        <SearchContextProvider>
+                          <Main />
+                        </SearchContextProvider>
+                      </ResultsContextProvider>
+                    </QueryContextProvider>
+                  </LicenceContextProvider>
+                </MuiPickersUtilsProvider>
+              </CustomThemeProvider>
+            </StylesProvider>
+          </UserContextProvider>
+        </UIConfigContextProvider>
       </APIEndpointsContextProvider>
     </Suspense>
   );
