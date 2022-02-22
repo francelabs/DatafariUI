@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  CircularProgress,
   ClickAwayListener,
   FormControl,
   InputAdornment,
@@ -200,6 +199,11 @@ const SimpleSearchBar = () => {
               }
             />
           </FormControl>
+          {searchState.isSearching && (
+            <Box sx={{ width: "100%" }}>
+              <LinearProgress style={{ height: 2 }} color={"secondary"} />
+            </Box>
+          )}
         </form>
 
         <div className={classes.suggestions}>

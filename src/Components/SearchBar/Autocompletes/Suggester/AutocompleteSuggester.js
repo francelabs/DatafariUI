@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useState,
 } from "react";
 import {
@@ -29,14 +30,14 @@ const AutocompleteSuggester = (
   // UseEffect trigger searching
   useEffect(() => {
     const suggester = searchState.suggesters.find((s) => s.type === type);
-    if (suggester && suggester.isSearching) {
+    if (suggester && suggester.isSearching && !isSearching) {
       querySuggestions(searchState.queryText);
       setSearching(true);
     }
-  }, [searchState, querySuggestions, type]);
+  }, [searchState, querySuggestions, isSearching, type]);
 
   // Effect when is done
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isSearching && !isLoading) {
       searchDispatch(SearchContextActions.done(type));
       setSearching(false);

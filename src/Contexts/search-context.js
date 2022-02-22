@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useReducer } from "react";
 
 export const SearchContext = React.createContext();
 
@@ -71,8 +71,8 @@ const searchReducer = (state, action) => {
       return {
         ...state,
         suggesters,
-        // at least one suggester has finished
-        isSearching: !suggesters.find((suggester) => !suggester.isSearching),
+        // Done if all has been done
+        isSearching: !suggesters.every((suggester) => !suggester.isSearching),
       };
     }
 

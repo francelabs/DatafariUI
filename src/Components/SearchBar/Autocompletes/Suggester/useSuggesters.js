@@ -1,10 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { QueryContext } from "../../../../Contexts/query-context";
-import {
-  SearchContext,
-  SearchContextActions,
-} from "../../../../Contexts/search-context";
 import { UIConfigContext } from "../../../../Contexts/ui-config-context";
 import useBasicAutocomplete from "../BasicAutoComplete/useBasicAutocomplete";
 import useCustomSuggesterAutocomplete from "../CustomSuggesterAutocomplete/useCustomSuggesterAutocomplete";
@@ -21,8 +17,6 @@ const useSuggesters = () => {
   // Retrieve UI configuration for search bar
   const { uiDefinition } = useContext(UIConfigContext);
   const { searchBar } = uiDefinition;
-
-  const { searchDispatch } = useContext(SearchContext);
 
   // Defined default suggesters with default props
   const [definedSuggesters] = useState([

@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     borderBottom: "solid 1px " + theme.palette.grey[500],
     fontSize: theme.typography.fontSize,
-    paddingTop: 10,
   },
 
   title: {

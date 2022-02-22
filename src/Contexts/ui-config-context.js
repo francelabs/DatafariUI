@@ -118,7 +118,7 @@ const UIConfigContextProvider = ({ children }) => {
     if (!isLoading) {
       let definition = DEFAULT_UI;
       if (!error && data && typeof data === "object") {
-        definition = data;
+        // definition = data;
       }
       setUiDefinition({ uiDefinition: definition, isLoading: false });
     }
