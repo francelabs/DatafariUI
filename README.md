@@ -376,6 +376,135 @@ For each one, you can configured props :
 
 It is allowed to use multiple suggesters of the same **type** like 2 ENTITY suggesters on different fields. Each will appear on different section.
 
+#### Add new suggester configuration
+
+In the configuration below, we have 3 suggesters : 1 basic et 2 entities.
+The 2 entities suggesters differ on the field. Title/subtitle can be different as well.
+
+```json
+  ...
+  "searchBar": {
+    "suggesters": [
+      {
+        "type": "BASIC",
+        "props": {
+          "maxSuggestion": 5,
+          "title": "SUGGESTED QUERIES",
+          "subtitle": "Queries extending your current query terms",
+        },
+      },
+      {
+        "type": "ENTITY",
+        "props": {
+          "field": "authorTokens",
+          "suggester": "suggestAuthors",
+          "dictionary": "suggesterEntityAuthors",
+          "asFacet": false,
+          "maxSuggestion": 5,
+          "title": "Entities suggested",
+          "subtitle": "Queries extending your current query terms"
+        }
+      },
+      {
+        "type": "ENTITY",
+        "props": {
+          "field": "authorSocialSecurityNumber",
+          "suggester": "suggestAuthors",
+          "dictionary": "suggesterEntityAuthors",
+          "asFacet": false,
+          "maxSuggestion": 5,
+          "title": "Entities suggested by social security number",
+          "subtitle": "Queries extending your current query terms"
+        }
+      }
+    ]
+  }
+  ...
+```
+
+#### Add new type suggester
+
+When adding a new type of suggester, we need to implement it in React and rebuild DatafariUI.
+
+To do it, following these steps :
+
+1. Implement a new hook with the same structure as other hooks implemented yet like `useBasicAutocomplete.js`. This hook needs to have at least, a `querySuggestions` function, a `suggestions` array for results, a `onSelect` function to return the real value to display in the search bar, `title` and `subtitle` as string to name the autocomplete section.
+2. in `useSuggester.js`, add a new suggester type and export it :
+
+```jsx
+export const NEW_TYPE = "myNewTypeSuggester";
+```
+
+Then add the new suggester hook in the array `definedSuggester` :
+
+```jsx
+const [definedSuggesters] = useState([
+  {
+    type: BASIC_ID,
+    suggester: useBasicAutocomplete,
+  },
+
+  {
+    type: ENTITY_ID,
+    suggester: useEntityAutocomplete,
+  },
+
+  {
+    type: CUSTOM_ID,
+    suggester: useCustomSuggesterAutocomplete,
+  },
+  {
+    type: NEW_TYPE,
+    suggester: useNewTypeSuggesterAutocomplete,
+  },
+]);
+```
+
+3. Finally, add this new type in the `ui-config.json` file :
+
+```json
+...
+searchBar: {
+    suggesters: [
+      {
+        type: "BASIC",
+        props: {
+          maxSuggestion: 5,
+          title: "SUGGESTED QUERIES",
+          subtitle: "Queries extending your current query terms",
+        },
+      },
+      {
+        type: "ENTITY",
+        props: {
+          field: "authorTokens",
+          suggester: "suggestAuthors",
+          dictionary: "suggesterEntityAuthors",
+          asFacet: false,
+          maxSuggestion: 5,
+          title: "Entities suggested",
+          subtitle: "Queries extending your current query terms",
+        },
+      },
+      {
+        type: "NEW_TYPE",
+        props: {
+          field: "newField",
+          suggester: "newSuggester",
+          dictionary: "newDictionary",
+          asFacet: false,
+          maxSuggestion: 5,
+          title: "New suggestions",
+          subtitle: "Queries extending your current query terms",
+        },
+      }
+    ],
+  },
+  ...
+```
+
+Adapt props to your new type. All fields will be pass as props to the new type suggester.
+
 ### Search results display
 
 The display of results is managed by the components defined in the `src/Components/ResultsList` folder.
