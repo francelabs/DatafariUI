@@ -31,7 +31,7 @@ const useSuggesters = () => {
     },
 
     {
-      type: [CUSTOM_ID],
+      type: CUSTOM_ID,
       suggester: useCustomSuggesterAutocomplete,
     },
   ]);
