@@ -19,8 +19,14 @@ const AutocompleteSuggester = (
   { type, suggester, suggesterProps, onClick, selection },
   ref
 ) => {
-  const { querySuggestions, suggestions, title, subtitle, isLoading } =
-    suggester(suggesterProps);
+  const {
+    querySuggestions,
+    suggestions,
+    title,
+    subtitle,
+    isLoading,
+    onSelect,
+  } = suggester(suggesterProps);
 
   const { searchState, searchDispatch } = useContext(SearchContext);
   const [isSearching, setSearching] = useState(false); // Inner searching state, more reliable
@@ -28,6 +34,7 @@ const AutocompleteSuggester = (
   // External API from parent to be called
   useImperativeHandle(ref, () => ({
     getSuggestions: () => suggestions,
+    onSelect: onSelect,
   }));
 
   // UseEffect trigger searching with timeout

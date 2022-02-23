@@ -91,19 +91,17 @@ const useEntityAutocomplete = ({
   // Uses the props onClick function passed by the parent.
   const onClickClassic = useCallback(
     (value, onSelect) => {
-      return () => {
-        if (onSelect) {
-          let queryWithLastTermRemoved = queryText.substring(
-            0,
-            queryText.lastIndexOf(" ")
-          );
-          queryWithLastTermRemoved =
-            queryWithLastTermRemoved.length === 0
-              ? queryWithLastTermRemoved
-              : `${queryWithLastTermRemoved} `;
-          onSelect(`${queryWithLastTermRemoved}${field}:${value}`);
-        }
-      };
+      if (onSelect) {
+        let queryWithLastTermRemoved = queryText.substring(
+          0,
+          queryText.lastIndexOf(" ")
+        );
+        queryWithLastTermRemoved =
+          queryWithLastTermRemoved.length === 0
+            ? queryWithLastTermRemoved
+            : `${queryWithLastTermRemoved} `;
+        onSelect(`${queryWithLastTermRemoved}${field}:${value}`);
+      }
     },
     [field, queryText]
   );
@@ -111,40 +109,38 @@ const useEntityAutocomplete = ({
   // Handler when entities must be added as facet selection
   const onClickForFacet = useCallback(
     (value) => {
-      return () => {
-        if (query.fieldFacets[field]) {
-          // We are building a new query, the list of selected
-          // will be only the one selected in the autocomplete list
-          let selected = [value];
+      if (query.fieldFacets[field]) {
+        // We are building a new query, the list of selected
+        // will be only the one selected in the autocomplete list
+        let selected = [value];
 
-          let queryWithLastTermRemoved = queryText.substring(
-            0,
-            queryText.lastIndexOf(" ")
-          );
-          // Treat the selection as a new search launching.
-          // Keep the text entered before the entity as the search text
-          // and add the entity as a facet selection.
-          // The two operations should trigger only one query to the server
-          // because the system waits for the query object to not change for
-          // a few hundred milliseconds before firing a query.
-          queryWithLastTermRemoved =
-            queryWithLastTermRemoved.length === 0
-              ? queryWithLastTermRemoved
-              : `${queryWithLastTermRemoved} `;
-          queryDispatch({
-            type: SET_ELEMENTS,
-            elements: queryWithLastTermRemoved,
-          });
-          queryDispatch({
-            type: SET_FIELD_FACET_SELECTED,
-            facetId: field,
-            selected: selected,
-          });
-        } else {
-          // If facet style behavior is required whilst the facet is not declared, revert back to classic bahavior
-          onClickClassic(value)();
-        }
-      };
+        let queryWithLastTermRemoved = queryText.substring(
+          0,
+          queryText.lastIndexOf(" ")
+        );
+        // Treat the selection as a new search launching.
+        // Keep the text entered before the entity as the search text
+        // and add the entity as a facet selection.
+        // The two operations should trigger only one query to the server
+        // because the system waits for the query object to not change for
+        // a few hundred milliseconds before firing a query.
+        queryWithLastTermRemoved =
+          queryWithLastTermRemoved.length === 0
+            ? queryWithLastTermRemoved
+            : `${queryWithLastTermRemoved} `;
+        queryDispatch({
+          type: SET_ELEMENTS,
+          elements: queryWithLastTermRemoved,
+        });
+        queryDispatch({
+          type: SET_FIELD_FACET_SELECTED,
+          facetId: field,
+          selected: selected,
+        });
+      } else {
+        // If facet style behavior is required whilst the facet is not declared, revert back to classic bahavior
+        onClickClassic(value);
+      }
     },
     [field, onClickClassic, query.fieldFacets, queryDispatch, queryText]
   );

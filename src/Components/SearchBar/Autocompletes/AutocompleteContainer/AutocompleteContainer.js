@@ -112,7 +112,11 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
           if (index > -1) {
             setCurrentIndex(index);
             const selectSuggestion = rootSuggestions[index];
-            onSelect(selectSuggestion.suggestion, false);
+            const suggesterRef = autocompleteRefs.current[selectSuggestion.id];
+            suggesterRef.onSelect(
+              selectSuggestion.suggestion,
+              (formattedValue) => onSelect(formattedValue, false)
+            );
             setSelection(selectSuggestion);
           }
         }
