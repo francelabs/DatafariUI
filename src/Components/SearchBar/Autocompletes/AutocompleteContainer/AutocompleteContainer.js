@@ -146,7 +146,7 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
 
   return (
     <div>
-      <div className={classes.autocomplete}>
+      <MenuList className={classes.autocomplete}>
         {autocompletePool.map((autocomplete, index) => {
           const { type, suggester, suggesterProps } = autocomplete;
           // To allow create multiple of the same suggester, they need different ID/key to be displayed
@@ -163,7 +163,7 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
             />
           );
         })}
-      </div>
+      </MenuList>
     </div>
   );
 };
