@@ -75,6 +75,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 const DEBOUCE_TIME_MS = 500;
+const SPACE_REGEX = /\s$/;
 
 const SimpleSearchBar = () => {
   const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
@@ -114,7 +115,11 @@ const SimpleSearchBar = () => {
         }
 
         timeoutId.current = setTimeout(() => {
-          searchDispatch(SearchContextActions.setSearchingAction(userText));
+          searchDispatch(
+            SearchContextActions.setSearchingAction(
+              SPACE_REGEX.test(userText) ? "" : userText
+            )
+          );
         }, DEBOUCE_TIME_MS);
       }
     },
