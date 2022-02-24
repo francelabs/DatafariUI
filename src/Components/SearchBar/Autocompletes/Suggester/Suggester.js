@@ -71,7 +71,7 @@ const Suggester = ({
               : ""
           }`}
           key={"suggestion_" + index}
-          onClick={() => onClick(suggestion)}
+          onClick={() => onClick(type, suggestion)}
         >
           {suggestion}{" "}
         </MenuItem>

@@ -135,6 +135,15 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
     onSelect,
   ]);
 
+  const handleClick = (type, suggestion) => {
+    const suggesterRef = autocompleteRefs.current[type];
+    if (suggesterRef) {
+      suggesterRef.onSelect(suggestion, (formattedValue) =>
+        onClick(formattedValue)
+      );
+    }
+  };
+
   return (
     <MenuList className={classes.autocomplete}>
       {autocompletePool.map((autocomplete, index) => {
@@ -148,7 +157,7 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
             ref={(ref) => (autocompleteRefs.current[keyId] = ref)}
             suggester={suggester}
             suggesterProps={suggesterProps}
-            onClick={onClick}
+            onClick={handleClick}
             selection={selection}
           />
         );
