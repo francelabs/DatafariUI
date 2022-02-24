@@ -1,24 +1,24 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-import { Grid, makeStyles, Paper } from '@material-ui/core';
-import SimpleSearchBar from '../../Components/SearchBar/SimpleSearchBar';
+import { Grid, makeStyles, Paper } from "@material-ui/core";
+import SimpleSearchBar from "../../Components/SearchBar/SimpleSearchBar";
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    marginTop: '10vh',
-    width: '80%',
-    margin: 'auto',
+    marginTop: "10vh",
+    width: "80%",
+    margin: "auto",
   },
   card: {
     padding: theme.spacing(2),
   },
   logo: {
-    display: 'block',
-    margin: 'auto',
-    maxHeight: '15vh',
-    minHeight: '70px',
-    maxWidth: '100%',
+    display: "block",
+    margin: "auto",
+    maxHeight: "15vh",
+    minHeight: "70px",
+    maxWidth: "100%",
   },
 }));
 
@@ -41,7 +41,7 @@ const HomePage = (props) => {
         />
       </Grid>
       <Grid item xs={10}>
-        <SimpleSearchBar></SimpleSearchBar>
+        <SimpleSearchBar />
       </Grid>
       {[1, 2, 3].map((value) => (
         <Grid key={value} item xs={10} lg={3}>

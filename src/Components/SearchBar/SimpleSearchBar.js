@@ -157,7 +157,7 @@ const SimpleSearchBar = () => {
 
   return (
     <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
-      <div>
+      <div style={{ position: "relative" }}>
         <form onSubmit={handleSubmit}>
           <FormControl
             fullWidth

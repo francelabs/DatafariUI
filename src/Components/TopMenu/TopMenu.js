@@ -1,30 +1,30 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import { NavLink, useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import SimpleSearchBar from '../SearchBar/SimpleSearchBar';
-import Avatar from '@material-ui/core/Avatar';
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import MoreIcon from "@material-ui/icons/MoreVert";
+import { NavLink, useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import SimpleSearchBar from "../SearchBar/SimpleSearchBar";
+import Avatar from "@material-ui/core/Avatar";
 
-import LanguageIcon from '@material-ui/icons/Language';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
-import LangSelectionMenu from '../LangSelectionMenu/LangSelectionMenu';
-import { UserContext } from '../../Contexts/user-context';
-import { ReactComponent as LoginIcon } from '../../Icons/login-24px.svg';
-import SvgIcon from '@material-ui/icons/AccountCircle';
-import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
-import FeedbacksMenu from '../FeedbacksMenu/FeedbacksMenu';
-import HelpMenu from '../HelpMenu/HelpMenu';
-import { Link } from '@material-ui/core';
-import useHttp from '../../Hooks/useHttp';
-import UserMenu from '../UserMenu/UserMenu';
+import LanguageIcon from "@material-ui/icons/Language";
+import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
+import FeedbackOutlinedIcon from "@material-ui/icons/FeedbackOutlined";
+import LangSelectionMenu from "../LangSelectionMenu/LangSelectionMenu";
+import { UserContext } from "../../Contexts/user-context";
+import { ReactComponent as LoginIcon } from "../../Icons/login-24px.svg";
+import SvgIcon from "@material-ui/icons/AccountCircle";
+import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
+import FeedbacksMenu from "../FeedbacksMenu/FeedbacksMenu";
+import HelpMenu from "../HelpMenu/HelpMenu";
+import { Link } from "@material-ui/core";
+import useHttp from "../../Hooks/useHttp";
+import UserMenu from "../UserMenu/UserMenu";
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -34,70 +34,69 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
+    display: "none",
+    [theme.breakpoints.up("sm")]: {
+      display: "block",
       marginRight: theme.spacing(2),
     },
   },
   search: {
-    position: 'relative',
     marginRight: theme.spacing(2),
     marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
       marginLeft: theme.spacing(3),
       flexGrow: 1,
     },
   },
   searchIcon: {
     padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputRoot: {
-    color: 'inherit',
+    color: "inherit",
   },
   inputInput:
-    theme.direction === 'ltr'
+    theme.direction === "ltr"
       ? {
           padding: theme.spacing(1, 1, 1, 0),
           // vertical padding + font size from searchIcon
           paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-          transition: theme.transitions.create('width'),
-          width: '100%',
-          [theme.breakpoints.up('md')]: {
-            width: '20ch',
+          transition: theme.transitions.create("width"),
+          width: "100%",
+          [theme.breakpoints.up("md")]: {
+            width: "20ch",
           },
         }
       : {
           padding: theme.spacing(1, 0, 1, 1),
           // vertical padding + font size from searchIcon
           paddingRight: `calc(1em + ${theme.spacing(4)}px)`,
-          transition: theme.transitions.create('width'),
-          width: '100%',
-          [theme.breakpoints.up('md')]: {
-            width: '20ch',
+          transition: theme.transitions.create("width"),
+          width: "100%",
+          [theme.breakpoints.up("md")]: {
+            width: "20ch",
           },
         },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "flex",
     },
   },
   sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
+    display: "flex",
+    [theme.breakpoints.up("md")]: {
+      display: "none",
     },
   },
   menuLink: {
-    color: 'inherit',
+    color: "inherit",
   },
 }));
 
@@ -163,7 +162,7 @@ const TopMenu = () => {
 
   const handleLogout = useCallback(
     (event) => {
-      sendRequest(apiEndpointsContext.logoutURL, 'GET');
+      sendRequest(apiEndpointsContext.logoutURL, "GET");
       handleMenuClose();
     },
     [apiEndpointsContext.logoutURL, handleMenuClose, sendRequest]
@@ -179,35 +178,35 @@ const TopMenu = () => {
 
   const loginURL = new URL(apiEndpointsContext.authURL);
   loginURL.search =
-    '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
+    "?callback=" + new URL(process.env.PUBLIC_URL, window.location.href);
   const adminURL = new URL(apiEndpointsContext.adminURL);
   adminURL.search = `?lang=${i18n.language}`;
 
-  const menuId = 'primary-search-account-menu';
+  const menuId = "primary-search-account-menu";
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
       id={mobileMenuId}
       keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
+      <MenuItem onClick={handleLogout}>{t("Logout")}</MenuItem>
       {userState.user &&
         userState.user.roles &&
-        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
-          userState.user.roles.indexOf('SearchExpert') !== -1) && (
+        (userState.user.roles.indexOf("SearchAdministrator") !== -1 ||
+          userState.user.roles.indexOf("SearchExpert") !== -1) && (
           <MenuItem
             onClick={handleMobileMenuClose}
             component={Link}
             href={adminURL}
             target="_blank"
           >
-            {t('Admin')}
+            {t("Admin")}
           </MenuItem>
         )}
     </Menu>
@@ -221,7 +220,7 @@ const TopMenu = () => {
             <img
               src={`${process.env.PUBLIC_URL}/images/logo.png`}
               alt="logo"
-              style={{ height: '50px' }}
+              style={{ height: "50px" }}
             />
           </NavLink>
           <div className={classes.title}>
@@ -235,7 +234,7 @@ const TopMenu = () => {
           <div />
           <div className={classes.sectionDesktop}>
             <IconButton
-              aria-label={t('Language selection')}
+              aria-label={t("Language selection")}
               color="inherit"
               onClick={handleOpenLangMenu}
             >
@@ -243,14 +242,14 @@ const TopMenu = () => {
             </IconButton>
 
             <IconButton
-              aria-label={t('Feedbacks')}
+              aria-label={t("Feedbacks")}
               color="inherit"
               onClick={handleOpenFeedbacksMenu}
             >
               <FeedbackOutlinedIcon fontSize="large" />
             </IconButton>
             <IconButton
-              aria-label={t('Help')}
+              aria-label={t("Help")}
               color="inherit"
               onClick={handleOpenHelpMenu}
             >
