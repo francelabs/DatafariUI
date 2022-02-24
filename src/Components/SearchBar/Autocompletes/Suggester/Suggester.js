@@ -4,7 +4,8 @@ import {
   MenuItem,
   Typography,
 } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
+import { SearchContext } from "../../../../Contexts/search-context";
 
 const useStyles = makeStyles((theme) => ({
   titleContainer: {
@@ -53,10 +54,11 @@ const Suggester = ({
   selection = {},
 }) => {
   const classes = useStyles();
+  const { searchState } = useContext(SearchContext);
 
   const { id: idSelection, index: indexSelection } = selection;
 
-  return suggestions.length ? (
+  return suggestions.length && !searchState.isSearching ? (
     <div>
       <ListSubheader className={classes.titleContainer} disableSticky={true}>
         <Typography className={classes.title}>{title}</Typography>
