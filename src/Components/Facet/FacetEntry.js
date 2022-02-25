@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   ListItem,
   ListItemText,
@@ -7,12 +7,12 @@ import {
   makeStyles,
   Tooltip,
   FormControlLabel,
-} from '@material-ui/core';
-import { useState, useEffect } from 'react';
+} from "@material-ui/core";
+import { useState, useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
   facetTextContainer: {
-    display: 'flex',
+    display: "flex",
   },
   facetTextLabel: {
     flexGrow: 1,
@@ -20,12 +20,12 @@ const useStyles = makeStyles((theme) => ({
   },
 
   facetControlInputRoot: {
-    width: '100%',
-    margin: '0',
+    width: "100%",
+    margin: "0",
   },
 
   facetControlInputLabel: {
-    width: '100%',
+    width: "100%",
   },
 }));
 
@@ -38,7 +38,7 @@ const FacetEntry = (props) => {
   }, [props.selected]);
 
   const prepareValue = () => {
-    let value = '';
+    let value = "";
     if (Array.isArray(props.value)) {
       try {
         value = decodeURIComponent(props.value[0]);
@@ -57,7 +57,7 @@ const FacetEntry = (props) => {
         <Tooltip title={value} aria-label={value}>
           <span>
             {value.substring(0, 15) +
-              '...' +
+              "..." +
               value.substring(value.length - 15)}
           </span>
         </Tooltip>
@@ -90,7 +90,9 @@ const FacetEntry = (props) => {
                   <span>{props.count}</span>
                 </>
               }
-              primaryTypographyProps={{ className: classes.facetTextContainer }}
+              primaryTypographyProps={{
+                className: classes.facetTextContainer,
+              }}
             />
           }
           classes={{
