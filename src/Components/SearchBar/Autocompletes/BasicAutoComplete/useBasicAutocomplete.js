@@ -64,13 +64,17 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
     }
   }, []);
 
+  // Clear suggestions
+  const clearSuggestions = useCallback(() => setSuggestions([]), []);
+
   return {
-    querySuggestions: querySuggestions,
-    onSelect: onSelect,
+    querySuggestions,
+    onSelect,
+    clearSuggestions,
     isLoading,
-    suggestions: suggestions,
-    title: title,
-    subtitle: subtitle,
+    suggestions,
+    title,
+    subtitle,
   };
 };
 

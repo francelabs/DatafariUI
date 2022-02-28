@@ -86,9 +86,13 @@ const useCustomSuggesterAutocomplete = ({
     }
   }, []);
 
+  // Clear suggestions
+  const clearSuggestions = useCallback(() => setSuggestions([]), []);
+
   return {
     querySuggestions,
     onSelect,
+    clearSuggestions,
     isLoading,
     suggestions,
     title,

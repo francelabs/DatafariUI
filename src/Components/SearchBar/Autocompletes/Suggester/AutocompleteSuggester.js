@@ -22,6 +22,7 @@ const AutocompleteSuggester = (
   const {
     querySuggestions,
     suggestions,
+    clearSuggestions,
     title,
     subtitle,
     isLoading,
@@ -34,7 +35,8 @@ const AutocompleteSuggester = (
   // External API from parent to be called
   useImperativeHandle(ref, () => ({
     getSuggestions: () => suggestions,
-    onSelect: onSelect,
+    onSelect,
+    clearSuggestions,
   }));
 
   // UseEffect trigger searching with timeout
