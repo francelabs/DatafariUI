@@ -38,7 +38,7 @@ const DateFacetCustom = (props) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const [selectedFromDate, setSelectedFromDate] = React.useState(new Date());
   const [selectedToDate, setSelectedToDate] = React.useState(new Date());
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const { state: userState } = useContext(UserContext);
