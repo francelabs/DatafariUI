@@ -1,63 +1,104 @@
+import {
+  Checkbox,
+  Divider,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import { Autocomplete } from "@material-ui/lab";
 import React, {
+  useCallback,
   useContext,
   useEffect,
-  useState,
   useRef,
-  useCallback,
-} from 'react';
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
 import {
   QueryContext,
   REGISTER_FIELD_FACET,
   SET_FIELD_FACET_SELECTED,
-} from '../../Contexts/query-context';
-import { ResultsContext } from '../../Contexts/results-context';
-import FacetEntry from './FacetEntry';
-import {
-  Divider,
-  IconButton,
-  makeStyles,
-  List,
-  Typography,
-  Menu,
-  MenuItem,
-  Link,
-} from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import { useTranslation } from 'react-i18next';
-
-const DISPLAY_ENTRIES = [10, 100];
+} from "../../Contexts/query-context";
+import { ResultsContext } from "../../Contexts/results-context";
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
     flexGrow: 1,
   },
   facetHeader: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   showMore: {
-    width: '100%',
+    width: "100%",
     marginBottom: theme.spacing(1),
+  },
+
+  autocompleteRoot: {
+    marginBottom: 15,
+
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: "black",
+        borderWidth: 1,
+      },
+    },
+  },
+
+  option: {
+    '&[aria-selected="true"]': {
+      backgroundColor: "transparent",
+    },
+    '&[data-focus="true"]': {
+      backgroundColor: theme.palette.grey[300],
+    },
   },
 }));
 
+// Max tags displayed in the input
+const MAX_TAGS = 2;
+
 const FieldFacet = (props) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = useState(true);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
   const { field, op } = props;
   const { t } = useTranslation();
   const menuAnchorRef = useRef(null);
+
+  const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showMore, setShowMore] = useState(false);
+  const [facetResultValues, setFacetResultValues] = useState([]);
 
-  const minShow = props.minShow ? props.minShow : DISPLAY_ENTRIES[0];
-  const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
+  // Effect to build facet result values
+  useEffect(() => {
+    let newValues = [];
 
-  const numShowed = showMore ? maxShow : minShow;
+    if (results.fieldFacets[field]) {
+      for (let i = 0; i < results.fieldFacets[field].length; i += 2) {
+        newValues.push({
+          value: results.fieldFacets[field][i],
+          count: results.fieldFacets[field][i + 1],
+          selected: !!(
+            query.selectedFieldFacets[field] &&
+            query.selectedFieldFacets[field].indexOf(
+              results.fieldFacets[field][i]
+            ) !== -1
+          ),
+        });
+      }
+    }
+
+    setFacetResultValues(newValues);
+  }, [results, field, query.selectedFieldFacets]);
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
@@ -70,6 +111,11 @@ const FieldFacet = (props) => {
     };
     queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
   }, [field, queryDispatch, op, props.title]);
+
+  // Selected facet values
+  const selectedFacetResultValues = facetResultValues.filter(
+    (option) => option.selected
+  );
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
@@ -97,36 +143,7 @@ const FieldFacet = (props) => {
     [field, query.selectedFieldFacets, queryDispatch]
   );
 
-  // Build a facet values array from the results to be displayed
-  let facetValues = [];
-  if (results.fieldFacets[field]) {
-    for (
-      let i = 0;
-      i < results.fieldFacets[field].length && i / 2 < numShowed;
-      i += 2
-    ) {
-      facetValues.push(
-        <FacetEntry
-          onClick={onClick(results.fieldFacets[field][i])}
-          value={results.fieldFacets[field][i]}
-          count={results.fieldFacets[field][i + 1]}
-          selected={
-            query.selectedFieldFacets[field] &&
-            query.selectedFieldFacets[field].indexOf(
-              results.fieldFacets[field][i]
-            ) !== -1
-          }
-          key={`facet-${props.field}-${i}`}
-        />
-      );
-    }
-  }
-
-  const handleExpandClick = () => {
-    setExpanded((previous) => !previous);
-  };
-
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = () => {
     setMenuOpen(true);
   };
 
@@ -160,16 +177,39 @@ const FieldFacet = (props) => {
     setMenuOpen(false);
   };
 
-  const handleShowMoreClick = (event) => {
-    event.preventDefault();
-    setShowMore((oldShowMore) => {
-      return !oldShowMore;
-    });
+  const onChangeAutocomplete = (e, options, reason) => {
+    switch (reason) {
+      case "select-option": {
+        options
+          .filter((option) => !option.selected)
+          .forEach((option) => onClick(option.value)());
+        break;
+      }
+      case "remove-option": {
+        selectedFacetResultValues
+          .filter((option) => !options.includes(option))
+          .forEach((option) => onClick(option.value)());
+        break;
+      }
+      case "clear": {
+        handleClearFilterClick();
+        break;
+      }
+
+      default:
+        break;
+    }
   };
 
-  return facetValues.length > 0 ? (
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+  return facetResultValues.length ? (
     <>
+      {/* NEW FACET */}
+
       <div className={classes.facetHeader}>
+        {/* MENU */}
         <IconButton
           onClick={handleOpenMenu}
           aria-controls={`${field}-facet-menu`}
@@ -177,6 +217,7 @@ const FieldFacet = (props) => {
           aria-label={t(`Open {{ facetTitle }} facet menu`, {
             facetTitle: t(props.title),
           })}
+          classes={{ root: classes.menuRoot }}
         >
           <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
@@ -186,57 +227,84 @@ const FieldFacet = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
+          <MenuItem onClick={handleSelectAllClick}>{t("Select All")}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
+            {t("Clear Filter")}
           </MenuItem>
         </Menu>
+
+        {/* TITLE */}
         <Typography color="secondary" className={classes.facetTitleText}>
           {t(props.title)}
         </Typography>
+
+        {/* EXPAND */}
         <IconButton
-          onClick={handleExpandClick}
+          onClick={() => setExpanded(!expanded)}
           aria-label={t(
-            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
+            `${expanded ? "Collapse" : "Expand"} {{ facetTitle }} facet`,
             {
               facetTitle: t(props.title),
             }
           )}
+          classes={{ root: classes.expandRoot }}
         >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
-      {expanded && (
-        <>
-          <List dense>{facetValues}</List>
-          {!showMore && numShowed < results.fieldFacets[field].length / 2 && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}
+
+      {expanded ? (
+        <Autocomplete
+          multiple
+          id="facets-selection"
+          limitTags={MAX_TAGS}
+          options={facetResultValues}
+          value={selectedFacetResultValues} // Display only selected values in the input
+          disableCloseOnSelect
+          placeholder={field}
+          classes={{
+            root: classes.autocompleteRoot,
+            option: classes.option,
+          }}
+          onChange={onChangeAutocomplete}
+          getOptionLabel={(option) => `${option.value} (${option.count})`}
+          renderOption={(option) => (
+            <div
+              key={option.value}
+              onClick={onClick(option.value)}
+              style={{
+                display: "flex",
+                width: "100%",
+              }}
             >
-              <Typography variant="caption">
-                {t('Show More')} &gt;&gt;
-              </Typography>
-            </Link>
+              <Checkbox
+                id={option.value}
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={option.selected}
+                onClick={onClick(option.value)}
+              ></Checkbox>
+              <div style={{ flexGrow: 1 }}>{option.value}</div>
+              <div>{option.count}</div>
+            </div>
           )}
-          {showMore && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}
-            >
-              <Typography variant="caption">
-                {t('Show Less')} &lt;&lt;
-              </Typography>
-            </Link>
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder={
+                selectedFacetResultValues.length
+                  ? props.title
+                  : `${facetResultValues.length} ${
+                      facetResultValues.length > 1 ? "options" : "option"
+                    }`
+              }
+            />
           )}
-        </>
-      )}
+        />
+      ) : null}
+
       <Divider className={props.dividerClassName} />
     </>
   ) : null;
