@@ -54,7 +54,13 @@ const userReducer = (userState, action) => {
       };
 
     case "SET_AUTHENTICATED_USER":
-      return { ...userState, ...action.user };
+      return {
+        ...userState,
+        state: {
+          ...userState.state,
+          user: action.user,
+        },
+      };
 
     case "SET_LANGUAGE": {
       return {
@@ -111,8 +117,12 @@ const UserContextProvider = (props) => {
         let userData = data.content;
         userDispatcher({
           type: "SET_AUTHENTICATED_USER",
-          user: { ...userData },
+          user: userData,
         });
+
+        // Set language according to user language
+        i18n.changeLanguage(userData.lang);
+
         timer = setTimeout(autoConnect, 60000);
       }
     } else if (!isLoading && error) {
@@ -130,6 +140,7 @@ const UserContextProvider = (props) => {
     isLoading,
     queryID,
     reqIdentifier,
+    i18n,
     userDispatcher,
   ]);
 
