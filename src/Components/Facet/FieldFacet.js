@@ -42,24 +42,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
 
-  menuRoot: {
-    marginLeft: -5,
-    padding: 0,
-  },
-
-  expandRoot: {
-    marginRight: -10,
-  },
-
   autocompleteRoot: {
     marginBottom: 15,
 
-    "& label.Mui-focused": {
-      color: "yellow",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "yellow",
-    },
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
         borderColor: "black",
@@ -310,7 +295,7 @@ const FieldFacet = (props) => {
               variant="outlined"
               placeholder={
                 selectedFacetResultValues.length
-                  ? ""
+                  ? props.title
                   : `${facetResultValues.length} ${
                       facetResultValues.length > 1 ? "options" : "option"
                     }`
