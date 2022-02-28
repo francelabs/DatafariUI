@@ -11,11 +11,19 @@ const useStyles = makeStyles((theme) => ({
   titleContainer: {
     display: "flex",
     borderBottom: "solid 1px " + theme.palette.grey[500],
-    fontSize: theme.typography.fontSize,
   },
 
   title: {
     flexGrow: 1,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "0.75rem",
+    },
+  },
+
+  subtitle: {
+    [theme.breakpoints.down("sm")]: {
+      display: "none",
+    },
   },
 
   autocomplete: {
@@ -35,6 +43,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       cursor: "pointer",
       backgroundColor: theme.palette.grey[300],
+    },
+
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: 5,
     },
   },
 
@@ -62,7 +74,7 @@ const Suggester = ({
     <div>
       <ListSubheader className={classes.titleContainer} disableSticky={true}>
         <Typography className={classes.title}>{title}</Typography>
-        <Typography>{subtitle}</Typography>
+        <Typography className={classes.subtitle}>{subtitle}</Typography>
       </ListSubheader>
 
       {suggestions.map((suggestion, index) => (

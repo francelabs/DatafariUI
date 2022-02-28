@@ -45,22 +45,20 @@ function Main() {
 
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <div>
-        <Switch>
-          <Route path="/" exact>
-            <Redirect to="/home" />
-          </Route>
-          <Route path="/home" component={HomePage} />
-          <Route path={["/search", "/preview"]}>
-            <LicenceChecker />
-            <TopMenu />
-            <Switch>
-              <Route path="/search" component={SearchPage} />
-              <Route path="/preview" component={Preview} />
-            </Switch>
-          </Route>
-        </Switch>
-      </div>
+      <Switch>
+        <Route path="/" exact>
+          <Redirect to="/home" />
+        </Route>
+        <Route path="/home" component={HomePage} />
+        <Route path={["/search", "/preview"]}>
+          <LicenceChecker />
+          <TopMenu />
+          <Switch>
+            <Route path="/search" component={SearchPage} />
+            <Route path="/preview" component={Preview} />
+          </Switch>
+        </Route>
+      </Switch>
     </BrowserRouter>
   );
 }

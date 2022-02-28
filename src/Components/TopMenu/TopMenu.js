@@ -27,9 +27,6 @@ import useHttp from "../../Hooks/useHttp";
 import UserMenu from "../UserMenu/UserMenu";
 
 const useStyles = makeStyles((theme) => ({
-  grow: {
-    flexGrow: 1,
-  },
   logo: {
     marginRight: theme.spacing(2),
   },
