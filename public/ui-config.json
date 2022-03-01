@@ -75,7 +75,7 @@
           "maxSuggestion": 5,
           "title": "SUGGESTED QUERIES",
           "subtitle": "Queries extending your current query terms",
-        },
+        }
       },
       {
         "type": "ENTITY",

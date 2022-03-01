@@ -25,6 +25,7 @@ import {
   SearchContext,
   SearchContextActions,
 } from "../../Contexts/search-context";
+import useHotkey, { ESCAPE, SHIFT } from "../../Hooks/useHotkey";
 import AutocompleteContainer from "./Autocompletes/AutocompleteContainer/AutocompleteContainer";
 import "./SimpleSearchBar.css";
 
@@ -53,6 +54,7 @@ const useStyles = makeStyles((theme) => {
 
     suggestions: {
       display: (props) => (props.showQuerySuggestion ? "block" : "none"),
+      zIndex: 2,
     },
 
     clearButton: {
@@ -74,6 +76,23 @@ const useStyles = makeStyles((theme) => {
       [theme.breakpoints.down("xs")]: {
         paddingLeft: 5,
       },
+    },
+
+    formContainer: {
+      position: "relative",
+      zIndex: 2,
+    },
+
+    searchBackground: {
+      display: (props) => (props.showQuerySuggestion ? "block" : "none"),
+      width: "100%",
+      height: "100%",
+      background: theme.palette.grey[600] + "AA", // grey with alpha
+      position: "fixed",
+      top: 0,
+      left: 0,
+      zIndex: 1,
+      backdropFilter: "blur(2px)",
     },
   };
 });
@@ -98,6 +117,28 @@ const SimpleSearchBar = () => {
   const { query } = useContext(QueryContext);
   const history = useHistory();
   const { searchState, searchDispatch } = useContext(SearchContext);
+
+  const handleHotkey = useCallback(
+    () => inputSearchRef.current.focus(),
+    [inputSearchRef]
+  );
+
+  const handeEscapeHotkey = useCallback(() => {
+    setShowQuerySuggestion(false);
+    inputSearchRef.current.blur();
+  }, [inputSearchRef, setShowQuerySuggestion]);
+
+  // Defines hotkeys
+  const { hotkey: searchHotkey } = useHotkey({
+    cmdKey: SHIFT,
+    secondKey: "S",
+    callback: handleHotkey,
+  }); // Focus on input search bar
+
+  const { hotkey: escapeHotkey } = useHotkey({
+    cmdKey: ESCAPE,
+    callback: handeEscapeHotkey,
+  }); // Hide suggestions panel and blur input
 
   useEffect(() => {
     setTextState({ queryText: query.elements });
@@ -165,65 +206,73 @@ const SimpleSearchBar = () => {
   };
 
   return (
-    <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
-      <div style={{ position: "relative" }}>
-        <form onSubmit={handleSubmit}>
-          <FormControl
-            fullWidth
-            className={
-              showQuerySuggestion
-                ? classes.searchWithSuggestion
-                : classes.search
-            }
-          >
-            <InputBase
-              ref={inputSearchRef}
+    <>
+      <div className={classes.searchBackground} />
+      <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
+        <div className={classes.formContainer}>
+          <form onSubmit={handleSubmit}>
+            <FormControl
               fullWidth
-              placeholder={t("Search")}
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ "aria-label": "search", autocomplete: "off" }}
-              id="datafari-search-input"
-              type="text"
-              value={queryText}
-              onChange={(event) => handleChange(event.target.value)}
-              onFocus={() => setShowQuerySuggestion(true)}
-              endAdornment={
-                <InputAdornment position="end">
-                  {queryText && (
-                    <Button
-                      onClick={handleClear}
-                      size="small"
-                      className={classes.clearButton}
-                    >
-                      <ClearIcon />
-                    </Button>
-                  )}
-                  <Button onClick={handleSubmit} size="small" color="secondary">
-                    <SearchIcon />
-                  </Button>
-                </InputAdornment>
+              className={
+                showQuerySuggestion
+                  ? classes.searchWithSuggestion
+                  : classes.search
               }
-            />
-          </FormControl>
-          {searchState.isSearching && (
-            <Box sx={{ width: "100%" }}>
-              <LinearProgress style={{ height: 2 }} color={"secondary"} />
-            </Box>
-          )}
-        </form>
+            >
+              <InputBase
+                inputRef={inputSearchRef}
+                fullWidth
+                placeholder={t("Search")}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ "aria-label": "search", autocomplete: "off" }}
+                id="datafari-search-input"
+                type="text"
+                value={queryText}
+                onChange={(event) => handleChange(event.target.value)}
+                onFocus={() => setShowQuerySuggestion(true)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showQuerySuggestion ? escapeHotkey : searchHotkey}
+                    {queryText && (
+                      <Button
+                        onClick={handleClear}
+                        size="small"
+                        className={classes.clearButton}
+                      >
+                        <ClearIcon />
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleSubmit}
+                      size="small"
+                      color="secondary"
+                    >
+                      <SearchIcon />
+                    </Button>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            {searchState.isSearching && (
+              <Box sx={{ width: "100%" }}>
+                <LinearProgress style={{ height: 2 }} color={"secondary"} />
+              </Box>
+            )}
+          </form>
 
-        <div className={classes.suggestions}>
-          <AutocompleteContainer
-            inputRef={inputSearchRef.current}
-            onSelect={handleChange}
-            onClick={onClickSuggestion}
-          />
+          <div className={classes.suggestions}>
+            <AutocompleteContainer
+              inputRef={inputSearchRef.current}
+              onSelect={handleChange}
+              onClick={onClickSuggestion}
+            />
+          </div>
         </div>
-      </div>
-    </ClickAwayListener>
+      </ClickAwayListener>
+    </>
   );
 };
 

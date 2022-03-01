@@ -1060,6 +1060,45 @@ Have a look at the code for the `FavoritesModal` (`src/Pages/FavoritesModal/Favo
 
 an endpoint URL, a hook, and use the hook in components in combination to effects (`useEffect`) to handle responses.
 
+### useHotkey hook
+
+This hook allows to define hotkey with one command key plus an optional second letter key.
+Command key are defined as below :
+
+- SHIFT
+- ALT
+- CTRL
+- ESCAPE
+
+These command keys can be associated with another key like any alphanumeric key, to provide hotkey under the form : `[CMD_key+second_key]` such as `[ctrl+k]`, `[SHIFT+S]` etc.
+
+So far, hotkeys are used in the search bar :
+
+- `[SHIFT + S]` : set focus in the search bar
+- `[ESCAPE]` : Hide suggestions and blur the input of the search bar
+
+`useHotkey` hook can be used anywhere in the react application. Exemple of use :
+
+```jsx
+const { hotkey: ctrlHotkey } = useHotkey({
+  cmdKey: CTRL,
+  secondKey: "D",
+  callback: handleHotkey,
+});
+```
+
+The hook take 3 parameters :
+
+- `cmdKey` : Command key, one of defined command keys in the useHotkey js file
+- `secondKey` (optional, default value to "") : Second key of the hotkey.
+- `callback` : Called if command key matched and either the second key matched or it equals to empty string
+
+The hook returns a component that represents the hotkey. You can mount it wherever you want in your component. By default, this component displays the hotkey between `[]` like `[⇧S]`.
+
+###Hotkeys
+Active the search bar : `[⇧S]`
+Deactive the search bar : `[ESC]`
+
 ## License 📗
 
 [Apache-2.0](https://github.com/elastic/search-ui/blob/master/LICENSE.txt) © [France Labs](https://www.francelabs.com/)
