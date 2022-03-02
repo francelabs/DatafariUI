@@ -6,6 +6,7 @@ import {
   SET_ELEMENTS,
   SET_FIELD_FACET_SELECTED,
 } from "../../../../Contexts/query-context";
+import { ResultsContext } from "../../../../Contexts/results-context";
 
 const useEntityAutocomplete = ({
   field,
@@ -24,6 +25,13 @@ const useEntityAutocomplete = ({
   const [queryID, setQueryID] = useState(null);
   const [queryText, setQueryText] = useState(null);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
+
+  const { results } = useContext(ResultsContext);
+
+  // Effect to clear suggestion when a search is performed
+  useEffect(() => {
+    setSuggestions([]);
+  }, [results]);
 
   const querySuggestions = useCallback(
     (queryText) => {

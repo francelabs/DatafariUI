@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
+import { ResultsContext } from "../../../../Contexts/results-context";
 import useHttp from "../../../../Hooks/useHttp.js";
 
 const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
@@ -9,6 +10,13 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
 
   const [queryID, setQueryID] = useState(null);
   const [queryText, setQueryText] = useState(null);
+
+  const { results } = useContext(ResultsContext);
+
+  // Effect to clear suggestion when a search is performed
+  useEffect(() => {
+    setSuggestions([]);
+  }, [results]);
 
   const querySuggestions = useCallback(
     (queryText) => {

@@ -142,11 +142,6 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
         onClick(formattedValue)
       );
 
-      // Reset suggestions from all suggesters
-      autocompleteRefs.current
-        .values()
-        .forEach((suggesterRef) => suggesterRef.clearSuggestions());
-
       // Reset selection
       setCurrentIndex(-1);
       setSelection();
