@@ -3,6 +3,7 @@ import React, { Fragment, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import DateFacetCustom from "../../Components/DateFacetCustom/DateFacetCustom";
+import AutocompleteFieldFacet from "../../Components/Facet/AutocompleteFieldFacet";
 import FieldFacet from "../../Components/Facet/FieldFacet";
 import QueryFacet from "../../Components/Facet/QueryFacet";
 import HierarchicalFacet from "../../Components/HierarchicalFacet/HierarchicalFacet";
@@ -64,6 +65,7 @@ const Search = (props) => {
       if (element.op && element.title && element.field) {
         const minShow = element.minShow ? element.minShow : 3;
         const maxShow = element.maxShow ? element.maxShow : 5;
+
         return (
           <FieldFacet
             title={t(element.title)}
@@ -72,6 +74,7 @@ const Search = (props) => {
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
+            variant={element.variant}
           />
         );
       }
