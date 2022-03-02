@@ -16,6 +16,10 @@ const useStyles = makeStyles((theme) => {
       borderStyle: "solid",
       borderRadius: theme.shape.borderRadius,
       paddingInline: theme.spacing(0.5),
+
+      [theme.breakpoints.down("sm")]: {
+        display: "none",
+      },
     },
   };
 });
@@ -57,16 +61,16 @@ function useHotkey({ cmdKey, secondKey = "", callback }) {
     return () => document.removeEventListener("keydown", handleKeyup);
   }, [cmdKey, secondKey, callback]);
 
-  const cmdIcon = cmdKey && CMDKEYS[cmdKey] && CMDKEYS[cmdKey].icon;
   return {
-    hotkey: cmdIcon ? (
-      <Typography variant="button" className={classes.hotkey}>
-        {CMDKEYS[cmdKey].icon}
-        {secondKey}
-      </Typography>
-    ) : (
-      ""
-    ),
+    hotkey:
+      cmdKey in CMDKEYS ? (
+        <Typography variant="button" className={classes.hotkey}>
+          {CMDKEYS[cmdKey].icon}
+          {secondKey}
+        </Typography>
+      ) : (
+        ""
+      ),
   };
 }
 
