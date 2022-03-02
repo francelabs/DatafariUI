@@ -1,20 +1,21 @@
-import React, { useCallback, useReducer } from 'react';
-import produce from 'immer';
+import React, { useCallback, useReducer } from "react";
+import produce from "immer";
 
-export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
-export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
-export const REGISTER_QUERY_FACET = 'REGISTER_QUERY_FACET';
-export const SET_QUERY_FACET_SELECTED = 'SET_QUERY_FACET_SELECTED';
-export const SET_ROWS = 'SET_ROWS';
-export const SET_PAGE = 'SET_PAGE';
-export const SET_ELEMENTS = 'SET_ELEMENTS';
-export const SET_SORT = 'SET_SORT';
-export const SET_FILTERS = 'SET_FILTERS';
-export const REGISTER_FILTER = 'REGISTER_FILTER';
-export const UNREGISTER_FILTER = 'UNREGISTER_FILTER';
-export const SET_ELEMENTS_NO_RESET = 'SET_ELEMENTS_NO_RESET';
-export const FILL_FROM_URL_PARAMS = 'FILL_FROM_URL_PARAMS';
-export const SET_OP = 'SET_OP';
+export const REGISTER_FIELD_FACET = "REGISTER_FIELD_FACET";
+export const SET_FIELD_FACET_SELECTED = "SET_FIELD_FACET_SELECTED";
+export const REGISTER_QUERY_FACET = "REGISTER_QUERY_FACET";
+export const SET_QUERY_FACET_SELECTED = "SET_QUERY_FACET_SELECTED";
+export const SET_ROWS = "SET_ROWS";
+export const SET_PAGE = "SET_PAGE";
+export const SET_ELEMENTS = "SET_ELEMENTS";
+export const SET_SORT = "SET_SORT";
+export const SET_FILTERS = "SET_FILTERS";
+export const REGISTER_FILTER = "REGISTER_FILTER";
+export const UNREGISTER_FILTER = "UNREGISTER_FILTER";
+export const SET_ELEMENTS_NO_RESET = "SET_ELEMENTS_NO_RESET";
+export const FILL_FROM_URL_PARAMS = "FILL_FROM_URL_PARAMS";
+export const SET_OP = "SET_OP";
+export const CLEAR_FIELDS_FACET_SELECTED = "CLEAR_FIELDS_FACET_SELECTED";
 
 const defaultQuery = {
   fieldFacets: {},
@@ -22,18 +23,18 @@ const defaultQuery = {
   queryFacets: {},
   selectedQueryFacets: {},
   filters: {},
-  elements: '',
+  elements: "",
   rows: 10,
   page: 1,
-  op: 'AND',
-  sort: { label: 'Relevance', value: 'score desc' },
+  op: "AND",
+  sort: { label: "Relevance", value: "score desc" },
 };
 
 const newQueryReducer = produce((queryDraft, action) => {
   switch (action.type) {
     case SET_ELEMENTS:
       queryDraft.page = 1;
-      queryDraft.elements = action.elements ? action.elements : '';
+      queryDraft.elements = action.elements ? action.elements : "";
       queryDraft.selectedQueryFacets = {};
       queryDraft.selectedFieldFacets = {};
       queryDraft.filters = {};
@@ -43,12 +44,12 @@ const newQueryReducer = produce((queryDraft, action) => {
       break;
     case SET_ELEMENTS_NO_RESET:
       queryDraft.page = 1;
-      queryDraft.elements = action.elements ? action.elements : '';
+      queryDraft.elements = action.elements ? action.elements : "";
       break;
     case SET_PAGE:
       if (
         action.page &&
-        typeof action.page === 'number' &&
+        typeof action.page === "number" &&
         isFinite(action.page) &&
         Math.floor(action.page) === action.page
       ) {
@@ -58,7 +59,7 @@ const newQueryReducer = produce((queryDraft, action) => {
     case SET_ROWS:
       if (
         action.rows &&
-        typeof action.rows === 'number' &&
+        typeof action.rows === "number" &&
         isFinite(action.rows) &&
         Math.floor(action.rows) === action.rows
       ) {
@@ -153,7 +154,7 @@ const newQueryReducer = produce((queryDraft, action) => {
       // If no filter with the id exists, just do nothing
       break;
     case SET_OP:
-      if (action.op === 'OR' || action.op === 'AND') {
+      if (action.op === "OR" || action.op === "AND") {
         queryDraft.op = action.op;
       }
       break;
@@ -173,6 +174,13 @@ const newQueryReducer = produce((queryDraft, action) => {
         ...currentRegisteredFacets,
         ...urlParams,
       };
+
+    case CLEAR_FIELDS_FACET_SELECTED: {
+      action.facetIds.forEach((facetId) => {
+        queryDraft.selectedFieldFacets[facetId] = [];
+      });
+      break;
+    }
     default:
       // Nothing to do, query should remain unchanged
       break;
@@ -193,58 +201,58 @@ const QueryContextProvider = (props) => {
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
-    let result = '';
+    let result = "";
     for (const key in queryParams) {
-      if (result !== '') {
-        result += '&';
+      if (result !== "") {
+        result += "&";
       }
       switch (key) {
-        case 'facet.query':
-        case 'facet.field':
-        case 'fq':
+        case "facet.query":
+        case "facet.field":
+        case "fq":
           let currentParamString = queryParams[key].reduce(
             (accu, element, index, array) => {
-              let next = accu + key + '=' + encodeURIComponent(element);
+              let next = accu + key + "=" + encodeURIComponent(element);
               if (index < array.length - 1) {
-                next += '&';
+                next += "&";
               }
               return next;
             },
-            ''
+            ""
           );
           result += currentParamString;
           break;
         default:
-          result += key + '=' + encodeURIComponent(queryParams[key]);
+          result += key + "=" + encodeURIComponent(queryParams[key]);
       }
     }
     return result;
   }, []);
 
   const buildSavedQueryStringFromParams = useCallback((queryParams) => {
-    let result = '';
+    let result = "";
     for (const key in queryParams) {
-      if (result !== '') {
-        result += '&';
+      if (result !== "") {
+        result += "&";
       }
       switch (key) {
-        case 'facet.query':
-        case 'facet.field':
-        case 'fq':
+        case "facet.query":
+        case "facet.field":
+        case "fq":
           let currentParamString = queryParams[key].reduce(
             (accu, element, index, array) => {
-              let next = accu + key + '=' + element;
+              let next = accu + key + "=" + element;
               if (index < array.length - 1) {
-                next += '&';
+                next += "&";
               }
               return next;
             },
-            ''
+            ""
           );
           result += currentParamString;
           break;
         default:
-          result += key + '=' + queryParams[key];
+          result += key + "=" + queryParams[key];
       }
     }
     return result;
@@ -268,7 +276,7 @@ const QueryContextProvider = (props) => {
               if (index < array.length - 1) {
                 next += ` ${query.fieldFacets[key].op} `;
               } else {
-                next += ')';
+                next += ")";
               }
               return next;
             },
@@ -294,7 +302,7 @@ const QueryContextProvider = (props) => {
               if (index < array.length - 1) {
                 next += ` ${query.fieldFacets[key].op} `;
               } else {
-                next += ')';
+                next += ")";
               }
               return next;
             },
@@ -390,7 +398,7 @@ const QueryContextProvider = (props) => {
     const [fieldFacetsParams, selectedFieldFacets] = prepareFieldFacets();
     if (fieldFacetsParams.length > 0) {
       facetParams.facet = true;
-      facetParams['facet.field'] = fieldFacetsParams;
+      facetParams["facet.field"] = fieldFacetsParams;
       if (selectedFieldFacets.length > 0) {
         facetParams.fq = selectedFieldFacets;
       }
@@ -400,7 +408,7 @@ const QueryContextProvider = (props) => {
     const [queryFacetsParams, selectedQueryFacets] = prepareQueryFacets();
     if (queryFacetsParams.length > 0) {
       facetParams.facet = true;
-      facetParams['facet.query'] = queryFacetsParams;
+      facetParams["facet.query"] = queryFacetsParams;
       if (selectedQueryFacets.length > 0) {
         if (facetParams.fq) {
           facetParams.fq = facetParams.fq.concat(selectedQueryFacets);
@@ -431,26 +439,26 @@ const QueryContextProvider = (props) => {
       // .join(' ')
       // .trim(),
       fl: [
-        'title',
-        'url',
-        'id',
-        'extension',
-        'preview_content',
-        'last_modified',
-        'crawl_date',
-        'author',
-        'original_file_size',
-        'emptied',
-        'repo_source',
-      ].join(','),
+        "title",
+        "url",
+        "id",
+        "extension",
+        "preview_content",
+        "last_modified",
+        "crawl_date",
+        "author",
+        "original_file_size",
+        "emptied",
+        "repo_source",
+      ].join(","),
       sort: query.sort.value,
-      'q.op': 'AND',
+      "q.op": "AND",
       rows: query.rows,
       start: (query.page - 1) * query.rows,
       ...facetsParams,
     };
-    if (queryParameters.q === '') {
-      queryParameters.q = '*:*';
+    if (queryParameters.q === "") {
+      queryParameters.q = "*:*";
     }
 
     return buildQueryStringFromParams(queryParameters);
@@ -468,16 +476,16 @@ const QueryContextProvider = (props) => {
     if (facetsParams.fq) {
       const fieldFacets = prepareFieldFacetsForAlerts();
       const queryFacets = prepareQueryFacetsForAlerts();
-      let result = '';
+      let result = "";
       if (fieldFacets.length > 0) {
-        result = fieldFacets.join('&');
+        result = fieldFacets.join("&");
       }
       if (queryFacets.length > 0) {
-        result = `${result}&${queryFacets.join('&')}`;
+        result = `${result}&${queryFacets.join("&")}`;
       }
       return result;
     } else {
-      return '';
+      return "";
     }
   }, [
     prepareFacetsParams,
@@ -492,8 +500,8 @@ const QueryContextProvider = (props) => {
       q: query.elements,
       ...fq,
     };
-    if (queryParameters.q === '') {
-      queryParameters.q = '*:*';
+    if (queryParameters.q === "") {
+      queryParameters.q = "*:*";
     }
 
     return buildSavedQueryStringFromParams(queryParameters);
@@ -515,7 +523,7 @@ const QueryContextProvider = (props) => {
         // field facets from the legacy UI.
         const regexFieldFacet = /\(?([^:\s]+):("[^"]+"|[^\s]+)\s?\)?/g;
 
-        const fqs = params.getAll('fq');
+        const fqs = params.getAll("fq");
         if (fqs && fqs.length > 0) {
           fqs.forEach((element, index) => {
             const regexResults = regexfq.exec(element);
@@ -609,10 +617,10 @@ const QueryContextProvider = (props) => {
           });
         }
         draft.page = 1;
-        if (params.get('q') === '*:*') {
-          draft.elements = '';
+        if (params.get("q") === "*:*") {
+          draft.elements = "";
         } else {
-          draft.elements = params.get('q');
+          draft.elements = params.get("q");
         }
       });
       queryDispatcher({ type: FILL_FROM_URL_PARAMS, params: newQuery });
@@ -653,7 +661,7 @@ const QueryContextProvider = (props) => {
       }
       if (
         !draft.sort ||
-        (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')
+        (draft.sort.label === "Relevance" && draft.sort.value === "score desc")
       ) {
         delete draft.sort;
       }

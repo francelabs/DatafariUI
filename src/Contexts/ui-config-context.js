@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import useHttp from "../Hooks/useHttp";
 import { APIEndpointsContext } from "./api-endpoints-context";
 
@@ -60,16 +60,23 @@ const DEFAULT_UI = {
       separator: "/",
     },
   ],
-  center: [
-    {
-      type: "SearchInformation",
-      data: ["filters", "facets"],
-    },
-    {
-      type: "ResultsList",
-      data: ["title", "url", "logo", "previewButton", "extract"],
-    },
-  ],
+  center: {
+    main: [
+      {
+        type: "SearchInformation",
+        data: ["filters", "facets"],
+      },
+      {
+        type: "ResultsList",
+        data: ["title", "url", "logo", "previewButton", "extract"],
+      },
+    ],
+    tabs: [
+      { type: "FieldFacet", field: "extension", max: 3 }, // Display tabs as much as extension exist from results
+      { type: "FieldFacet", field: "repo_source", max: 3 }, // Display tabs as much as source exist from results
+      { type: "Raw", label: "google", url: "www.google.fr" }, // Display a tab named google that opens a new tab on www.google.fr
+    ],
+  },
   right: [],
 
   searchBar: {
@@ -100,13 +107,43 @@ const DEFAULT_UI = {
 
 export const UIConfigContext = React.createContext();
 
+// ACTION TYPES
+export const SET_UI_DEFINITION = "SET_UI_DEFINITION";
+export const SET_MASK_FIELD = "SET_MASK_FIELD";
+
+const initialState = {
+  uiDefinition: DEFAULT_UI,
+  maskFieldFacet: "",
+  isLoading: true,
+};
+
+// REDUCER
+const uiConfigReducer = (state, action) => {
+  switch (action.type) {
+    case SET_UI_DEFINITION: {
+      return {
+        ...state,
+        uiDefinition: action.definition,
+        isLoading: false,
+      };
+    }
+
+    case SET_MASK_FIELD: {
+      return {
+        ...state,
+        maskFieldFacet: action.field,
+      };
+    }
+
+    default:
+      return state;
+  }
+};
+
 const UIConfigContextProvider = ({ children }) => {
   const { getUIDefinitionURL } = useContext(APIEndpointsContext);
   const { isLoading, error, data, sendRequest } = useHttp();
-  const [uiDefinition, setUiDefinition] = useState({
-    uiDefinition: DEFAULT_UI,
-    isLoading: true,
-  });
+  const [uiState, dispatch] = useReducer(uiConfigReducer, initialState);
 
   // Sends request to get ui definition json file
   useEffect(() => {
@@ -116,16 +153,17 @@ const UIConfigContextProvider = ({ children }) => {
   // Process request events (loading status change, data reception, error)
   useEffect(() => {
     if (!isLoading) {
-      let definition = DEFAULT_UI;
       if (!error && data && typeof data === "object") {
-        definition = data;
+        dispatch({
+          type: SET_UI_DEFINITION,
+          definition: data,
+        });
       }
-      setUiDefinition({ uiDefinition: definition, isLoading: false });
     }
-  }, [data, error, isLoading, setUiDefinition]);
+  }, [data, error, isLoading, dispatch]);
 
   return (
-    <UIConfigContext.Provider value={uiDefinition}>
+    <UIConfigContext.Provider value={{ ...uiState, dispatch }}>
       {children}
     </UIConfigContext.Provider>
   );
