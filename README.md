@@ -505,6 +505,44 @@ searchBar: {
 
 Adapt props to your new type. All fields will be pass as props to the new type suggester.
 
+### Search Tabs
+
+The UI configuration allows to add some tabs below the search bar, between the All content tab and the Advance search tab.
+
+So far, it exists two kinds of tab :
+
+- `FieldFacet` : it will create tabs as much as a field from result query. Example with "extension" field, it will create tabs as mush as extensions returned in the results query (pdf, doc, ppt, etc).
+  This tab takes two parameters :
+  `field` : the field name to match with tabs
+  `max`: the max number of tab to create
+
+- `Raw` : Raw tab is just a link to an defined URL. It takes 2 parameters :
+  `label` : label of the tab
+  `url`: an HTTP URL. The link is opened into a new navigator tab.
+
+These tabs can be added as below in the ui-config.json, in the center property
+
+```json
+"center": {
+    "main": [
+      {
+        "type": "SearchInformation",
+        "data": ["filters", "facets"],
+      },
+      {
+        "type": "ResultsList",
+        "data": ["title", "url", "logo", "previewButton", "extract"],
+      }
+    ],
+    "tabs": [
+      { "type": "FieldFacet", "field": "extension", "max": 3 },
+      { "type": "FieldFacet", "field": "repo_source", "max": 3 },
+      { "type": "Raw", "label": "google", "url": "https://www.google.fr" },
+      { "type": "Raw", "label": "LinkedIn", "url": "https://www.linkedin.com" }
+    ]
+  },
+```
+
 ### Search results display
 
 The display of results is managed by the components defined in the `src/Components/ResultsList` folder.

@@ -56,16 +56,19 @@
       "separator": "/"
     }
   ],
-  "center": [
-    {
-      "type": "SearchInformation",
-      "data": ["filters", "facets"]
-    },
-    {
-      "type": "ResultsList",
-      "data": ["title", "url", "logo", "previewButton", "extract"]
-    }
-  ],
+  "center": {
+    "main": [
+      {
+        "type": "SearchInformation",
+        "data": ["filters", "facets"],
+      },
+      {
+        "type": "ResultsList",
+        "data": ["title", "url", "logo", "previewButton", "extract"],
+      }
+    ],
+    "tabs": []
+  },
   "right": [],
   "searchBar": {
     "suggesters": [
