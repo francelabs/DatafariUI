@@ -1,14 +1,14 @@
 import { Grid, Hidden, makeStyles } from "@material-ui/core";
 import React, { useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import DateFacetCustom from "../../Components/DateFacetCustom/DateFacetCustom";
-import FieldFacet from "../../Components/Facet/FieldFacet";
-import QueryFacet from "../../Components/Facet/QueryFacet";
-import HierarchicalFacet from "../../Components/HierarchicalFacet/HierarchicalFacet";
-import Pager from "../../Components/Pager/Pager";
-import ResultsList from "../../Components/ResultsList/ResultsList";
-import SearchInformation from "../../Components/SearchInformation/SearchInformation";
-import Spinner from "../../Components/Spinner/Spinner";
+import DateFacetCustom from "../DateFacetCustom/DateFacetCustom";
+import FieldFacet from "../Facet/FieldFacet";
+import QueryFacet from "../Facet/QueryFacet";
+import HierarchicalFacet from "../HierarchicalFacet/HierarchicalFacet";
+import Pager from "../Pager/Pager";
+import ResultsList from "../ResultsList/ResultsList";
+import SearchInformation from "../SearchInformation/SearchInformation";
+import Spinner from "../Spinner/Spinner";
 import { UIConfigContext } from "../../Contexts/ui-config-context";
 
 const allowedElementTypes = [
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function MainTab() {
+function MainTabPanel() {
   const { uiDefinition, maskFieldFacet, isLoading } =
     useContext(UIConfigContext);
 
@@ -200,4 +200,4 @@ function MainTab() {
   );
 }
 
-export default MainTab;
+export default MainTabPanel;

@@ -21,7 +21,6 @@ import ModifyAlertModal from "../../Pages/ModifyAlertModal/ModifyAlertModal";
 import ModifySavedQueryModal from "../../Pages/ModifySavedQueryModal/ModifySavedQueryModal";
 
 const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
-  const [value, setValue] = useState(selectedTab);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { t } = useTranslation();
   const [open, setOpen] = useState(undefined);
@@ -50,11 +49,6 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
     }
   }, [data, error, favoritesEnabled, isLoading, reqIdentifier]);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    onSelectTab && onSelectTab(newValue);
-  };
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -77,8 +71,8 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
           indicatorColor="secondary"
           textColor="secondary"
           variant="scrollable"
-          value={value}
-          onChange={handleChange}
+          value={selectedTab}
+          onChange={(event, newValue) => onSelectTab(newValue)}
         >
           {tabs}
         </Tabs>

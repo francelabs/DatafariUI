@@ -74,7 +74,7 @@ const DEFAULT_UI = {
     tabs: [
       { type: "FieldFacet", field: "extension", max: 3 }, // Display tabs as much as extension exist from results
       { type: "FieldFacet", field: "repo_source", max: 3 }, // Display tabs as much as source exist from results
-      { type: "Raw", label: "google", url: "www.google.fr" }, // Display a tab named google that opens a new tab on www.google.fr
+      { type: "Raw", label: "google", url: "https://www.google.fr" }, // Display a tab named google that opens a new tab on www.google.fr
     ],
   },
   right: [],

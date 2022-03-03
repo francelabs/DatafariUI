@@ -15,12 +15,17 @@ import {
   UIConfigContext,
 } from "../../Contexts/ui-config-context";
 import useDatafari from "../../Hooks/useDatafari";
-import MainTab from "../Tabs/MainTab";
+import MainTabPanel from "../../Components/TabPanel/MainTabPanel";
 import "./Search.css";
 
+// STYLES
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
     backgroundColor: theme.palette.background.default,
+  },
+
+  rawTab: {
+    color: theme.palette.secondary.main,
   },
 }));
 
@@ -31,8 +36,9 @@ const RAW_TAB_TYPE = "Raw";
 
 // Map tab types associated to panel component
 const DEFAULT_PANEL_TABS = {
-  [MAIN_TAB]: MainTab,
-  [FACET_TAB_TYPE]: MainTab,
+  [MAIN_TAB]: MainTabPanel,
+  [FACET_TAB_TYPE]: MainTabPanel,
+  [RAW_TAB_TYPE]: React.Fragment,
 };
 
 const TAB_VALUE_SEPARATOR = ";";
@@ -54,7 +60,9 @@ const Search = () => {
 
   // Build tabs from results and config
   useEffect(() => {
-    const makeTabs = [<Tab value={MAIN_TAB} label={t("All Content")} />];
+    const makeTabs = [
+      <Tab key={MAIN_TAB} value={MAIN_TAB} label={t("All Content")} />,
+    ];
 
     // Build other tabs
     if (uiDefinition.center && Array.isArray(uiDefinition.center.tabs)) {
@@ -75,13 +83,8 @@ const Search = () => {
 
                 makeTabs.push(
                   <Tab
-                    value={
-                      type +
-                      TAB_VALUE_SEPARATOR +
-                      field +
-                      TAB_VALUE_SEPARATOR +
-                      value
-                    }
+                    key={type + field + value}
+                    value={formatTabValue(type, field, value)}
                     label={
                       value +
                       (count
@@ -95,6 +98,15 @@ const Search = () => {
             break;
 
           case RAW_TAB_TYPE: {
+            const { type, label, url } = tab;
+            makeTabs.push(
+              <Tab
+                key={type + label + url}
+                value={formatTabValue(type, label, url)}
+                label={label}
+                className={classes.rawTab}
+              />
+            );
             break;
           }
           default:
@@ -104,11 +116,9 @@ const Search = () => {
     }
 
     setTabs(makeTabs.filter((tab) => React.isValidElement(tab)));
-  }, [results, uiDefinition, i18n, t, queryDispatch]);
+  }, [results, uiDefinition, i18n, classes.rawTab, t, queryDispatch]);
 
   const onSelectTab = (tab) => {
-    let selectTab = MAIN_TAB;
-
     // Set filter for other tab then main
     if (tab === MAIN_TAB) {
       // Reset all filters for each field from tabs
@@ -126,26 +136,40 @@ const Search = () => {
         type: SET_MASK_FIELD,
         field: "",
       });
+
+      setSelectTab(MAIN_TAB);
     } else {
-      const [type, field, value] = tab.split(TAB_VALUE_SEPARATOR);
-      if (type === FACET_TAB_TYPE) {
-        queryDispatch({
-          type: SET_FIELD_FACET_SELECTED,
-          facetId: field,
-          selected: [value],
-        });
+      const [type, ...arraySplit] = tab.split(TAB_VALUE_SEPARATOR);
 
-        // Mask the given field from facet filters layout
-        uiDispatch({
-          type: SET_MASK_FIELD,
-          field,
-        });
+      if (type) {
+        switch (type) {
+          case FACET_TAB_TYPE: {
+            const [field, value] = arraySplit;
+            queryDispatch({
+              type: SET_FIELD_FACET_SELECTED,
+              facetId: field,
+              selected: [value],
+            });
 
-        selectTab = type;
+            // Mask the given field from facet filters layout
+            uiDispatch({
+              type: SET_MASK_FIELD,
+              field,
+            });
+
+            setSelectTab(type);
+            break;
+          }
+          case RAW_TAB_TYPE: {
+            const [, url] = arraySplit;
+            window.open(url, "_blank");
+            break;
+          }
+          default:
+            break;
+        }
       }
     }
-
-    setSelectTab(selectTab);
   };
 
   const TabComponent = panelTabs[selectTab];
@@ -154,7 +178,7 @@ const Search = () => {
     <Fragment>
       <SearchTopMenu
         tabs={tabs}
-        selectedTab={MAIN_TAB}
+        selectedTab={selectTab}
         onSelectTab={onSelectTab}
       />
       <Grid container className={classes.searchGrid}>
@@ -173,4 +197,12 @@ export default Search;
 
 function formatNumberToLocale(n, language) {
   return n ? parseInt(n).toLocaleString(language) : "";
+}
+
+function formatTabValue(...props) {
+  return props.reduce(
+    (acc, current, index) =>
+      index === 0 ? current : acc + TAB_VALUE_SEPARATOR + current,
+    ""
+  );
 }
