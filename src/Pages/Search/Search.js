@@ -2,8 +2,10 @@ import { Grid, makeStyles, Tab } from "@material-ui/core";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import Modal from "../../Components/Modal/Modal";
 import SearchTopMenu from "../../Components/SearchTopMenu/SearchTopMenu";
+import MainTabPanel from "../../Components/TabPanel/MainTabPanel";
 import {
   CLEAR_FIELDS_FACET_SELECTED,
   QueryContext,
@@ -15,7 +17,6 @@ import {
   UIConfigContext,
 } from "../../Contexts/ui-config-context";
 import useDatafari from "../../Hooks/useDatafari";
-import MainTabPanel from "../../Components/TabPanel/MainTabPanel";
 import "./Search.css";
 
 // STYLES
@@ -49,6 +50,8 @@ const Search = () => {
 
   const classes = useStyles();
   const { path } = useRouteMatch();
+
+  const { tab = MAIN_TAB } = useParams();
 
   const { dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
@@ -157,7 +160,8 @@ const Search = () => {
               field,
             });
 
-            setSelectTab(type);
+            setSelectTab(formatTabValue(type, field, value));
+
             break;
           }
           case RAW_TAB_TYPE: {
@@ -172,7 +176,7 @@ const Search = () => {
     }
   };
 
-  const TabComponent = panelTabs[selectTab];
+  const TabComponent = panelTabs[tab];
 
   return (
     <Fragment>
