@@ -71,6 +71,7 @@ const DEFAULT_UI = {
         data: ["title", "url", "logo", "previewButton", "extract"],
       },
     ],
+    tabs: [],
   },
   right: [],
 

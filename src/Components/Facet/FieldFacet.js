@@ -10,7 +10,7 @@ const FacetComponentsByVariant = {
   [AUTOCOMPLETE_VARIANT]: AutocompleteFieldFacet,
 };
 
-const FieldFacet = ({ variant = "CHECKBOX_VARIANT", ...props }) => {
+const FieldFacet = ({ variant = CHECKBOX_VARIANT, ...props }) => {
   const FacetComponent =
     variant in FacetComponentsByVariant
       ? FacetComponentsByVariant[variant]
