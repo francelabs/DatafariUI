@@ -42,8 +42,6 @@ function useHotkey({ cmdKey, secondKey = "", callback }) {
 
   useEffect(() => {
     const handleKeyup = (e) => {
-      console.log(e, e.key);
-
       if (
         cmdKey &&
         CMDKEYS[cmdKey] &&
