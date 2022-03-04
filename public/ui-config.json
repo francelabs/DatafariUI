@@ -60,11 +60,11 @@
     "main": [
       {
         "type": "SearchInformation",
-        "data": ["filters", "facets"],
+        "data": ["filters", "facets"]
       },
       {
         "type": "ResultsList",
-        "data": ["title", "url", "logo", "previewButton", "extract"],
+        "data": ["title", "url", "logo", "previewButton", "extract"]
       }
     ],
     "tabs": []
@@ -77,7 +77,7 @@
         "props": {
           "maxSuggestion": 5,
           "title": "SUGGESTED QUERIES",
-          "subtitle": "Queries extending your current query terms",
+          "subtitle": "Queries extending your current query terms"
         }
       },
       {
