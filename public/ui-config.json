@@ -93,5 +93,16 @@
         }
       }
     ]
+  },
+  "hotkeys": {
+    "activeSearchBar": {
+      "cmd": "shift",
+      "key": "S",
+      "enable": false
+    }, 
+    "deactiveSearchBar": {
+      "cmd": "escape", 
+      "enable": false
+    }
   }
 }

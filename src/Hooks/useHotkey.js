@@ -2,11 +2,6 @@ import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React, { useEffect, useRef } from "react";
 
-export const CTRL = "ctrl";
-export const ALT = "alt";
-export const SHIFT = "shift";
-export const ESCAPE = "Escape";
-
 const useStyles = makeStyles((theme) => {
   return {
     hotkey: {
@@ -24,15 +19,25 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
+// Predefined hotkeys IDs use in the App
+export const ACTIVE_SEARCH_BAR_ID = "activeSearchBar";
+export const DEACTIVE_SEARCH_BAR_ID = "deactiveSearchBar";
+
+// MAIN CMD keys
+export const CTRL = "ctrl";
+export const ALT = "alt";
+export const SHIFT = "shift";
+export const ESCAPE = "escape";
+
 // PREDEFINED cmd keys available
 const CMDKEYS = {
   [CTRL]: { isValid: (e) => e.ctrlKey, icon: "CTRL" },
   [ALT]: { isValid: (e) => e.altKey, icon: "ALT" },
   [SHIFT]: { isValid: (e) => e.shiftKey, icon: <>&#8679;</> }, // Fat arrow up hex code
-  [ESCAPE]: { isValid: (e) => e.key === "Escape", icon: "ESC" },
+  [ESCAPE]: { isValid: (e) => e.key.toLowerCase() === "escape", icon: "ESC" },
 };
 
-function useHotkey({ cmdKey, secondKey = "", callback }) {
+function useHotkey({ cmd = "", key = "", enable = false, callback }) {
   const classes = useStyles();
   const callbackRef = useRef();
 
@@ -41,12 +46,14 @@ function useHotkey({ cmdKey, secondKey = "", callback }) {
   }, [callback]);
 
   useEffect(() => {
+    if (!enable) return;
+
     const handleKeyup = (e) => {
       if (
-        cmdKey &&
-        CMDKEYS[cmdKey] &&
-        CMDKEYS[cmdKey].isValid(e) &&
-        (secondKey === e.key || secondKey === "")
+        cmd &&
+        CMDKEYS[cmd] &&
+        CMDKEYS[cmd].isValid(e) &&
+        (key === e.key || key === "")
       ) {
         e.preventDefault();
         e.stopPropagation();
@@ -57,14 +64,14 @@ function useHotkey({ cmdKey, secondKey = "", callback }) {
     document.addEventListener("keydown", handleKeyup);
 
     return () => document.removeEventListener("keydown", handleKeyup);
-  }, [cmdKey, secondKey, callback]);
+  }, [enable, cmd, key, callback]);
 
   return {
     hotkey:
-      cmdKey in CMDKEYS ? (
+      enable && cmd in CMDKEYS ? (
         <Typography variant="button" className={classes.hotkey}>
-          {CMDKEYS[cmdKey].icon}
-          {secondKey}
+          {CMDKEYS[cmd].icon}
+          {key}
         </Typography>
       ) : (
         ""

@@ -25,7 +25,11 @@ import {
   SearchContext,
   SearchContextActions,
 } from "../../Contexts/search-context";
-import useHotkey, { ESCAPE, SHIFT } from "../../Hooks/useHotkey";
+import { UIConfigContext } from "../../Contexts/ui-config-context";
+import useHotkey, {
+  ACTIVE_SEARCH_BAR_ID,
+  DEACTIVE_SEARCH_BAR_ID,
+} from "../../Hooks/useHotkey";
 import AutocompleteContainer from "./Autocompletes/AutocompleteContainer/AutocompleteContainer";
 import "./SimpleSearchBar.css";
 
@@ -121,6 +125,8 @@ const SimpleSearchBar = () => {
     queryText: "",
     triggerSuggestion: false,
   });
+  const [activeSearchHotkey, setActiveSearchHotkey] = useState();
+  const [deactiveSearchHotkey, setDeactiveSearchHotkey] = useState();
 
   const { queryText } = textState;
 
@@ -133,6 +139,11 @@ const SimpleSearchBar = () => {
   const history = useHistory();
   const { searchState, searchDispatch } = useContext(SearchContext);
 
+  const {
+    uiDefinition: { hotkeys = {} },
+  } = useContext(UIConfigContext);
+
+  // Hotkey handlers
   const handleHotkey = useCallback(
     () => inputSearchRef.current.focus(),
     [inputSearchRef]
@@ -143,17 +154,17 @@ const SimpleSearchBar = () => {
     inputSearchRef.current.blur();
   }, [inputSearchRef, setShowQuerySuggestion]);
 
-  // Defines hotkeys
+  // Focus on input search bar
   const { hotkey: searchHotkey } = useHotkey({
-    cmdKey: SHIFT,
-    secondKey: "S",
+    ...hotkeys[ACTIVE_SEARCH_BAR_ID],
     callback: handleHotkey,
-  }); // Focus on input search bar
+  });
 
+  // Hide suggestions panel and blur input
   const { hotkey: escapeHotkey } = useHotkey({
-    cmdKey: ESCAPE,
+    ...hotkeys[DEACTIVE_SEARCH_BAR_ID],
     callback: handeEscapeHotkey,
-  }); // Hide suggestions panel and blur input
+  });
 
   useEffect(() => {
     setTextState({ queryText: query.elements });

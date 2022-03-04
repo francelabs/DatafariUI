@@ -1101,41 +1101,59 @@ an endpoint URL, a hook, and use the hook in components in combination to effect
 ### useHotkey hook
 
 This hook allows to define hotkey with one command key plus an optional second letter key.
-Command key are defined as below :
+Command key are defined as below (case sensitive) :
 
-- SHIFT
-- ALT
-- CTRL
-- ESCAPE
+- shift
+- alt
+- ctrl
+- escape
 
-These command keys can be associated with another key like any alphanumeric key, to provide hotkey under the form : `[CMD_key+second_key]` such as `[ctrl+k]`, `[SHIFT+S]` etc.
+  These commands keys are defined into `src/Hooks/useHotkey.js`. Use exported cmd keys ID in other components.
 
-So far, hotkeys are used in the search bar :
-
-- `[SHIFT + S]` : set focus in the search bar
-- `[ESCAPE]` : Hide suggestions and blur the input of the search bar
+These command keys can be associated with another key like any alphanumeric key, to provide hotkey under the form : `[CMD_key+second_key]` such as `[ctrl+k]`, `[shift+S]` etc.
 
 `useHotkey` hook can be used anywhere in the react application. Exemple of use :
 
 ```jsx
+import { CTRL } from "src/Hooks/useHotkey";
+
 const { hotkey: ctrlHotkey } = useHotkey({
-  cmdKey: CTRL,
-  secondKey: "D",
+  cmd: CTRL,
+  key: "D",
+  enable: true,
   callback: handleHotkey,
 });
 ```
 
 The hook take 3 parameters :
 
-- `cmdKey` : Command key, one of defined command keys in the useHotkey js file
-- `secondKey` (optional, default value to "") : Second key of the hotkey.
+- `cmd` : Command key, one of defined command keys in the useHotkey js file
+- `key` (optional, default value to "") : Second key of the hotkey.
+- `enable` (optional, default is false) : True to enable the hotkey. False otherwise. In this last case, empty string will be returned
 - `callback` : Called if command key matched and either the second key matched or it equals to empty string
 
 The hook returns a component that represents the hotkey. You can mount it wherever you want in your component. By default, this component displays the hotkey between `[]` like `[⇧S]`.
 
-###Hotkeys
-Active the search bar : `[⇧S]`
-Deactive the search bar : `[ESC]`
+###Hotkeys configuration
+Hotkeys can be configured into `ui-config.json` file, like below ;
+
+```json
+"hotkeys": {
+    "activeSearchBar": {
+      "cmd": "shift",
+      "key": "S",
+      "enable": false
+    },
+    "deactiveSearchBar": {
+      "cmd": "escape",
+      "enable": false
+    }
+  }
+```
+
+Be care, cmd and key are case sensitive. If you use `shift` as command, the key MUST be in <strong>CAPITAL</strong>.
+
+Hotkeys IDs are defined into the `useHotkey.js` (`activeSearchBar`, `deactiveSearchBar`, ...). Defined here other IDs to increase the list of hotkeys available.
 
 ## License 📗
 
