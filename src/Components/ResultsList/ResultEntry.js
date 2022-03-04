@@ -60,8 +60,14 @@ const useStyles = makeStyles((theme) => ({
     wordBreak: "break-all",
   },
   bookmarkAction: {
-    top: theme.spacing(1),
+    // top: theme.spacing(1),
     transform: "none",
+
+    [theme.breakpoints.down("sm")]: {
+      "& button": {
+        padding: "12px 12px 0 0",
+      },
+    },
   },
   moreLikeThis: {
     float: "right",
@@ -427,7 +433,7 @@ const ResultEntry = (props) => {
       />
       {/* Favorite badge, shown only if the user is authenticated and favorites are active */}
       {props.bookmarkEnabled && userState.user && (
-        <ListItemSecondaryAction className={classes.bookmarkAction}>
+        <div className={classes.bookmarkAction}>
           <IconButton
             edge="end"
             aria-label="bookmark"
@@ -435,7 +441,7 @@ const ResultEntry = (props) => {
           >
             {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
           </IconButton>
-        </ListItemSecondaryAction>
+        </div>
       )}
     </ListItem>
   );
