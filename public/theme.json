@@ -26,11 +26,5 @@
         "fontSize": "0.65em"
       }
     }
-  },
-  "components": {
-    "MuiList": {
-      "backgroundColor": "yellow",
-      "fontSize": 42
-    }
   }
 }

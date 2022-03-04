@@ -3,6 +3,7 @@ import {
   Button,
   Divider,
   Hidden,
+  makeStyles,
   Menu,
   MenuItem,
   Tabs,
@@ -20,6 +21,16 @@ import ManageSavedQueriesModal from "../../Pages/ManageSavedQueriesModal/ManageS
 import ModifyAlertModal from "../../Pages/ModifyAlertModal/ModifyAlertModal";
 import ModifySavedQueryModal from "../../Pages/ModifySavedQueryModal/ModifySavedQueryModal";
 
+const useStyles = makeStyles((theme) => ({
+  toolbar: {
+    "& button": {
+      [theme.breakpoints.down("sm")]: {
+        fontSize: "0.65em",
+      },
+    },
+  },
+}));
+
 const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { t } = useTranslation();
@@ -28,6 +39,8 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
   const { isLoading, data, error, reqIdentifier, getFavoritesStatus } =
     useFavorites();
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
+
+  const classes = useStyles();
 
   useEffect(() => {
     getFavoritesStatus("FETCH_FAVORITES_STATUS");
@@ -66,7 +79,7 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
 
   return (
     <AppBar position="static" elevation={0}>
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <Tabs
           indicatorColor="secondary"
           textColor="secondary"

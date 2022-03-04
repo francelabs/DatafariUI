@@ -37,6 +37,12 @@ const useStyles = makeStyles((theme) => ({
   },
   rightMenu: {
     textAlign: "right",
+
+    "& > button": {
+      [theme.breakpoints.down("sm")]: {
+        fontSize: 10,
+      },
+    },
   },
 }));
 
