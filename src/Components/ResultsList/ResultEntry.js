@@ -1,25 +1,23 @@
-import React, { useContext } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
-  makeStyles,
+  Avatar,
+  IconButton,
+  Link,
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton,
+  makeStyles,
   SvgIcon,
-  ListItemSecondaryAction,
-  Link,
   Tooltip,
-  Avatar,
 } from "@material-ui/core";
-
-import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
-import { ReactComponent as PreviewIcon } from "../../Icons/preview-black-18dp.svg";
+import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
+import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { UserContext } from "../../Contexts/user-context";
+import { Link as RouterLink } from "react-router-dom";
 import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
 import { QueryContext } from "../../Contexts/query-context";
+import { UserContext } from "../../Contexts/user-context";
+import { ReactComponent as PreviewIcon } from "../../Icons/preview-black-18dp.svg";
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -60,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
     wordBreak: "break-all",
   },
   bookmarkAction: {
-    // top: theme.spacing(1),
     transform: "none",
 
     [theme.breakpoints.down("sm")]: {
