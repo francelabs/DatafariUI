@@ -32,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
   pagerContainer: {
     margin: theme.spacing(2),
     float: "right",
+
+    [theme.breakpoints.down("sm")]: {
+      margin: 0,
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
   },
 
   facetDivider: {

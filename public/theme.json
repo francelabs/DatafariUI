@@ -14,6 +14,23 @@
     }
   },
   "typography": {
-    "fontFamily": "Montserrat, Helvetica, Arial, sans-serif"
+    "fontFamily": "Montserrat, Helvetica, Arial, sans-serif",
+
+    "body1": {
+      "@media (max-width:600px)": {
+        "fontSize": "0.65em"
+      }
+    },
+    "body2": {
+      "@media (max-width:600px)": {
+        "fontSize": "0.65em"
+      }
+    }
+  },
+  "components": {
+    "MuiList": {
+      "backgroundColor": "yellow",
+      "fontSize": 42
+    }
   }
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from "react";
 import {
   Typography,
   makeStyles,
@@ -6,30 +6,37 @@ import {
   Button,
   Menu,
   MenuItem,
-} from '@material-ui/core';
-import { useTranslation } from 'react-i18next';
-import { ResultsContext } from '../../Contexts/results-context';
+} from "@material-ui/core";
+import { useTranslation } from "react-i18next";
+import { ResultsContext } from "../../Contexts/results-context";
 import {
   QueryContext,
   SET_FIELD_FACET_SELECTED,
   SET_QUERY_FACET_SELECTED,
   SET_SORT,
   UNREGISTER_FILTER,
-} from '../../Contexts/query-context';
-import FilterEntry from './FilterEntry';
-import SortIcon from '@material-ui/icons/Sort';
-import CurrentSearchAndSpellcheck from './CurrentSearchAndSpellcheck';
-import ResultCountInformation from './ResultCountInformation';
-import produce from 'immer';
-import useFilterFormater from '../../Hooks/useFilterFormater';
+} from "../../Contexts/query-context";
+import FilterEntry from "./FilterEntry";
+import SortIcon from "@material-ui/icons/Sort";
+import CurrentSearchAndSpellcheck from "./CurrentSearchAndSpellcheck";
+import ResultCountInformation from "./ResultCountInformation";
+import produce from "immer";
+import useFilterFormater from "../../Hooks/useFilterFormater";
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {
     margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+
+    display: "flex",
+    justifyContent: "space-between",
+
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(0),
+    },
   },
   rightMenu: {
-    textAlign: 'right',
+    textAlign: "right",
   },
 }));
 
@@ -106,8 +113,8 @@ const SearchInformation = (props) => {
     queryDispatch({
       type: SET_SORT,
       sort: {
-        label: 'Relevance',
-        value: 'score desc',
+        label: "Relevance",
+        value: "score desc",
       },
     });
     handleCloseSortMenu();
@@ -117,15 +124,15 @@ const SearchInformation = (props) => {
     queryDispatch({
       type: SET_SORT,
       sort: {
-        label: 'Creation Date',
-        value: 'creation_date desc',
+        label: "Creation Date",
+        value: "creation_date desc",
       },
     });
     handleCloseSortMenu();
   };
 
   const filters = [];
-  if (displayData.includes('facets')) {
+  if (displayData.includes("facets")) {
     for (const key in query.fieldFacets) {
       if (
         query.selectedFieldFacets[key] &&
@@ -169,7 +176,7 @@ const SearchInformation = (props) => {
     }
   }
 
-  if (displayData.includes('filters')) {
+  if (displayData.includes("filters")) {
     if (Object.keys(query.filters).length > 0) {
       filters.push(
         <Typography component="span">
@@ -191,49 +198,48 @@ const SearchInformation = (props) => {
     !results.isLoading &&
     !results.error && (
       <div className={classes.informationContainer}>
-        <Grid container>
-          <Grid item xs={8}>
-            <Typography component="span">
-              <ResultCountInformation
-                start={results.start}
-                rows={results.rows}
-                numFound={results.numFound}
-              />
-            </Typography>
-            <Typography component="span">
-              {filters.length > 0 && (
-                <>
-                  - [{t('FILTERS')}]:&nbsp;
-                  {filters}
-                </>
-              )}
-            </Typography>
-            <CurrentSearchAndSpellcheck />
-          </Grid>
-          <Grid item xs className={classes.rightMenu}>
-            <Button
-              onClick={handleOpenSortMenu}
-              aria-controls={`sort-menu`}
-              aria-haspopup="true"
-              ref={sortMenuAnchorRef}
-            >
-              <SortIcon />
-              {t(query.sort.label)}
-            </Button>
-            <Menu
-              id={`sort-menu`}
-              anchorEl={sortMenuAnchorRef.current}
-              open={sortMenuOpen}
-              onClose={handleCloseSortMenu}
-            >
-              <MenuItem onClick={handleSelectRelevanceSort}>
-                {t('Relevance')}
-              </MenuItem>
-              <MenuItem onClick={handleSelectDateSort}>
-                {t('Creation Date')}
-              </MenuItem>
-            </Menu>
-            {/* 
+        <div>
+          <Typography component="span">
+            <ResultCountInformation
+              start={results.start}
+              rows={results.rows}
+              numFound={results.numFound}
+            />
+          </Typography>
+          <Typography component="span">
+            {filters.length > 0 && (
+              <>
+                - [{t("FILTERS")}]:&nbsp;
+                {filters}
+              </>
+            )}
+          </Typography>
+          <CurrentSearchAndSpellcheck />
+        </div>
+        <div className={classes.rightMenu}>
+          <Button
+            onClick={handleOpenSortMenu}
+            aria-controls={`sort-menu`}
+            aria-haspopup="true"
+            ref={sortMenuAnchorRef}
+          >
+            <SortIcon />
+            {t(query.sort.label)}
+          </Button>
+          <Menu
+            id={`sort-menu`}
+            anchorEl={sortMenuAnchorRef.current}
+            open={sortMenuOpen}
+            onClose={handleCloseSortMenu}
+          >
+            <MenuItem onClick={handleSelectRelevanceSort}>
+              {t("Relevance")}
+            </MenuItem>
+            <MenuItem onClick={handleSelectDateSort}>
+              {t("Creation Date")}
+            </MenuItem>
+          </Menu>
+          {/* 
           <IconButton>
             <ViewListIcon />
           </IconButton>
@@ -241,8 +247,7 @@ const SearchInformation = (props) => {
             <ViewModuleIcon />
           </IconButton>
            */}
-          </Grid>
-        </Grid>
+        </div>
       </div>
     )
   );

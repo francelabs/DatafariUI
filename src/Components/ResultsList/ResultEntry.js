@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   makeStyles,
   ListItem,
@@ -11,125 +11,132 @@ import {
   Link,
   Tooltip,
   Avatar,
-} from '@material-ui/core';
+} from "@material-ui/core";
 
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import { ReactComponent as PreviewIcon } from '../../Icons/preview-black-18dp.svg';
-import { useTranslation } from 'react-i18next';
-import { UserContext } from '../../Contexts/user-context';
-import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
-import { QueryContext } from '../../Contexts/query-context';
+import BookmarkBorderIcon from "@material-ui/icons/BookmarkBorder";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
+import { ReactComponent as PreviewIcon } from "../../Icons/preview-black-18dp.svg";
+import { useTranslation } from "react-i18next";
+import { UserContext } from "../../Contexts/user-context";
+import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
+import { QueryContext } from "../../Contexts/query-context";
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
-    wordWrap: 'break-word',
-    minHeight: '7rem',
+    wordWrap: "break-word",
+    minHeight: "7rem",
   },
 
   previewIcon: {
-    display: 'block',
-    position: 'absolute',
-    top: '3.75rem',
+    display: "block",
+    position: "absolute",
+    top: "3.75rem",
     left: theme.spacing(0),
   },
   fileIcon: {
-    height: '24px',
-    width: '24px',
+    height: "24px",
+    width: "24px",
   },
   previewIconSvg: {
-    fontSize: '2rem',
+    fontSize: "2rem",
   },
   url: {
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   urlContainer: {
-    paddingTop: '0.5rem',
+    paddingTop: "0.5rem",
+    wordBreak: "break-all",
   },
   bookmarkAction: {
     top: theme.spacing(1),
-    transform: 'none',
+    transform: "none",
   },
   moreLikeThis: {
-    float: 'right',
+    float: "right",
   },
 
   highlight: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+
+  iconsContainer: {
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 35,
+    },
   },
 }));
 
 // List of extensions for which a dedicated file icon exists
 const extension_list = [
-  'ai',
-  'asf',
-  'avi',
-  'bib',
-  'bin',
-  'csv',
-  'deb',
-  'default',
-  'djvu',
-  'dmg',
-  'doc',
-  'docx',
-  'dwf',
-  'dwg',
-  'flac',
-  'flv',
-  'gif',
-  'gz',
-  'html',
-  'indd',
-  'iso',
-  'jpg',
-  'log',
-  'm4v',
-  'midi',
-  'mkv',
-  'mov',
-  'mp4',
-  'mpeg',
-  'mpg',
-  'odp',
-  'ods',
-  'odt',
-  'oga',
-  'ogg',
-  'ogv',
-  'pdf',
-  'pds',
-  'png',
-  'ppt',
-  'pptx',
-  'ram',
-  'ra',
-  'rm',
-  'rpm',
-  'rv',
-  'skp',
-  'spx',
-  'sql',
-  'tar',
-  'tex',
-  'tgz',
-  'txt',
-  'vob',
-  'wmv',
-  'xls',
-  'xml',
-  'xpi',
-  'xsl',
-  'xslx',
-  'zip',
+  "ai",
+  "asf",
+  "avi",
+  "bib",
+  "bin",
+  "csv",
+  "deb",
+  "default",
+  "djvu",
+  "dmg",
+  "doc",
+  "docx",
+  "dwf",
+  "dwg",
+  "flac",
+  "flv",
+  "gif",
+  "gz",
+  "html",
+  "indd",
+  "iso",
+  "jpg",
+  "log",
+  "m4v",
+  "midi",
+  "mkv",
+  "mov",
+  "mp4",
+  "mpeg",
+  "mpg",
+  "odp",
+  "ods",
+  "odt",
+  "oga",
+  "ogg",
+  "ogv",
+  "pdf",
+  "pds",
+  "png",
+  "ppt",
+  "pptx",
+  "ram",
+  "ra",
+  "rm",
+  "rpm",
+  "rv",
+  "skp",
+  "spx",
+  "sql",
+  "tar",
+  "tex",
+  "tgz",
+  "txt",
+  "vob",
+  "wmv",
+  "xls",
+  "xml",
+  "xpi",
+  "xsl",
+  "xslx",
+  "zip",
 ];
 
 const dataNames = {
-  title: 'title',
-  url: 'url',
-  logo: 'logo',
-  previewButton: 'previewButton',
-  snippet: 'extract',
+  title: "title",
+  url: "url",
+  logo: "logo",
+  previewButton: "previewButton",
+  snippet: "extract",
 };
 
 const ResultEntry = (props) => {
@@ -139,7 +146,7 @@ const ResultEntry = (props) => {
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
   const data = Array.isArray(props.data) ? props.data : [];
-  const docLinkTarget = props.openDocInNewTab ? '_blank' : undefined;
+  const docLinkTarget = props.openDocInNewTab ? "_blank" : undefined;
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -152,32 +159,32 @@ const ResultEntry = (props) => {
       .replace(/&#x?([\dA-F]+);/g, function (match, dec) {
         return String.fromCharCode(dec);
       })
-      .replace(/\uFFFD/g, '');
+      .replace(/\uFFFD/g, "");
   };
 
   /*
    * Prepare and formats the text to be shown as snippet
    */
   const prepareSnippet = () => {
-    let snippet = t('Document content not indexed');
+    let snippet = t("Document content not indexed");
     if (!props.emptied) {
       snippet = Object.keys(props.highlighting).reduce((accumulator, hlKey) => {
         return (
           accumulator +
           props.highlighting[hlKey].reduce((innerAccu, value) => {
             let formattedValue = value
-              .replace(/\uFFFD/g, ' ')
-              .replace(/(\s*\n){2,}/gm, '\n\n');
+              .replace(/\uFFFD/g, " ")
+              .replace(/(\s*\n){2,}/gm, "\n\n");
             return innerAccu + formattedValue;
-          }, '')
+          }, "")
         );
-      }, '');
+      }, "");
 
-      if (snippet === '') {
+      if (snippet === "") {
         snippet = props.preview_content[0]
           .substring(0, 200)
-          .replace(/\uFFFD/g, ' ')
-          .replace(/(\s*\n){2,}/gm, '\n\n');
+          .replace(/\uFFFD/g, " ")
+          .replace(/(\s*\n){2,}/gm, "\n\n");
       } else {
         const highlightExtract = /<span class="em">(.*?)<\/span>/gm;
         let match;
@@ -204,7 +211,7 @@ const ResultEntry = (props) => {
    * when hovered.
    */
   const prepareTitle = () => {
-    let title = '';
+    let title = "";
     if (Array.isArray(props.title)) {
       try {
         title = decodeURIComponent(props.title[0]);
@@ -223,7 +230,7 @@ const ResultEntry = (props) => {
         <Tooltip title={title} placement="right" aria-label={title}>
           <span>
             {title.substring(0, 15) +
-              '...' +
+              "..." +
               title.substring(title.length - 15)}
           </span>
         </Tooltip>
@@ -240,13 +247,13 @@ const ResultEntry = (props) => {
     var maxSize = 70;
     let result = props.url;
     if (props.url.length > maxSize) {
-      const fileName = props.url.substring(props.url.lastIndexOf('/') + 1);
+      const fileName = props.url.substring(props.url.lastIndexOf("/") + 1);
       if (fileName.length > maxSize - 15) {
         result = (
           <Tooltip title={props.url} placement="right" aria-label={props.url}>
             <span>
               {props.url.substring(0, 15) +
-                '...' +
+                "..." +
                 fileName.substring(fileName.length - 1 - (maxSize - 15))}
             </span>
           </Tooltip>
@@ -257,10 +264,10 @@ const ResultEntry = (props) => {
             <span>
               {props.url.substring(
                 0,
-                props.url.lastIndexOf('/') - props.url.length + maxSize
+                props.url.lastIndexOf("/") - props.url.length + maxSize
               ) +
-                '...' +
-                props.url.substring(props.url.lastIndexOf('/'))}
+                "..." +
+                props.url.substring(props.url.lastIndexOf("/"))}
             </span>
           </Tooltip>
         );
@@ -285,7 +292,7 @@ const ResultEntry = (props) => {
     let request = buildSearchQueryString();
     return `${apiEndpointsContext.docRedirectURL}?url=${props.url.substring(
       0,
-      props.url.lastIndexOf('/')
+      props.url.lastIndexOf("/")
     )}&${request}&position=${props.position}`;
   };
 
@@ -318,7 +325,7 @@ const ResultEntry = (props) => {
     >
       {(data.includes(dataNames.logo) ||
         data.includes(dataNames.previewButton)) && (
-        <ListItemIcon>
+        <ListItemIcon className={classes.iconsContainer}>
           {data.includes(dataNames.logo) && (
             <Avatar
               className={classes.fileIcon}
@@ -368,8 +375,8 @@ const ResultEntry = (props) => {
                 <span className={classes.url}>{prepareUrl()}</span>
               </div>
             )}
-            {props['folderLinkSources'] &&
-              props['folderLinkSources'].indexOf(props['repo_source']) !==
+            {props["folderLinkSources"] &&
+              props["folderLinkSources"].indexOf(props["repo_source"]) !==
                 -1 && (
                 <div>
                   <Link
@@ -377,13 +384,13 @@ const ResultEntry = (props) => {
                     href={prepareFolderURL()}
                     target="_blank"
                   >
-                    {t('Open Folder')}
+                    {t("Open Folder")}
                   </Link>
                 </div>
               )}
             <div>
               <span>
-                {t('Source')}: {props['repo_source']}
+                {t("Source")}: {props["repo_source"]}
               </span>
               {/* More like this link, commented because not yet implemented.
               <span className={classes.moreLikeThis}>
@@ -398,7 +405,7 @@ const ResultEntry = (props) => {
             </div>
           </>
         }
-        secondaryTypographyProps={{ component: 'div' }}
+        secondaryTypographyProps={{ component: "div" }}
       />
       {/* Favorite badge, shown only if the user is authenticated and favorites are active */}
       {props.bookmarkEnabled && userState.user && (

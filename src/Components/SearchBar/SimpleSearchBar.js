@@ -40,6 +40,10 @@ const useStyles = makeStyles((theme) => {
     "&:hover": {
       backgroundColor: theme.palette.grey[300],
     },
+
+    "&::first-letter": {
+      textTransform: "lowercase",
+    },
   };
 
   return {
@@ -81,6 +85,7 @@ const useStyles = makeStyles((theme) => {
     formContainer: {
       position: "relative",
       zIndex: 2,
+      width: "100%",
     },
 
     searchBackground: {
@@ -227,7 +232,11 @@ const SimpleSearchBar = () => {
                   root: classes.inputRoot,
                   input: classes.inputInput,
                 }}
-                inputProps={{ "aria-label": "search", autocomplete: "off" }}
+                inputProps={{
+                  "aria-label": "search",
+                  autocomplete: "off",
+                  autoCapitalize: "none",
+                }}
                 id="datafari-search-input"
                 type="text"
                 value={queryText}
