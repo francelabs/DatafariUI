@@ -24,21 +24,33 @@ import { QueryContext } from "../../Contexts/query-context";
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
     wordWrap: "break-word",
-    minHeight: "7rem",
+    alignItems: "normal",
+    paddingLeft: 0,
+
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(0),
+    },
   },
 
   previewIcon: {
-    display: "block",
-    position: "absolute",
-    top: "3.75rem",
-    left: theme.spacing(0),
+    padding: 0,
   },
   fileIcon: {
     height: "24px",
     width: "24px",
+    margin: "10px 0px",
+
+    [theme.breakpoints.down("sm")]: {
+      margin: "5px 0px",
+    },
   },
   previewIconSvg: {
     fontSize: "2rem",
+    margin: "15px 0px",
+
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "1.25rem",
+    },
   },
   url: {
     fontStyle: "italic",
@@ -60,8 +72,18 @@ const useStyles = makeStyles((theme) => ({
   },
 
   iconsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+
     [theme.breakpoints.down("sm")]: {
       minWidth: 35,
+
+      "& img": {
+        width: 16,
+        height: 16,
+      },
     },
   },
 }));
@@ -318,11 +340,7 @@ const ResultEntry = (props) => {
   const fileIcon = selectFileIcon(props.extension);
 
   return (
-    <ListItem
-      alignItems="flex-start"
-      key={props.url}
-      className={classes.resultContainer}
-    >
+    <ListItem key={props.url} className={classes.resultContainer}>
       {(data.includes(dataNames.logo) ||
         data.includes(dataNames.previewButton)) && (
         <ListItemIcon className={classes.iconsContainer}>

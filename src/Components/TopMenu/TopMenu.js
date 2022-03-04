@@ -29,14 +29,28 @@ import UserMenu from "../UserMenu/UserMenu";
 const useStyles = makeStyles((theme) => ({
   toolbar: {
     display: "flex",
+
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       padding: theme.spacing(0),
+      maxHeight: 50,
     },
   },
 
   logo: {
     marginRight: theme.spacing(2),
+    padding: 5,
+    "& > img": {
+      height: 50,
+    },
+
+    [theme.breakpoints.down("sm")]: {
+      margin: 0,
+      marginBottom: -15,
+      "& > img": {
+        height: 25,
+      },
+    },
   },
 
   title: {
@@ -232,11 +246,7 @@ const TopMenu = () => {
       <AppBar position="static" elevation={0}>
         <Toolbar className={classes.toolbar}>
           <NavLink to="/search" className={classes.logo}>
-            <img
-              src={`${process.env.PUBLIC_URL}/images/logo.png`}
-              alt="logo"
-              style={{ height: "50px" }}
-            />
+            <img src={`${process.env.PUBLIC_URL}/images/logo.png`} alt="logo" />
           </NavLink>
           <div className={classes.title}>
             <Typography variant="h6" noWrap>

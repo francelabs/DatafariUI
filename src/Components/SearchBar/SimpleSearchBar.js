@@ -64,6 +64,16 @@ const useStyles = makeStyles((theme) => {
     clearButton: {
       borderRight: "solid 1px rgba(0,0,0,0.12)",
       borderRadius: "0",
+
+      [theme.breakpoints.down("sm")]: {
+        minWidth: 25,
+      },
+    },
+
+    searchButton: {
+      [theme.breakpoints.down("sm")]: {
+        minWidth: 25,
+      },
     },
 
     inputRoot: {
@@ -258,6 +268,7 @@ const SimpleSearchBar = () => {
                       onClick={handleSubmit}
                       size="small"
                       color="secondary"
+                      className={classes.searchButton}
                     >
                       <SearchIcon />
                     </Button>
