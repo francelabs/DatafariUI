@@ -29,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
 const ResultsList = ({
   data: facetData = [],
   folderLinkSources: folderSources = [],
-  target = "_blank",
+  folderTarget = "_blank",
+  previewTarget = "_self",
   ...props
 }) => {
   const defaultData = ["filters", "facets", "search", "spellcheck"];
@@ -204,8 +205,9 @@ const ResultsList = ({
                       )
                 }
                 data={displayData}
+                previewTarget={previewTarget}
                 folderLinkSources={folderLinkSources}
-                folderLinkTarget={target}
+                folderLinkTarget={folderTarget}
               />
               <Divider variant="inset" component="li" />
             </React.Fragment>

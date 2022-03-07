@@ -67,7 +67,8 @@
         "type": "ResultsList",
         "data": ["title", "url", "logo", "previewButton", "extract"],
         "folderLinkSources": [],
-        "target": "_blank"
+        "folderTarget": "_blank",
+        "previewTarget": "_self"
       }
     ],
     "tabs": [
@@ -98,9 +99,6 @@
         }
       }
     ]
-  },
-  "preview": {
-    "target": "_self"
   },
   "hotkeys": {
     "activeSearchBar": {

@@ -172,10 +172,6 @@ const ResultEntry = (props) => {
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
 
-  const {
-    uiDefinition: { preview = { target: "_self" } },
-  } = useContext(UIConfigContext);
-
   const data = Array.isArray(props.data) ? props.data : [];
   const docLinkTarget = props.openDocInNewTab ? "_blank" : undefined;
 
@@ -365,7 +361,7 @@ const ResultEntry = (props) => {
             <Link
               component={RouterLink}
               to={preparePreviewURL()}
-              target={preview.target}
+              target={props.previewTarget}
             >
               <IconButton aria-label="preview" className={classes.previewIcon}>
                 <SvgIcon
@@ -409,7 +405,7 @@ const ResultEntry = (props) => {
                   <Link
                     color="secondary"
                     href={prepareFolderURL()}
-                    target={props.folderLinkTarget}
+                    target={props.folderTarget}
                   >
                     {t("Open Folder")}
                   </Link>
