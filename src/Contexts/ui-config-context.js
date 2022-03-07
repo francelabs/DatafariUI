@@ -71,7 +71,7 @@ const DEFAULT_UI = {
         data: ["title", "url", "logo", "previewButton", "extract"],
       },
     ],
-    tabs: [],
+    tabs: [{ type: "FieldFacet", field: "repo_source", max: 3 }],
   },
   right: [],
 

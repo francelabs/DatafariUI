@@ -1,31 +1,24 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
+import {
+  Divider,
+  IconButton,
+  Link,
+  List,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@material-ui/core";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import React, { useCallback, useContext, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   QueryContext,
-  REGISTER_FIELD_FACET,
   SET_FIELD_FACET_SELECTED,
 } from "../../Contexts/query-context";
 import { ResultsContext } from "../../Contexts/results-context";
 import FacetEntry from "./FacetEntry";
-import {
-  Divider,
-  IconButton,
-  makeStyles,
-  List,
-  Typography,
-  Menu,
-  MenuItem,
-  Link,
-} from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import { useTranslation } from "react-i18next";
 
 const DISPLAY_ENTRIES = [10, 100];
 
@@ -48,7 +41,7 @@ const CheckboxFieldFacet = (props) => {
   const [expanded, setExpanded] = useState(true);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
-  const { field, op } = props;
+  const { field } = props;
   const { t } = useTranslation();
   const menuAnchorRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,18 +51,6 @@ const CheckboxFieldFacet = (props) => {
   const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
 
   const numShowed = showMore ? maxShow : minShow;
-
-  // Effect to add the facet to the query if it is not registered
-  useEffect(() => {
-    const newFacet = {
-      id: field,
-      field: field,
-      tag: field,
-      op: op,
-      title: props.title,
-    };
-    queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
-  }, [field, queryDispatch, op, props.title]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list

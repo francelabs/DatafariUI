@@ -10,9 +10,9 @@ import {
 } from "@material-ui/core";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import { Autocomplete } from "@material-ui/lab";
 import React, {
   useCallback,
@@ -24,7 +24,6 @@ import React, {
 import { useTranslation } from "react-i18next";
 import {
   QueryContext,
-  REGISTER_FIELD_FACET,
   SET_FIELD_FACET_SELECTED,
 } from "../../Contexts/query-context";
 import { ResultsContext } from "../../Contexts/results-context";
@@ -70,7 +69,7 @@ const AutocompleteFieldFacet = (props) => {
   const classes = useStyles();
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
-  const { field, op } = props;
+  const { field } = props;
   const { t } = useTranslation();
   const menuAnchorRef = useRef(null);
 
@@ -99,18 +98,6 @@ const AutocompleteFieldFacet = (props) => {
 
     setFacetResultValues(newValues);
   }, [results, field, query.selectedFieldFacets]);
-
-  // Effect to add the facet to the query if it is not registered
-  useEffect(() => {
-    const newFacet = {
-      id: field,
-      field: field,
-      tag: field,
-      op: op,
-      title: props.title,
-    };
-    queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
-  }, [field, queryDispatch, op, props.title]);
 
   // Selected facet values
   const selectedFacetResultValues = facetResultValues.filter(

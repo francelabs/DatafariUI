@@ -22,7 +22,8 @@
       "field": "repo_source",
       "op": "OR",
       "minShow": 2,
-      "maxShow": 5
+      "maxShow": 5,
+      "show": false
     },
     {
       "type": "QueryFacet",
@@ -67,7 +68,9 @@
         "data": ["title", "url", "logo", "previewButton", "extract"]
       }
     ],
-    "tabs": []
+    "tabs": [
+      { "type": "FieldFacet", "field": "repo_source", "max": 3 }
+    ]
   },
   "right": [],
   "searchBar": {

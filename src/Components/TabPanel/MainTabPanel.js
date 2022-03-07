@@ -71,6 +71,7 @@ function MainTabPanel() {
             field={element.field}
             op={element.op}
             variant={element.variant}
+            show={element.show}
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
