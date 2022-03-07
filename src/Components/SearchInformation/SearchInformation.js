@@ -1,14 +1,14 @@
-import React, { useContext, useRef, useState } from "react";
 import {
-  Typography,
-  makeStyles,
-  Grid,
   Button,
+  makeStyles,
   Menu,
   MenuItem,
+  Typography,
 } from "@material-ui/core";
+import SortIcon from "@material-ui/icons/Sort";
+import produce from "immer";
+import React, { useContext, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ResultsContext } from "../../Contexts/results-context";
 import {
   QueryContext,
   SET_FIELD_FACET_SELECTED,
@@ -16,12 +16,11 @@ import {
   SET_SORT,
   UNREGISTER_FILTER,
 } from "../../Contexts/query-context";
-import FilterEntry from "./FilterEntry";
-import SortIcon from "@material-ui/icons/Sort";
-import CurrentSearchAndSpellcheck from "./CurrentSearchAndSpellcheck";
-import ResultCountInformation from "./ResultCountInformation";
-import produce from "immer";
+import { ResultsContext } from "../../Contexts/results-context";
 import useFilterFormater from "../../Hooks/useFilterFormater";
+import CurrentSearchAndSpellcheck from "./CurrentSearchAndSpellcheck";
+import FilterEntry from "./FilterEntry";
+import ResultCountInformation from "./ResultCountInformation";
 
 const useStyles = makeStyles((theme) => ({
   informationContainer: {

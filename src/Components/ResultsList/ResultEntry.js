@@ -16,9 +16,9 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
 import { QueryContext } from "../../Contexts/query-context";
+import { UIConfigContext } from "../../Contexts/ui-config-context";
 import { UserContext } from "../../Contexts/user-context";
 import { ReactComponent as PreviewIcon } from "../../Icons/preview-black-18dp.svg";
-import { UIConfigContext } from "../../Contexts/ui-config-context";
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -173,10 +173,7 @@ const ResultEntry = (props) => {
   const { buildSearchQueryString } = useContext(QueryContext);
 
   const {
-    uiDefinition: {
-      preview = { target: "_self" },
-      resultsList = { target: "_blank" },
-    },
+    uiDefinition: { preview = { target: "_self" } },
   } = useContext(UIConfigContext);
 
   const data = Array.isArray(props.data) ? props.data : [];
@@ -412,7 +409,7 @@ const ResultEntry = (props) => {
                   <Link
                     color="secondary"
                     href={prepareFolderURL()}
-                    target={resultsList.target}
+                    target={props.folderLinkTarget}
                   >
                     {t("Open Folder")}
                   </Link>

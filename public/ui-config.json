@@ -65,7 +65,9 @@
       },
       {
         "type": "ResultsList",
-        "data": ["title", "url", "logo", "previewButton", "extract"]
+        "data": ["title", "url", "logo", "previewButton", "extract"],
+        "folderLinkSources": [],
+        "target": "_blank"
       }
     ],
     "tabs": [
@@ -96,10 +98,6 @@
         }
       }
     ]
-  },
-  "resultsList" : {
-    "folderLinkSources": [],
-    "target": "_blank"
   },
   "preview": {
     "target": "_self"

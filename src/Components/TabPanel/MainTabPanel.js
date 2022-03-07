@@ -137,7 +137,7 @@ function MainTabPanel() {
   }, []);
 
   const buildResultList = useCallback((element) => {
-    return <ResultsList data={element.data} />;
+    return <ResultsList {...element} />;
   }, []);
 
   const createElementFromParameters = useCallback(
