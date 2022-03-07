@@ -125,9 +125,6 @@ const SimpleSearchBar = () => {
     queryText: "",
     triggerSuggestion: false,
   });
-  const [activeSearchHotkey, setActiveSearchHotkey] = useState();
-  const [deactiveSearchHotkey, setDeactiveSearchHotkey] = useState();
-
   const { queryText } = textState;
 
   const inputSearchRef = useRef();

@@ -1155,6 +1155,12 @@ Be care, cmd and key are case sensitive. If you use `shift` as command, the key 
 
 Hotkeys IDs are defined into the `useHotkey.js` (`activeSearchBar`, `deactiveSearchBar`, ...). Defined here other IDs to increase the list of hotkeys available.
 
+### Preview configuration
+
+In the `ui-config.json`, you can parameterize preview :
+
+- `target` (default is `_self`) : set window target to open the preview of the file. Values are the same than the HTML attribute `target`.
+
 ## License 📗
 
 [Apache-2.0](https://github.com/elastic/search-ui/blob/master/LICENSE.txt) © [France Labs](https://www.francelabs.com/)

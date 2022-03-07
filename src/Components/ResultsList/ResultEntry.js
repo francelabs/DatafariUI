@@ -18,6 +18,7 @@ import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
 import { QueryContext } from "../../Contexts/query-context";
 import { UserContext } from "../../Contexts/user-context";
 import { ReactComponent as PreviewIcon } from "../../Icons/preview-black-18dp.svg";
+import { UIConfigContext } from "../../Contexts/ui-config-context";
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -43,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   previewIconSvg: {
+    marginBottom: 15,
     fontSize: "2rem",
-    margin: "15px 0px",
 
     [theme.breakpoints.down("sm")]: {
       fontSize: "1.25rem",
@@ -170,6 +171,11 @@ const ResultEntry = (props) => {
   const { t } = useTranslation();
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
+
+  const {
+    uiDefinition: { preview = { target: "_self" } },
+  } = useContext(UIConfigContext);
+
   const data = Array.isArray(props.data) ? props.data : [];
   const docLinkTarget = props.openDocInNewTab ? "_blank" : undefined;
 
@@ -359,7 +365,7 @@ const ResultEntry = (props) => {
             <Link
               component={RouterLink}
               to={preparePreviewURL()}
-              target="_blank"
+              target={preview.target}
             >
               <IconButton aria-label="preview" className={classes.previewIcon}>
                 <SvgIcon

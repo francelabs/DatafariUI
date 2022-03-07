@@ -94,6 +94,9 @@
       }
     ]
   },
+  "preview": {
+    "target": "_self"
+  },
   "hotkeys": {
     "activeSearchBar": {
       "cmd": "shift",
