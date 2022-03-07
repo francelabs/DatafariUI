@@ -1155,11 +1155,23 @@ Be care, cmd and key are case sensitive. If you use `shift` as command, the key 
 
 Hotkeys IDs are defined into the `useHotkey.js` (`activeSearchBar`, `deactiveSearchBar`, ...). Defined here other IDs to increase the list of hotkeys available.
 
-### Preview configuration
+### ResultsList configuration
 
-In the `ui-config.json`, you can parameterize preview :
+In the `ui-config.json`, you have some optional parameters :
 
-- `target` (default is `_self`) : set window target to open the preview of the file. Values are the same than the HTML attribute `target`.
+- `folderLinkSources` : array of sources to open as a folder. Default is empty array
+- `folderTarget` (default is `_blank`): target to open folder. Values are the same than the HTML attribute `target`
+- `previewTarget` (default `_self`): target to open preview page. Values are the same than the HTML attribute `target`.
+
+```json
+{
+  "type": "ResultsList",
+  "data": ["title", "url", "logo", "previewButton", "extract"],
+  "folderLinkSources": [],
+  "folderTarget": "_blank",
+  "previewTarget": "_self"
+}
+```
 
 ## License 📗
 
