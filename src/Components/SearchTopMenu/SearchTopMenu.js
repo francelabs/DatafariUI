@@ -23,6 +23,8 @@ import ModifySavedQueryModal from "../../Pages/ModifySavedQueryModal/ModifySaved
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
+    justifyContent: "space-between",
+
     "& button": {
       [theme.breakpoints.down("sm")]: {
         fontSize: "0.65em",
