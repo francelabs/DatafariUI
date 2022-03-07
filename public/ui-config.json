@@ -97,6 +97,10 @@
       }
     ]
   },
+  "resultsList" : {
+    "folderLinkSources": [],
+    "target": "_blank"
+  },
   "preview": {
     "target": "_self"
   },

@@ -173,7 +173,10 @@ const ResultEntry = (props) => {
   const { buildSearchQueryString } = useContext(QueryContext);
 
   const {
-    uiDefinition: { preview = { target: "_self" } },
+    uiDefinition: {
+      preview = { target: "_self" },
+      resultsList = { target: "_blank" },
+    },
   } = useContext(UIConfigContext);
 
   const data = Array.isArray(props.data) ? props.data : [];
@@ -409,7 +412,7 @@ const ResultEntry = (props) => {
                   <Link
                     color="secondary"
                     href={prepareFolderURL()}
-                    target="_blank"
+                    target={resultsList.target}
                   >
                     {t("Open Folder")}
                   </Link>
