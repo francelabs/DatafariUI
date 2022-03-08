@@ -5,6 +5,20 @@ import { Grid, makeStyles, Paper } from "@material-ui/core";
 import SimpleSearchBar from "../../Components/SearchBar/SimpleSearchBar";
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "grid",
+    gridTemplateRows: "minmax(10em, 1fr)",
+    gridTemplateColumns: "minmax(auto, 65em)",
+    justifyContent: "center",
+    alignContent: "center",
+    gridGap: "1em",
+    padding: "0em 1em",
+  },
+  contentContainer: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gridGap: "1em",
+  },
   content: {
     marginTop: "10vh",
     width: "80%",
@@ -12,13 +26,12 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     padding: theme.spacing(2),
+    textAlign: "justify",
   },
   logo: {
     display: "block",
     margin: "auto",
-    maxHeight: "15vh",
-    minHeight: "70px",
-    maxWidth: "100%",
+    maxWidth: "15em",
   },
 }));
 
@@ -27,31 +40,25 @@ const HomePage = (props) => {
   const { t } = useTranslation();
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      spacing={4}
-      className={classes.content}
-    >
-      <Grid item xs={10}>
-        <img
-          src={`${process.env.PUBLIC_URL}/images/logo_big.png`}
-          alt="logo"
-          className={classes.logo}
-        />
-      </Grid>
-      <Grid item xs={10}>
-        <SimpleSearchBar />
-      </Grid>
-      {[1, 2, 3].map((value) => (
-        <Grid key={value} item xs={10} lg={3}>
+    <div className={classes.container}>
+      <img
+        src={`${process.env.PUBLIC_URL}/images/logo_big.png`}
+        alt="logo"
+        className={classes.logo}
+      />
+      <SimpleSearchBar />
+      <div className={classes.contentContainer}>
+        {[1, 2, 3].map((value) => (
           <Paper
+            key={value}
             className={classes.card}
-            dangerouslySetInnerHTML={{ __html: t(`homepage column ${value}`) }}
+            dangerouslySetInnerHTML={{
+              __html: t(`homepage column ${value}`),
+            }}
           ></Paper>
-        </Grid>
-      ))}
-    </Grid>
+        ))}
+      </div>
+    </div>
   );
 };
 
