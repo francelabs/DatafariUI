@@ -30,6 +30,7 @@
   "Describe what you were doing when the bug happened": "Describe what you were doing when the bug happened",
   "Describe your suggestion": "Describe your suggestion",
   "Description": "Description",
+  "Dev mode banner content": "This system is currently in test mode, and may contain some bugs or may not be indexing all of the data sources. Please contact us via the menu to report any issue",
   "Dismiss": "Dismiss",
   "Document content not indexed": "Document content not indexed",
   "Email": "Email",

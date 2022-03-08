@@ -110,5 +110,15 @@
       "cmd": "escape", 
       "enable": false
     }
+  },
+  "devMode": {
+    "enable": true,
+    "banner": {
+      "location": "BOTTOM",
+      "content": "Dev mode banner content",
+      "props": {
+        "backgroundColor": "orange"
+      }
+    }
   }
 }

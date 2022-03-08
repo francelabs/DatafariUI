@@ -27,14 +27,22 @@ import { useTranslation } from "react-i18next";
 import CustomThemeProvider from "./Components/CustomThemeProvider/CustomThemeProvider";
 import useTitleUpdater from "./Hooks/useTitleUpdater";
 import HomePage from "./Pages/HomePage/HomePage";
-import UIConfigContextProvider from "./Contexts/ui-config-context";
+import UIConfigContextProvider, {
+  UIConfigContext,
+} from "./Contexts/ui-config-context";
 import SearchContextProvider from "./Contexts/search-context";
+import Banner from "./Components/Banner";
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
 function Main() {
   const { actions: userActions } = useContext(UserContext);
   const { t } = useTranslation();
+
+  const {
+    uiDefinition: { devMode = { enable: false } },
+  } = useContext(UIConfigContext);
+
   useTitleUpdater();
 
   useEffect(() => {
@@ -44,22 +52,26 @@ function Main() {
   document.title = t("Datafari Enterprise Search");
 
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <Switch>
-        <Route path="/" exact>
-          <Redirect to="/home" />
-        </Route>
-        <Route path="/home" component={HomePage} />
-        <Route path={["/search", "/preview"]}>
-          <LicenceChecker />
-          <TopMenu />
-          <Switch>
-            <Route path="/search" component={SearchPage} />
-            <Route path="/preview" component={Preview} />
-          </Switch>
-        </Route>
-      </Switch>
-    </BrowserRouter>
+    <>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <Switch>
+          <Route path="/" exact>
+            <Redirect to="/home" />
+          </Route>
+          <Route path="/home" component={HomePage} />
+          <Route path={["/search", "/preview"]}>
+            <LicenceChecker />
+            <TopMenu />
+            <Switch>
+              <Route path="/search" component={SearchPage} />
+              <Route path="/preview" component={Preview} />
+            </Switch>
+          </Route>
+        </Switch>
+      </BrowserRouter>
+
+      {devMode.enable ? <Banner {...devMode.banner} /> : null}
+    </>
   );
 }
 
