@@ -200,7 +200,8 @@ const Search = () => {
 export default Search;
 
 function formatNumberToLocale(n, language) {
-  return n ? parseInt(n).toLocaleString(language) : "";
+  // Slice language for code that have 2 codes like pt_br. Only takes 'pt'
+  return n ? parseInt(n).toLocaleString(language.slice(0, 2)) : "";
 }
 
 function formatTabValue(...props) {
