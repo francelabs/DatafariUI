@@ -27,6 +27,13 @@ import useHttp from "../../Hooks/useHttp";
 import UserMenu from "../UserMenu/UserMenu";
 
 const useStyles = makeStyles((theme) => ({
+  topbar: {
+    backgroundImage:
+      "url(" +
+      process.env.PUBLIC_URL +
+      "/images/background_datafari_banner_big.png)",
+  },
+
   toolbar: {
     display: "flex",
 
@@ -243,7 +250,7 @@ const TopMenu = () => {
 
   return (
     <>
-      <AppBar position="static" elevation={0}>
+      <AppBar position="static" elevation={0} className={classes.topbar}>
         <Toolbar className={classes.toolbar}>
           <NavLink to="/search" className={classes.logo}>
             <img src={`${process.env.PUBLIC_URL}/images/logo.png`} alt="logo" />
