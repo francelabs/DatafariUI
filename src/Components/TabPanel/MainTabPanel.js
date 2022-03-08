@@ -140,51 +140,39 @@ function MainTabPanel() {
     return <ResultsList {...element} />;
   }, []);
 
-  const createElementFromParameters = useCallback(
-    (element) => {
-      if (element.type && allowedElementTypes.includes(element.type)) {
-        switch (element.type) {
-          case "FieldFacet":
-            return buildFieldFacet(element);
-          case "QueryFacet":
-            return buildQueryFacet(element, createElementFromParameters);
-          case "DateFacetCustom":
-            return <DateFacetCustom />;
-          case "HierarchicalFacet":
-            return buildHierarchicalFacet(element);
-          case "SearchInformation":
-            return buildSearchInformation(element);
-          case "ResultsList":
-            return buildResultList(element);
-          default:
-            return null;
-        }
+  const createElementFromParameters = (element) => {
+    if (element.type && allowedElementTypes.includes(element.type)) {
+      switch (element.type) {
+        case "FieldFacet":
+          return buildFieldFacet(element);
+        case "QueryFacet":
+          return buildQueryFacet(element, createElementFromParameters);
+        case "DateFacetCustom":
+          return <DateFacetCustom />;
+        case "HierarchicalFacet":
+          return buildHierarchicalFacet(element);
+        case "SearchInformation":
+          return buildSearchInformation(element);
+        case "ResultsList":
+          return buildResultList(element);
+        default:
+          return null;
       }
-      return null;
-    },
-    [
-      buildFieldFacet,
-      buildHierarchicalFacet,
-      buildQueryFacet,
-      buildResultList,
-      buildSearchInformation,
-    ]
-  );
+    }
+    return null;
+  };
 
-  const buildContentFor = useCallback(
-    (part) => {
-      let result = null;
-      if (part && Array.isArray(part) && part.length !== 0) {
-        result = part
-          .map((element) => {
-            return createElementFromParameters(element);
-          })
-          .filter((element) => React.isValidElement(element));
-      }
-      return result;
-    },
-    [createElementFromParameters]
-  );
+  const buildContentFor = (part) => {
+    let result = null;
+    if (part && Array.isArray(part) && part.length !== 0) {
+      result = part
+        .map((element) => {
+          return createElementFromParameters(element);
+        })
+        .filter((element) => React.isValidElement(element));
+    }
+    return result;
+  };
 
   return isLoading && !uiDefinition ? (
     <Spinner />

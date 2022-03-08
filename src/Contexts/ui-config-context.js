@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useReducer } from "react";
 import useHttp from "../Hooks/useHttp";
 import { APIEndpointsContext } from "./api-endpoints-context";
+import Spinner from "../Components/Spinner/Spinner";
 
 const DEFAULT_UI = {
   left: [
@@ -160,7 +161,7 @@ const UIConfigContextProvider = ({ children }) => {
 
   return (
     <UIConfigContext.Provider value={{ ...uiState, dispatch }}>
-      {children}
+      {isLoading ? <Spinner /> : children}
     </UIConfigContext.Provider>
   );
 };

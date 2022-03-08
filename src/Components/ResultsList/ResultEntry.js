@@ -168,6 +168,7 @@ const ResultEntry = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
   const { t } = useTranslation();
+
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
 
