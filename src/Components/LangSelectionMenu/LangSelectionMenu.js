@@ -1,12 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Menu, MenuItem } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
+import { UserContext } from "../../Contexts/user-context";
 
 const LangSelectionMenu = (props) => {
   const { t, i18n } = useTranslation();
+  const {
+    state,
+    actions: { updateUserLanguage },
+  } = useContext(UserContext);
 
   const handleChangeLanguage = (lang) => {
     return () => {
+      // Save user language if logged in
+      state.user && updateUserLanguage && updateUserLanguage(lang);
+
       i18n.changeLanguage(lang);
       props.onClose();
     };

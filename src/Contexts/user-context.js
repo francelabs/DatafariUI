@@ -79,6 +79,8 @@ const userReducer = (userState, action) => {
 
 export const UserContext = React.createContext();
 
+const SET_USER_LANGUAGE_ID = "SET_USER_LANGUAGE_ID";
+
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const [queryID, setQueryID] = useState(null);
@@ -96,11 +98,26 @@ const UserContextProvider = (props) => {
     );
   }, [apiEndpointsContext.currentUserURL, sendRequest]);
 
+  const updateUserLanguage = useCallback(
+    (langugage) => {
+      let newQueryID = SET_USER_LANGUAGE_ID;
+      setQueryID(newQueryID);
+      sendRequest(
+        `${apiEndpointsContext.currentUserURL}`,
+        "PUT",
+        JSON.stringify({ lang: langugage }),
+        newQueryID
+      );
+    },
+    [apiEndpointsContext.currentUserURL, sendRequest]
+  );
+
   const actions = useMemo(() => {
     return {
-      autoConnect: autoConnect,
+      autoConnect,
+      updateUserLanguage,
     };
-  }, [autoConnect]);
+  }, [autoConnect, updateUserLanguage]);
 
   // Define user state
   const [userState, userDispatcher] = useReducer(userReducer, {
@@ -111,6 +128,11 @@ const UserContextProvider = (props) => {
   useEffect(() => {
     let timer = null;
     if (!isLoading && !error && data && reqIdentifier === queryID) {
+      if (SET_USER_LANGUAGE_ID === reqIdentifier) {
+        // nothing to do in return when setting user language
+        return;
+      }
+
       if (data.status !== "OK") {
         userDispatcher({ type: "SET_GUEST" });
       } else {
