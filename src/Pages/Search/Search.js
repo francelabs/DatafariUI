@@ -101,12 +101,12 @@ const Search = () => {
             break;
 
           case RAW_TAB_TYPE: {
-            const { type, label, url } = tab;
+            const { type, label, url, target = "_self" } = tab;
             makeTabs.push(
               <Tab
                 key={type + label + url}
-                value={formatTabValue(type, label, url)}
-                label={label}
+                value={formatTabValue(type, label, url, target)}
+                label={t(label)}
                 className={classes.rawTab}
               />
             );
@@ -165,8 +165,8 @@ const Search = () => {
             break;
           }
           case RAW_TAB_TYPE: {
-            const [, url] = arraySplit;
-            window.open(url, "_blank");
+            const [, url, target] = arraySplit;
+            window.open(url, target);
             break;
           }
           default:

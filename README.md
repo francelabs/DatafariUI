@@ -517,8 +517,9 @@ So far, it exists two kinds of tab :
   `max`: the max number of tab to create
 
 - `Raw` : Raw tab is just a link to an defined URL. It takes 2 parameters :
-  `label` : label of the tab
+  `label` : label of the tab or key for i18n
   `url`: an HTTP URL. The link is opened into a new navigator tab.
+  `target` (optional, default is `_self`): Define HTML target to open the url
 
 These tabs can be added as below in the ui-config.json, in the center property
 
@@ -538,7 +539,7 @@ These tabs can be added as below in the ui-config.json, in the center property
       { "type": "FieldFacet", "field": "extension", "max": 3 },
       { "type": "FieldFacet", "field": "repo_source", "max": 3 },
       { "type": "Raw", "label": "google", "url": "https://www.google.fr" },
-      { "type": "Raw", "label": "LinkedIn", "url": "https://www.linkedin.com" }
+      { "type": "Raw", "label": "LinkedIn", "url": "https://www.linkedin.com", "target": "_blank" }
     ]
   },
 ```
