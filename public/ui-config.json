@@ -112,7 +112,7 @@
     }
   },
   "devMode": {
-    "enable": true,
+    "enable": false,
     "banner": {
       "location": "BOTTOM",
       "content": "Dev mode banner content",
