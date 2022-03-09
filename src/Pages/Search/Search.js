@@ -134,12 +134,6 @@ const Search = () => {
         facetIds: fields,
       });
 
-      // Unmask field
-      uiDispatch({
-        type: SET_MASK_FIELD,
-        field: "",
-      });
-
       setSelectTab(MAIN_TAB);
     } else {
       const [type, ...arraySplit] = tab.split(TAB_VALUE_SEPARATOR);
@@ -152,12 +146,6 @@ const Search = () => {
               type: SET_FIELD_FACET_SELECTED,
               facetId: field,
               selected: [value],
-            });
-
-            // Mask the given field from facet filters layout
-            uiDispatch({
-              type: SET_MASK_FIELD,
-              field,
             });
 
             setSelectTab(formatTabValue(type, field, value));
