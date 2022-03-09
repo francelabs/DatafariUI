@@ -105,10 +105,12 @@ const DEFAULT_UI = {
 export const UIConfigContext = React.createContext();
 
 // ACTION TYPES
+const SET_DEFAULT_UI_DEFINITION = "SET_DEFAULT_UI_DEFINITION";
 export const SET_UI_DEFINITION = "SET_UI_DEFINITION";
 export const SET_MASK_FIELD = "SET_MASK_FIELD";
 
 const initialState = {
+  defaultUiDefinition: DEFAULT_UI,
   uiDefinition: DEFAULT_UI,
   maskFieldFacet: "",
   isLoading: true,
@@ -117,6 +119,13 @@ const initialState = {
 // REDUCER
 const uiConfigReducer = (state, action) => {
   switch (action.type) {
+    case SET_DEFAULT_UI_DEFINITION: {
+      return {
+        ...state,
+        defaultUiDefinition: { ...action.definition },
+        uiDefinition: { ...action.definition },
+      };
+    }
     case SET_UI_DEFINITION: {
       return {
         ...state,
@@ -152,7 +161,7 @@ const UIConfigContextProvider = ({ children }) => {
     if (!isLoading) {
       if (!error && data && typeof data === "object") {
         dispatch({
-          type: SET_UI_DEFINITION,
+          type: SET_DEFAULT_UI_DEFINITION,
           definition: data,
         });
       }

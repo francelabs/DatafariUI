@@ -185,5 +185,14 @@
   "file name": "file name",
   "or any means": "or any means",
   "title": "title",
+  "User Preferences": "User Preferences",
+  "Facets position": "Facets position",
+  "Left": "Left",
+  "Right": "Right",
+  "Left facets order": "Left facets ordering",
+  "Right facets order": "Right facets ordering",
+  "Sources order": "Sources ordering",
+  "Save": "Save",
+  "Reset": "Reset",
   "url": "url"
 }

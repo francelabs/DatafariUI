@@ -181,5 +181,14 @@
   "file name": "nom du fichier",
   "or any means": "ou tout autre moyen",
   "title": "titre",
+  "User Preferences": "Préférences Utilisateur",
+  "Facets position": "Positions des facets",
+  "Left": "Gauche",
+  "Right": "Droite",
+  "Left facets order": "Priorité des facets à gauche",
+  "Right facets order": "Priorité des facets à droite",
+  "Sources order": "Priorité des souces",
+  "Save": "Sauvegarder",
+  "Reset": "Reinitialiser",
   "url": "url"
 }

@@ -16,6 +16,7 @@ import ruLocale from "date-fns/locale/ru";
 import { useTranslation } from "react-i18next";
 import useHttp from "../Hooks/useHttp";
 import { APIEndpointsContext } from "./api-endpoints-context";
+import { SET_UI_DEFINITION, UIConfigContext } from "./ui-config-context";
 
 // Used UI locales
 const DatafariUILocales = {
@@ -80,9 +81,12 @@ const userReducer = (userState, action) => {
 export const UserContext = React.createContext();
 
 const SET_USER_LANGUAGE_ID = "SET_USER_LANGUAGE_ID";
+const UPDATE_USER_PREF_ID = "UPDATE_USER_PREF_ID";
 
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { uiDefinition, dispatch: uiConfigDispatch } =
+    useContext(UIConfigContext);
   const [queryID, setQueryID] = useState(null);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const { i18n } = useTranslation();
@@ -112,12 +116,44 @@ const UserContextProvider = (props) => {
     [apiEndpointsContext.currentUserURL, sendRequest]
   );
 
+  const updateUserUiDefinition = useCallback(
+    (userUi) => {
+      let newQueryID = UPDATE_USER_PREF_ID;
+      setQueryID(newQueryID);
+      sendRequest(
+        `${apiEndpointsContext.currentUserURL}`,
+        "PUT",
+        JSON.stringify({ userUi }),
+        newQueryID
+      );
+
+      uiConfigDispatch({
+        type: SET_UI_DEFINITION,
+        definition: {
+          ...uiDefinition,
+          direction: userUi.direction,
+          left: userUi.left,
+          right: userUi.right,
+          sources: userUi.sources,
+        },
+      });
+    },
+
+    [
+      apiEndpointsContext.currentUserURL,
+      sendRequest,
+      uiConfigDispatch,
+      uiDefinition,
+    ]
+  );
+
   const actions = useMemo(() => {
     return {
       autoConnect,
       updateUserLanguage,
+      updateUserUiDefinition,
     };
-  }, [autoConnect, updateUserLanguage]);
+  }, [autoConnect, updateUserLanguage, updateUserUiDefinition]);
 
   // Define user state
   const [userState, userDispatcher] = useReducer(userReducer, {
@@ -127,7 +163,7 @@ const UserContextProvider = (props) => {
 
   useEffect(() => {
     let timer = null;
-    if (!isLoading && !error && data && reqIdentifier === queryID) {
+    if (!isLoading && !error && data) {
       if (SET_USER_LANGUAGE_ID === reqIdentifier) {
         // nothing to do in return when setting user language
         return;
@@ -145,11 +181,18 @@ const UserContextProvider = (props) => {
         // Set language according to user language
         i18n.changeLanguage(userData.lang);
 
+        // Dispatch UI configuration from user preference
+        if (UPDATE_USER_PREF_ID === reqIdentifier) {
+          const { userUi } = userData;
+          uiConfigDispatch({ type: SET_UI_DEFINITION, definition: userUi });
+        }
+
         timer = setTimeout(autoConnect, 60000);
       }
     } else if (!isLoading && error) {
       userDispatcher({ type: "SET_GUEST" });
     }
+
     return () => {
       if (timer !== null) {
         clearTimeout(timer);
@@ -164,6 +207,7 @@ const UserContextProvider = (props) => {
     reqIdentifier,
     i18n,
     userDispatcher,
+    uiConfigDispatch,
   ]);
 
   const getLocale = useCallback(() => {
