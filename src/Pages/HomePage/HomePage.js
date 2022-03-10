@@ -1,7 +1,6 @@
+import { makeStyles, Paper } from "@material-ui/core";
 import React from "react";
 import { useTranslation } from "react-i18next";
-
-import { Grid, makeStyles, Paper } from "@material-ui/core";
 import SimpleSearchBar from "../../Components/SearchBar/SimpleSearchBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,8 +15,13 @@ const useStyles = makeStyles((theme) => ({
   },
   contentContainer: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gridTemplateColumns: "repeat(3, minmax(200px, 1fr))",
     gridGap: "1em",
+
+    [theme.breakpoints.down("xs")]: {
+      gridTemplateColumns: "1fr",
+      fontSize: "0.75em",
+    },
   },
   content: {
     marginTop: "10vh",
