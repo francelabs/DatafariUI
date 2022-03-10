@@ -5,44 +5,47 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import React, {
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
-} from 'react';
-import { useTranslation } from 'react-i18next';
+} from "react";
+import { useTranslation } from "react-i18next";
 import {
   QueryContext,
   REGISTER_FIELD_FACET,
   SET_FIELD_FACET_SELECTED,
-} from '../../Contexts/query-context';
-import TreeView from '@material-ui/lab/TreeView';
-import { ResultsContext } from '../../Contexts/results-context';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import produce from 'immer';
-import CustomTreeItem from './CustomTreeItem';
+} from "../../Contexts/query-context";
+import TreeView from "@material-ui/lab/TreeView";
+import { ResultsContext } from "../../Contexts/results-context";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import produce from "immer";
+import CustomTreeItem from "./CustomTreeItem";
 
-export const CHECKED_STATE = 'checked';
-export const UNCHECKED_STATE = 'unchecked';
-export const UNDETERMINATE_STATE = 'undeterminate';
+export const CHECKED_STATE = "checked";
+export const UNCHECKED_STATE = "unchecked";
+export const UNDETERMINATE_STATE = "undeterminate";
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
     flexGrow: 1,
   },
   facetHeader: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   showMore: {
-    width: '100%',
+    width: "100%",
     marginBottom: theme.spacing(1),
+  },
+  treeView: {
+    padding: "0 16px",
   },
 }));
 
@@ -227,15 +230,15 @@ const HierarchicalFacet = (props) => {
               0,
               itemName.lastIndexOf(separator)
             );
-            if (parentName === '') {
+            if (parentName === "") {
               parentName = separator;
             }
             if (
-              hierarchyStateDraft['level' + (itemDepth - 1)] &&
-              hierarchyStateDraft['level' + (itemDepth - 1)][parentName]
+              hierarchyStateDraft["level" + (itemDepth - 1)] &&
+              hierarchyStateDraft["level" + (itemDepth - 1)][parentName]
             ) {
               const parentItem =
-                hierarchyStateDraft['level' + (itemDepth - 1)][parentName];
+                hierarchyStateDraft["level" + (itemDepth - 1)][parentName];
               const childrenCheckedStates = parentItem.children.map(
                 (currentItemName) => {
                   const childDepth = itemDepth;
@@ -249,21 +252,21 @@ const HierarchicalFacet = (props) => {
                   childrenCheckedStates.includes(UNCHECKED_STATE) ||
                   childrenCheckedStates.includes(UNDETERMINATE_STATE)
                 ) {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
+                  hierarchyStateDraft["level" + (itemDepth - 1)][
                     parentName
                   ].checked = UNDETERMINATE_STATE;
                 } else {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
+                  hierarchyStateDraft["level" + (itemDepth - 1)][
                     parentName
                   ].checked = CHECKED_STATE;
                 }
               } else {
                 if (childrenCheckedStates.includes(UNDETERMINATE_STATE)) {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
+                  hierarchyStateDraft["level" + (itemDepth - 1)][
                     parentName
                   ].checked = UNDETERMINATE_STATE;
                 } else {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
+                  hierarchyStateDraft["level" + (itemDepth - 1)][
                     parentName
                   ].checked = UNCHECKED_STATE;
                 }
@@ -349,7 +352,7 @@ const HierarchicalFacet = (props) => {
       id: field,
       field: field,
       tag: field,
-      op: 'OR',
+      op: "OR",
       title: title,
     };
     queryDispatch({ type: REGISTER_FIELD_FACET, fieldFacet: newFacet });
@@ -388,7 +391,7 @@ const HierarchicalFacet = (props) => {
     const defaultItem = {
       children: [],
       nb: 0,
-      original: '',
+      original: "",
       checked: UNCHECKED_STATE,
     };
     if (results.fieldFacets[field]) {
@@ -410,18 +413,18 @@ const HierarchicalFacet = (props) => {
         const itemName = solrFacetLabel.substring(
           solrFacetLabel.indexOf(separator)
         );
-        if (hierarchyMap['level' + itemDepth] === undefined) {
-          hierarchyMap['level' + itemDepth] = {};
+        if (hierarchyMap["level" + itemDepth] === undefined) {
+          hierarchyMap["level" + itemDepth] = {};
         }
-        if (hierarchyMap['level' + itemDepth][itemName] === undefined) {
-          hierarchyMap['level' + itemDepth][itemName] = produce(
+        if (hierarchyMap["level" + itemDepth][itemName] === undefined) {
+          hierarchyMap["level" + itemDepth][itemName] = produce(
             defaultItem,
             (itemDraft) => {}
           );
         }
         // We don't want to modify the children array here if the parent has been created by a child.
-        hierarchyMap['level' + itemDepth][itemName] = produce(
-          hierarchyMap['level' + itemDepth][itemName],
+        hierarchyMap["level" + itemDepth][itemName] = produce(
+          hierarchyMap["level" + itemDepth][itemName],
           (item) => {
             item.nb = numberOfDocs;
             item.original = solrFacetLabel;
@@ -434,23 +437,23 @@ const HierarchicalFacet = (props) => {
             0,
             itemName.lastIndexOf(separator)
           );
-          if (parentItem === '') {
+          if (parentItem === "") {
             parentItem = separator;
           }
-          if (hierarchyMap['level' + (itemDepth - 1)] === undefined) {
-            hierarchyMap['level' + (itemDepth - 1)] = {};
+          if (hierarchyMap["level" + (itemDepth - 1)] === undefined) {
+            hierarchyMap["level" + (itemDepth - 1)] = {};
           }
           if (
-            hierarchyMap['level' + (itemDepth - 1)][parentItem] === undefined
+            hierarchyMap["level" + (itemDepth - 1)][parentItem] === undefined
           ) {
             // If parent level does not exist, create it
-            hierarchyMap['level' + (itemDepth - 1)][parentItem] = produce(
+            hierarchyMap["level" + (itemDepth - 1)][parentItem] = produce(
               defaultItem,
               (itemDraft) => {}
             );
           }
-          hierarchyMap['level' + (itemDepth - 1)][parentItem] = produce(
-            hierarchyMap['level' + (itemDepth - 1)][parentItem],
+          hierarchyMap["level" + (itemDepth - 1)][parentItem] = produce(
+            hierarchyMap["level" + (itemDepth - 1)][parentItem],
             (parentItem) => {
               // add the name of the current level in the parent level children list as a reference
               parentItem.children[parentItem.children.length] = itemName;
@@ -459,14 +462,14 @@ const HierarchicalFacet = (props) => {
         }
 
         if (
-          hierarchyMap['level' + itemDepth][itemName].checked ===
+          hierarchyMap["level" + itemDepth][itemName].checked ===
             UNCHECKED_STATE &&
           selected.includes(
-            hierarchyMap['level' + itemDepth][itemName].original
+            hierarchyMap["level" + itemDepth][itemName].original
           )
         ) {
-          hierarchyMap['level' + itemDepth][itemName] = produce(
-            hierarchyMap['level' + itemDepth][itemName],
+          hierarchyMap["level" + itemDepth][itemName] = produce(
+            hierarchyMap["level" + itemDepth][itemName],
             (item) => {
               item.checked = CHECKED_STATE;
             }
@@ -476,24 +479,24 @@ const HierarchicalFacet = (props) => {
           // We need to check if an ancestor or a descendent is.
           if (
             ancestorInList(
-              hierarchyMap['level' + itemDepth][itemName],
+              hierarchyMap["level" + itemDepth][itemName],
               selected
             )
           ) {
-            hierarchyMap['level' + itemDepth][itemName] = produce(
-              hierarchyMap['level' + itemDepth][itemName],
+            hierarchyMap["level" + itemDepth][itemName] = produce(
+              hierarchyMap["level" + itemDepth][itemName],
               (item) => {
                 item.checked = CHECKED_STATE;
               }
             );
           } else if (
             descendentInList(
-              hierarchyMap['level' + itemDepth][itemName],
+              hierarchyMap["level" + itemDepth][itemName],
               selected
             )
           ) {
-            hierarchyMap['level' + itemDepth][itemName] = produce(
-              hierarchyMap['level' + itemDepth][itemName],
+            hierarchyMap["level" + itemDepth][itemName] = produce(
+              hierarchyMap["level" + itemDepth][itemName],
               (item) => {
                 item.checked = UNDETERMINATE_STATE;
               }
@@ -529,9 +532,9 @@ const HierarchicalFacet = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
+          <MenuItem onClick={handleSelectAllClick}>{t("Select All")}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
+            {t("Clear Filter")}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
@@ -540,7 +543,7 @@ const HierarchicalFacet = (props) => {
         <IconButton
           onClick={handleExpandClick}
           aria-label={t(
-            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
+            `${expanded ? "Collapse" : "Expand"} {{ facetTitle }} facet`,
             {
               facetTitle: t(props.title),
             }
@@ -554,12 +557,13 @@ const HierarchicalFacet = (props) => {
           <TreeView
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}
+            className={classes.treeView}
           >
-            {hierarchyState['level0'] &&
-              Object.getOwnPropertyNames(hierarchyState['level0']).map(
+            {hierarchyState["level0"] &&
+              Object.getOwnPropertyNames(hierarchyState["level0"]).map(
                 (hierearchyItemName) => {
                   return renderTreeItem(
-                    hierarchyState['level0'][hierearchyItemName],
+                    hierarchyState["level0"][hierearchyItemName],
                     hierearchyItemName,
                     hierarchyState
                   );
