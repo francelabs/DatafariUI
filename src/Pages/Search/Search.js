@@ -12,10 +12,7 @@ import {
   SET_FIELD_FACET_SELECTED,
 } from "../../Contexts/query-context";
 import { ResultsContext } from "../../Contexts/results-context";
-import {
-  SET_MASK_FIELD,
-  UIConfigContext,
-} from "../../Contexts/ui-config-context";
+import { UIConfigContext } from "../../Contexts/ui-config-context";
 import useDatafari from "../../Hooks/useDatafari";
 import "./Search.css";
 
@@ -55,7 +52,7 @@ const Search = () => {
 
   const { dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
-  const { uiDefinition, dispatch: uiDispatch } = useContext(UIConfigContext);
+  const { uiDefinition } = useContext(UIConfigContext);
 
   const [selectTab, setSelectTab] = useState(MAIN_TAB);
   const [panelTabs] = useState(DEFAULT_PANEL_TABS);

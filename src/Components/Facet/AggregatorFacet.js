@@ -1,20 +1,19 @@
 import {
   IconButton,
   List,
-  ListItem,
   Menu,
   MenuItem,
   Typography,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { QueryContext } from "../../Contexts/query-context";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import useHttp from "../../Hooks/useHttp";
+import { makeStyles } from "@material-ui/styles";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
+import { QueryContext } from "../../Contexts/query-context";
+import useHttp from "../../Hooks/useHttp";
 import FacetEntry from "./FacetEntry";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AggregatorFacet({ title }) {
+function AggregatorFacet({ title, show = true }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [queryID, setQueryID] = useState(null);
@@ -118,7 +117,7 @@ function AggregatorFacet({ title }) {
     });
   };
 
-  return (
+  return show ? (
     <>
       <div className={classes.facetHeader}>
         <IconButton
@@ -170,7 +169,7 @@ function AggregatorFacet({ title }) {
         </List>
       ) : null}
     </>
-  );
+  ) : null;
 }
 
 export default AggregatorFacet;

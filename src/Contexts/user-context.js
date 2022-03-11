@@ -73,6 +73,15 @@ const userReducer = (userState, action) => {
         },
       };
     }
+
+    case "SET_USER_UI": {
+      const newState = {
+        ...userState,
+      };
+      newState.state.user.userUi = { ...action.userUi };
+      return newState;
+    }
+
     default:
       return userState;
   }
@@ -137,6 +146,11 @@ const UserContextProvider = (props) => {
           sources: userUi.sources,
         },
       });
+
+      userDispatcher({
+        type: "SET_USER_UI",
+        userUi,
+      });
     },
 
     [
@@ -163,6 +177,7 @@ const UserContextProvider = (props) => {
 
   useEffect(() => {
     let timer = null;
+
     if (!isLoading && !error && data) {
       if (SET_USER_LANGUAGE_ID === reqIdentifier) {
         // nothing to do in return when setting user language

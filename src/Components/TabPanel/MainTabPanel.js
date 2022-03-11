@@ -100,6 +100,7 @@ function MainTabPanel() {
             queries={element.queries}
             labels={element.labels.map((label) => t(label))}
             id={element.id}
+            show={element.show}
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
@@ -126,6 +127,7 @@ function MainTabPanel() {
             field={element.field}
             title={t(element.title)}
             separator={element.separator}
+            show={element.show}
           />
         );
       }

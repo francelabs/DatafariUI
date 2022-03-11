@@ -56,6 +56,7 @@ const UserMenu = (props) => {
   const adminURL = new URL(apiEndpointsContext.adminURL);
   adminURL.search = `?lang=${i18n.language}`;
 
+  console.log("USERPREFES MODAL", open === USER_PREF_MODAL);
   return (
     <Menu
       id={props.id}
@@ -107,13 +108,10 @@ const UserMenu = (props) => {
 
       <MenuItem onClick={onUserPrefsClick}>{t("User Preferences")}</MenuItem>
 
-      {/* Mount only if ask to reset its state */}
       {open === USER_PREF_MODAL ? (
         <UserPreferencesModal
           open={open === USER_PREF_MODAL}
-          onClose={() => {
-            setOpen();
-          }}
+          onClose={setOpen}
         />
       ) : null}
     </Menu>

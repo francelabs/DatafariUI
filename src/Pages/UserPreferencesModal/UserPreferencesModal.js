@@ -6,10 +6,7 @@ import {
   DialogContent,
   Divider,
   FormControlLabel,
-  Grid,
   IconButton,
-  List,
-  ListItem,
   makeStyles,
   Radio,
   RadioGroup,
@@ -17,15 +14,15 @@ import {
 } from "@material-ui/core";
 import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DialogTitle from "../../Components/DialogTitle/DialogTitle";
 import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
 import { UIConfigContext } from "../../Contexts/ui-config-context";
-import useHttp from "../../Hooks/useHttp";
 import { UserContext } from "../../Contexts/user-context";
+import useHttp from "../../Hooks/useHttp";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -40,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   facetsContent: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+    gap: "0.85em",
   },
 
   listOrder: {
@@ -64,13 +62,13 @@ const UserPreferencesModal = (props) => {
 
   // States
   const [facetsPosition, setFacetPosition] = useState(
-    user?.userUi.direction || defaultUiDefinition.direction || "ltr" // default is ltr
+    user?.userUi?.direction || defaultUiDefinition.direction || "ltr" // default is ltr
   );
-  const [leftFacetsOrder, setLeftFacetOrder] = useState(
-    user?.userUi.left || defaultUiDefinition.left || []
+  const [leftFacetsOrder, setLeftFacetsOrder] = useState(
+    user?.userUi?.left || defaultUiDefinition.left || []
   );
   const [rightFacetsOrder, setRightFacetsOrder] = useState(
-    user?.userUi.right || defaultUiDefinition.right || []
+    user?.userUi?.right || defaultUiDefinition.right || []
   );
 
   const [sources, setSources] = useState([]);
@@ -107,15 +105,16 @@ const UserPreferencesModal = (props) => {
 
   const handleEntityOrder = (entity, entities, stateCallback, isUp) => {
     const facetIndex = entities.findIndex((f) => entity === f);
-    entities.splice(facetIndex, 1);
-    entities.splice(
+    const newEntities = entities.filter((f, index) => index !== facetIndex);
+    newEntities.splice(
       isUp
         ? Math.max(facetIndex - 1, 0)
         : Math.min(facetIndex + 1, entities.length),
       0,
       entity
     );
-    stateCallback([...entities]);
+
+    stateCallback(newEntities);
   };
 
   const handleChangeFacetPosition = (
@@ -129,10 +128,24 @@ const UserPreferencesModal = (props) => {
     setTarget([...target, facet]);
   };
 
+  const handleShowFacet = (checked, facet, source, target) => {
+    target(
+      source.map((f) => {
+        if (f === facet) {
+          return {
+            ...f,
+            show: checked,
+          };
+        }
+        return f;
+      })
+    );
+  };
+
   const handleReset = () => {
     // Reset from uiDefinition values
     setFacetPosition(defaultUiDefinition.direction || "ltr");
-    setLeftFacetOrder(defaultUiDefinition.left || []);
+    setLeftFacetsOrder(defaultUiDefinition.left || []);
     setRightFacetsOrder(defaultUiDefinition.right || []);
     setSources(defaultUiDefinition.sources || formatSource(data));
   };
@@ -199,6 +212,18 @@ const UserPreferencesModal = (props) => {
               {leftFacetsOrder.map((facet, index) => (
                 <div className={classes.listOrder}>
                   <div key={facet.field}>
+                    <Checkbox
+                      style={{ padding: 0 }}
+                      checked={facet.show === undefined ? true : facet.show}
+                      onClick={(e) =>
+                        handleShowFacet(
+                          e.target.checked,
+                          facet,
+                          leftFacetsOrder,
+                          setLeftFacetsOrder
+                        )
+                      }
+                    />{" "}
                     {index + 1} - {t(facet.title)}{" "}
                   </div>
                   <div>
@@ -208,7 +233,7 @@ const UserPreferencesModal = (props) => {
                         handleEntityOrder(
                           facet,
                           leftFacetsOrder,
-                          setLeftFacetOrder,
+                          setLeftFacetsOrder,
                           true
                         )
                       }
@@ -221,7 +246,7 @@ const UserPreferencesModal = (props) => {
                         handleEntityOrder(
                           facet,
                           leftFacetsOrder,
-                          setLeftFacetOrder
+                          setLeftFacetsOrder
                         )
                       }
                     >
@@ -233,7 +258,7 @@ const UserPreferencesModal = (props) => {
                         handleChangeFacetPosition(
                           facet,
                           leftFacetsOrder,
-                          setLeftFacetOrder,
+                          setLeftFacetsOrder,
                           rightFacetsOrder,
                           setRightFacetsOrder
                         )
@@ -255,6 +280,18 @@ const UserPreferencesModal = (props) => {
               {rightFacetsOrder.map((facet, index) => (
                 <div className={classes.listOrder}>
                   <div key={facet.field}>
+                    <Checkbox
+                      style={{ padding: 0 }}
+                      checked={facet.show === undefined ? true : facet.show}
+                      onClick={(e) =>
+                        handleShowFacet(
+                          e.target.checked,
+                          facet,
+                          rightFacetsOrder,
+                          setRightFacetsOrder
+                        )
+                      }
+                    />{" "}
                     {index + 1} - {t(facet.title)}{" "}
                   </div>
                   <div>
@@ -291,7 +328,7 @@ const UserPreferencesModal = (props) => {
                           rightFacetsOrder,
                           setRightFacetsOrder,
                           leftFacetsOrder,
-                          setLeftFacetOrder
+                          setLeftFacetsOrder
                         )
                       }
                     >

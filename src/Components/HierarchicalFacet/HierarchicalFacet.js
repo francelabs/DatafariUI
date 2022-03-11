@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const HierarchicalFacet = (props) => {
+const HierarchicalFacet = ({ show = true, ...props }) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { t } = useTranslation();
   const classes = useStyles();
@@ -513,7 +513,7 @@ const HierarchicalFacet = (props) => {
     results.fieldFacets,
     separator,
   ]);
-  return Object.getOwnPropertyNames(hierarchyState).length > 0 ? (
+  return Object.getOwnPropertyNames(hierarchyState).length > 0 && show ? (
     <>
       <div className={classes.facetHeader}>
         <IconButton
