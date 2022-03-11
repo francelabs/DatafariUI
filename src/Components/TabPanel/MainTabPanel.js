@@ -10,6 +10,7 @@ import ResultsList from "../ResultsList/ResultsList";
 import SearchInformation from "../SearchInformation/SearchInformation";
 import Spinner from "../Spinner/Spinner";
 import { UIConfigContext } from "../../Contexts/ui-config-context";
+import AggregatorFacet from "../Facet/AggregatorFacet";
 
 const allowedElementTypes = [
   "FieldFacet",
@@ -18,6 +19,7 @@ const allowedElementTypes = [
   "HierarchicalFacet",
   "SearchInformation",
   "ResultsList",
+  "AggregatorFacet",
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -155,6 +157,8 @@ function MainTabPanel() {
           return buildSearchInformation(element);
         case "ResultsList":
           return buildResultList(element);
+        case "AggregatorFacet":
+          return <AggregatorFacet {...element} />;
         default:
           return null;
       }

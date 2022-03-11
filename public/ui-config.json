@@ -55,6 +55,10 @@
       "field": "urlHierarchy",
       "title": "hierarchical facet",
       "separator": "/"
+    },
+    {
+      "type": "AggregatorFacet",
+      "title": "Aggregator facet"
     }
   ],
   "center": {

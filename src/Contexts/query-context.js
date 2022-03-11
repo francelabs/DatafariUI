@@ -16,6 +16,7 @@ export const SET_ELEMENTS_NO_RESET = "SET_ELEMENTS_NO_RESET";
 export const FILL_FROM_URL_PARAMS = "FILL_FROM_URL_PARAMS";
 export const SET_OP = "SET_OP";
 export const CLEAR_FIELDS_FACET_SELECTED = "CLEAR_FIELDS_FACET_SELECTED";
+export const SET_AGGREGATORS_FACET = "SET_AGGREGATORS_FACET";
 
 const defaultQuery = {
   fieldFacets: {},
@@ -23,6 +24,7 @@ const defaultQuery = {
   queryFacets: {},
   selectedQueryFacets: {},
   filters: {},
+  aggregator: [],
   elements: "",
   rows: 10,
   page: 1,
@@ -181,6 +183,11 @@ const newQueryReducer = produce((queryDraft, action) => {
       });
       break;
     }
+
+    case SET_AGGREGATORS_FACET: {
+      queryDraft.aggregator = action.aggregators;
+      break;
+    }
     default:
       // Nothing to do, query should remain unchanged
       break;
@@ -222,6 +229,21 @@ const QueryContextProvider = (props) => {
           );
           result += currentParamString;
           break;
+        case "aggregator": {
+          if (Array.isArray(queryParams[key]) && queryParams[key].length) {
+            const aggregatorParam =
+              "aggregator=" +
+              queryParams[key].reduce((acc, agg, index) => {
+                if (index > 0) {
+                  acc += encodeURIComponent(",");
+                }
+                return acc + agg;
+              }, "");
+
+            result += aggregatorParam;
+          }
+          break;
+        }
         default:
           result += key + "=" + encodeURIComponent(queryParams[key]);
       }
@@ -455,6 +477,7 @@ const QueryContextProvider = (props) => {
       "q.op": "AND",
       rows: query.rows,
       start: (query.page - 1) * query.rows,
+      aggregator: query.aggregator,
       ...facetsParams,
     };
     if (queryParameters.q === "") {
@@ -469,6 +492,7 @@ const QueryContextProvider = (props) => {
     query.page,
     query.rows,
     query.sort.value,
+    query.aggregator,
   ]);
 
   const prepareFiltersForAlerts = useCallback(() => {
@@ -664,6 +688,10 @@ const QueryContextProvider = (props) => {
         (draft.sort.label === "Relevance" && draft.sort.value === "score desc")
       ) {
         delete draft.sort;
+      }
+
+      if (!draft.aggretor || isEmptyObj(draft.aggregator)) {
+        delete draft.aggegator;
       }
     });
   };
