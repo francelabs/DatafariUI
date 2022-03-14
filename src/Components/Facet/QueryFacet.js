@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import {
   QueryContext,
   REGISTER_QUERY_FACET,
   SET_QUERY_FACET_SELECTED,
-} from "../../Contexts/query-context";
-import { ResultsContext } from "../../Contexts/results-context";
-import FacetEntry from "./FacetEntry";
+} from '../../Contexts/query-context';
+import { ResultsContext } from '../../Contexts/results-context';
+import FacetEntry from './FacetEntry';
 import {
   Divider,
   IconButton,
@@ -15,11 +15,11 @@ import {
   Menu,
   MenuItem,
   Link,
-} from "@material-ui/core";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import { useTranslation } from "react-i18next";
+} from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { useTranslation } from 'react-i18next';
 
 const DISPLAY_ENTRIES = [10, 100];
 
@@ -29,16 +29,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   facetHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   showMore: {
-    width: "100%",
+    width: '100%',
     marginBottom: theme.spacing(1),
   },
 }));
 
-const QueryFacet = ({ show = true, ...props }) => {
+const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(true);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
@@ -61,14 +61,16 @@ const QueryFacet = ({ show = true, ...props }) => {
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
-    const newFacet = {
-      id: id,
-      labels: labels,
-      queries: queries,
-      title: props.title,
-    };
-    queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
-  }, [id, queryDispatch, labels, queries, props.title]);
+    if (sendToSolr) {
+      const newFacet = {
+        id: id,
+        labels: labels,
+        queries: queries,
+        title: props.title,
+      };
+      queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
+    }
+  }, [id, queryDispatch, labels, queries, props.title, sendToSolr]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
@@ -186,11 +188,11 @@ const QueryFacet = ({ show = true, ...props }) => {
         >
           {multipleSelect && (
             <MenuItem onClick={handleSelectAllClick}>
-              {t("Select All")}
+              {t('Select All')}
             </MenuItem>
           )}
           <MenuItem onClick={handleClearFilterClick}>
-            {t("Clear Filter")}
+            {t('Clear Filter')}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
@@ -199,7 +201,7 @@ const QueryFacet = ({ show = true, ...props }) => {
         <IconButton
           onClick={handleExpandClick}
           aria-label={t(
-            `${expanded ? "Collapse" : "Expand"} {{ facetTitle }} facet`,
+            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
             {
               facetTitle: t(props.title),
             }
@@ -220,7 +222,7 @@ const QueryFacet = ({ show = true, ...props }) => {
               className={classes.showMore}
             >
               <Typography variant="caption">
-                {t("Show More")} &gt;&gt;
+                {t('Show More')} &gt;&gt;
               </Typography>
             </Link>
           )}
@@ -233,7 +235,7 @@ const QueryFacet = ({ show = true, ...props }) => {
               className={classes.showMore}
             >
               <Typography variant="caption">
-                {t("Show Less")} &lt;&lt;
+                {t('Show Less')} &lt;&lt;
               </Typography>
             </Link>
           )}

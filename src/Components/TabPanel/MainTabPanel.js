@@ -1,41 +1,41 @@
-import { Grid, Hidden, makeStyles } from "@material-ui/core";
-import React, { useCallback, useContext } from "react";
-import { useTranslation } from "react-i18next";
-import DateFacetCustom from "../DateFacetCustom/DateFacetCustom";
-import FieldFacet from "../Facet/FieldFacet";
-import QueryFacet from "../Facet/QueryFacet";
-import HierarchicalFacet from "../HierarchicalFacet/HierarchicalFacet";
-import Pager from "../Pager/Pager";
-import ResultsList from "../ResultsList/ResultsList";
-import SearchInformation from "../SearchInformation/SearchInformation";
-import Spinner from "../Spinner/Spinner";
-import { UIConfigContext } from "../../Contexts/ui-config-context";
-import AggregatorFacet from "../Facet/AggregatorFacet";
+import { Grid, Hidden, makeStyles } from '@material-ui/core';
+import React, { useCallback, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
+import FieldFacet from '../Facet/FieldFacet';
+import QueryFacet from '../Facet/QueryFacet';
+import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
+import Pager from '../Pager/Pager';
+import ResultsList from '../ResultsList/ResultsList';
+import SearchInformation from '../SearchInformation/SearchInformation';
+import Spinner from '../Spinner/Spinner';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
+import AggregatorFacet from '../Facet/AggregatorFacet';
 
 const allowedElementTypes = [
-  "FieldFacet",
-  "QueryFacet",
-  "DateFacetCustom",
-  "HierarchicalFacet",
-  "SearchInformation",
-  "ResultsList",
-  "AggregatorFacet",
+  'FieldFacet',
+  'QueryFacet',
+  'DateFacetCustom',
+  'HierarchicalFacet',
+  'SearchInformation',
+  'ResultsList',
+  'AggregatorFacet',
 ];
 
 const useStyles = makeStyles((theme) => ({
   facetsSection: {
     backgroundColor: theme.palette.background.paper,
-    borderRadius: "5px",
+    borderRadius: '5px',
     margin: theme.spacing(2),
     padding: theme.spacing(2),
-    minWidth: "280px",
+    minWidth: '280px',
   },
 
   pagerContainer: {
     margin: theme.spacing(2),
-    float: "right",
+    float: 'right',
 
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('sm')]: {
       margin: 0,
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   facetDivider: {
-    "&:last-of-type": {
-      display: "none",
+    '&:last-of-type': {
+      display: 'none',
     },
   },
 }));
@@ -74,6 +74,7 @@ function MainTabPanel() {
             op={element.op}
             variant={element.variant}
             show={element.show}
+            sendToSolr={element.sendToSolr}
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
@@ -105,6 +106,8 @@ function MainTabPanel() {
             minShow={minShow}
             maxShow={maxShow}
             multipleSelect={multipleSelect}
+            show={element.show}
+            sendToSolr={element.sendToSolr}
           >
             {element.children &&
               Array.isArray(element.children) &&
@@ -147,19 +150,19 @@ function MainTabPanel() {
   const createElementFromParameters = (element) => {
     if (element.type && allowedElementTypes.includes(element.type)) {
       switch (element.type) {
-        case "FieldFacet":
+        case 'FieldFacet':
           return buildFieldFacet(element);
-        case "QueryFacet":
+        case 'QueryFacet':
           return buildQueryFacet(element, createElementFromParameters);
-        case "DateFacetCustom":
+        case 'DateFacetCustom':
           return <DateFacetCustom />;
-        case "HierarchicalFacet":
+        case 'HierarchicalFacet':
           return buildHierarchicalFacet(element);
-        case "SearchInformation":
+        case 'SearchInformation':
           return buildSearchInformation(element);
-        case "ResultsList":
+        case 'ResultsList':
           return buildResultList(element);
-        case "AggregatorFacet":
+        case 'AggregatorFacet':
           return <AggregatorFacet {...element} />;
         default:
           return null;
