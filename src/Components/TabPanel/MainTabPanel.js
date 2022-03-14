@@ -106,7 +106,6 @@ function MainTabPanel() {
             minShow={minShow}
             maxShow={maxShow}
             multipleSelect={multipleSelect}
-            show={element.show}
             sendToSolr={element.sendToSolr}
           >
             {element.children &&

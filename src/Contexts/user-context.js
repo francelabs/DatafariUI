@@ -1,11 +1,3 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
 import deLocale from "date-fns/locale/de";
 import enLocale from "date-fns/locale/en-US";
 import esLocale from "date-fns/locale/es";
@@ -13,6 +5,14 @@ import frLocale from "date-fns/locale/fr";
 import itLocale from "date-fns/locale/it";
 import ptLocale from "date-fns/locale/pt";
 import ruLocale from "date-fns/locale/ru";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState
+} from "react";
 import { useTranslation } from "react-i18next";
 import useHttp from "../Hooks/useHttp";
 import { APIEndpointsContext } from "./api-endpoints-context";
@@ -232,6 +232,7 @@ const UserContextProvider = (props) => {
     i18n,
     userDispatcher,
     uiConfigDispatch,
+    uiDefinition
   ]);
 
   const getLocale = useCallback(() => {

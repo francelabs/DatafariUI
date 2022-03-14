@@ -9,11 +9,8 @@ import {
   IconButton,
   makeStyles,
   Radio,
-  RadioGroup,
-  Tooltip,
-  Typography,
+  RadioGroup
 } from "@material-ui/core";
-import QuestionMarkIcon from "@material-ui/icons/Help";
 import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
