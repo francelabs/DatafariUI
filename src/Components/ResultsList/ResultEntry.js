@@ -6,7 +6,6 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
-  SvgIcon,
   Tooltip,
 } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -17,7 +16,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import { QueryContext } from '../../Contexts/query-context';
 import { UserContext } from '../../Contexts/user-context';
-import { ReactComponent as PreviewIcon } from '../../Icons/preview-black-18dp.svg';
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
