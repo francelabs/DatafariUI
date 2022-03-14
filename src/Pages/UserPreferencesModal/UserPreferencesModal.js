@@ -10,8 +10,10 @@ import {
   makeStyles,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
+import QuestionMarkIcon from "@material-ui/icons/Help";
 import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
@@ -23,6 +25,7 @@ import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
 import { UIConfigContext } from "../../Contexts/ui-config-context";
 import { UserContext } from "../../Contexts/user-context";
 import useHttp from "../../Hooks/useHttp";
+import UserPreferenceTitle from "./UserPreferenceTitle";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -58,7 +61,7 @@ const UserPreferencesModal = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { defaultUiDefinition } = useContext(UIConfigContext);
   const { state: userState, actions } = useContext(UserContext);
-  const { user = { userUi: {} } } = userState.user;
+  const { user = { userUi: {} } } = userState;
 
   // States
   const [facetsPosition, setFacetPosition] = useState(
@@ -181,7 +184,10 @@ const UserPreferencesModal = (props) => {
         <div className={classes.content}>
           {/* FACETS POSITION */}
           <div>
-            <Typography color="secondary">{t("Facets position")}</Typography>
+            <UserPreferenceTitle
+              title={t("Facets position")}
+              tooltip={t("Facets position tooltip")}
+            />
             <RadioGroup
               aria-label="facet-location"
               name="facet-location"
@@ -205,9 +211,10 @@ const UserPreferencesModal = (props) => {
           <div className={classes.facetsContent}>
             {/* LEFT FACETS ORDER */}
             <div>
-              <Typography color="secondary" className={classes.title}>
-                {t("Left facets order")}
-              </Typography>
+              <UserPreferenceTitle
+                title={t("Left facets order")}
+                tooltip={t("Left facets order tooltip")}
+              />
 
               {leftFacetsOrder.map((facet, index) => (
                 <div className={classes.listOrder}>
@@ -271,12 +278,12 @@ const UserPreferencesModal = (props) => {
               ))}
             </div>
 
-            {/* RIFHT FACETS ORDER */}
+            {/* RIGHT FACETS ORDER */}
             <div>
-              <Typography color="secondary" className={classes.title}>
-                {t("Right facets order")}
-              </Typography>
-
+              <UserPreferenceTitle
+                title={t("Right facets order")}
+                tooltip={t("Right facets order tooltip")}
+              />
               {rightFacetsOrder.map((facet, index) => (
                 <div className={classes.listOrder}>
                   <div key={facet.field}>
@@ -342,9 +349,10 @@ const UserPreferencesModal = (props) => {
 
           {/* SOURCES */}
           <div>
-            <Typography color="secondary" className={classes.title}>
-              {t("Sources order")}
-            </Typography>
+            <UserPreferenceTitle
+              title={t("Sources order")}
+              tooltip={t("Sources order tooltip")}
+            />
             <div className={classes.listOrder}>
               <div className={classes.listOrder}>
                 {sources.map((source, index) => (

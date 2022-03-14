@@ -196,10 +196,19 @@ const UserContextProvider = (props) => {
         // Set language according to user language
         i18n.changeLanguage(userData.lang);
 
-        // Dispatch UI configuration from user preference
+        // Dispatch UI configuration from user preference, only direction, left, right and sources
         if (UPDATE_USER_PREF_ID === reqIdentifier) {
           const { userUi } = userData;
-          uiConfigDispatch({ type: SET_UI_DEFINITION, definition: userUi });
+          uiConfigDispatch({
+            type: SET_UI_DEFINITION,
+            definition: {
+              ...uiDefinition,
+              direction: userUi.direction,
+              left: userUi.left,
+              right: userUi.right,
+              sources: userUi.sources,
+            },
+          });
         }
 
         timer = setTimeout(autoConnect, 60000);
