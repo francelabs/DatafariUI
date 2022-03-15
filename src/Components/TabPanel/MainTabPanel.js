@@ -25,7 +25,8 @@ const allowedElementTypes = [
 const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
-    gap: 10,
+    gap: 15,
+    marginTop: 15,
 
     [theme.breakpoints.down('sm')]: {
       gap: 5,
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     borderRadius: '5px',
     minWidth: '300px',
+    height: 'min-content',
 
     [theme.breakpoints.down('sm')]: {
       display: 'none',
