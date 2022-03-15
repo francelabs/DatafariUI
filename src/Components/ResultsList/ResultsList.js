@@ -1,39 +1,32 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { ResultsContext } from "../../Contexts/results-context";
-import ResultEntry from "./ResultEntry";
-import ResultError from "./ResultError";
-import Spinner from "../Spinner/Spinner";
-import { makeStyles, Divider, List } from "@material-ui/core";
-import useFavorites from "../../Hooks/useFavorites";
-import useFolderLinkSources from "../../Hooks/useFolderLinkSources";
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { ResultsContext } from '../../Contexts/results-context';
+import ResultEntry from './ResultEntry';
+import ResultError from './ResultError';
+import Spinner from '../Spinner/Spinner';
+import { makeStyles, Divider, List } from '@material-ui/core';
+import useFavorites from '../../Hooks/useFavorites';
+import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
     backgroundColor: theme.palette.background.paper,
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
-    borderRadius: "5px",
-
-    [theme.breakpoints.down("sm")]: {
-      margin: theme.spacing(0),
-      padding: theme.spacing(0),
-    },
+    borderRadius: '5px',
   },
   spinnerContainer: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
   },
 }));
 
 const ResultsList = ({
   data: facetData = [],
   folderLinkSources: folderSources = [],
-  folderTarget = "_blank",
-  previewTarget = "_self",
+  folderTarget = '_blank',
+  previewTarget = '_self',
   ...props
 }) => {
-  const defaultData = ["filters", "facets", "search", "spellcheck"];
+  const defaultData = ['filters', 'facets', 'search', 'spellcheck'];
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
   const {
@@ -58,16 +51,16 @@ const ResultsList = ({
 
   // Retrieve favorite status on mount (getFavortiesStatus should be constant)
   useEffect(() => {
-    getFavoritesStatus("FETCH_FAVORITES_STATUS");
+    getFavoritesStatus('FETCH_FAVORITES_STATUS');
   }, [getFavoritesStatus]);
 
   // Handles reception of the fetch status query
   useEffect(() => {
-    if (reqIdentifier === "FETCH_FAVORITES_STATUS") {
+    if (reqIdentifier === 'FETCH_FAVORITES_STATUS') {
       if (!isLoading && !error && data) {
-        if (data.status === "OK") {
+        if (data.status === 'OK') {
           let enabled = false;
-          if (data.content.activated === "true") {
+          if (data.content.activated === 'true') {
             enabled = true;
           }
           if (enabled !== favoritesEnabled) {
@@ -94,7 +87,7 @@ const ResultsList = ({
   // Populate the favorites state variable upon reception of the response
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
-      if (data.status === "OK") {
+      if (data.status === 'OK') {
         setFavorites(data.content.favorites.map((favorite) => favorite.id));
       }
     }
@@ -108,7 +101,7 @@ const ResultsList = ({
       return () => {
         setModifQueries((currentQueries) => {
           const newQueries = { ...currentQueries };
-          newQueries[favoriteID] = "add";
+          newQueries[favoriteID] = 'add';
           return newQueries;
         });
         addFavorite(favoriteID, favoriteID, favoriteTitle);
@@ -125,7 +118,7 @@ const ResultsList = ({
       return () => {
         setModifQueries((currentQueries) => {
           const newQueries = { ...currentQueries };
-          newQueries[favoriteID] = "remove";
+          newQueries[favoriteID] = 'remove';
           return newQueries;
         });
         removeFavorite(favoriteID, favoriteID);
@@ -140,9 +133,9 @@ const ResultsList = ({
   useEffect(() => {
     if (modifQueries[reqIdentifier]) {
       if (!isLoading && !error && data) {
-        if (data.code === 0 || data.status === "OK") {
+        if (data.code === 0 || data.status === 'OK') {
           setFavorites((currentFavorites) => {
-            if (modifQueries[reqIdentifier] === "add") {
+            if (modifQueries[reqIdentifier] === 'add') {
               return currentFavorites.concat(reqIdentifier);
             } else {
               return currentFavorites.filter(

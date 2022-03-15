@@ -1,7 +1,9 @@
-import { Grid, Hidden, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
 import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
+import AggregatorFacet from '../Facet/AggregatorFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
@@ -9,8 +11,6 @@ import Pager from '../Pager/Pager';
 import ResultsList from '../ResultsList/ResultsList';
 import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
-import { UIConfigContext } from '../../Contexts/ui-config-context';
-import AggregatorFacet from '../Facet/AggregatorFacet';
 
 const allowedElementTypes = [
   'FieldFacet',
@@ -23,12 +23,23 @@ const allowedElementTypes = [
 ];
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    gap: 10,
+
+    [theme.breakpoints.down('sm')]: {
+      gap: 5,
+    },
+  },
+
   facetsSection: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: '5px',
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
-    minWidth: '280px',
+    minWidth: '300px',
+
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
   },
 
   pagerContainer: {
@@ -185,22 +196,26 @@ function MainTabPanel() {
   return isLoading && !uiDefinition ? (
     <Spinner />
   ) : (
-    <>
-      <Grid item md={4} lg>
-        <Hidden smDown>
-          <div className={classes.facetsSection}>
-            {buildContentFor(uiDefinition.left)}
-          </div>
-        </Hidden>
-      </Grid>
-      <Grid item sm={12} md={8}>
+    <div className={classes.container}>
+      {uiDefinition.left?.length ? (
+        <div className={classes.facetsSection}>
+          {buildContentFor(uiDefinition.left)}
+        </div>
+      ) : null}
+
+      <div className={classes.centerContainer}>
         {buildContentFor(uiDefinition.center.main)}
         <div className={classes.pagerContainer}>
           <Pager />
         </div>
-      </Grid>
-      <Grid item lg={1} />
-    </>
+      </div>
+
+      {uiDefinition.right?.length ? (
+        <div className={classes.facetsSection}>
+          {buildContentFor(uiDefinition.right)}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
