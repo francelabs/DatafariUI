@@ -194,7 +194,8 @@
   "Sources order": "Priorité des souces",
   "Sources order tooltip": "Utiliser pour favoriser les résultats provenant de sources spécifiques. Plus le chiffre est bas plus la source est pertinente.",
   "Save": "Sauvegarder",
-  "Reset": "Reinitialiser",
+  "Reset": "Réinitialiser",
   "Aggregator facet": "Aggrégateur",
-  "url": "url"
+  "url": "url",
+  "Date Range": "Date interval"
 }

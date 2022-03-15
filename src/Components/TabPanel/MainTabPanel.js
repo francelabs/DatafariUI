@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { UIConfigContext } from '../../Contexts/ui-config-context';
 import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
+import RangeFacet from '../Facet/RangeFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
@@ -16,6 +17,7 @@ const allowedElementTypes = [
   'FieldFacet',
   'QueryFacet',
   'DateFacetCustom',
+  'RangeFacet',
   'HierarchicalFacet',
   'SearchInformation',
   'ResultsList',
@@ -168,6 +170,10 @@ function MainTabPanel() {
           return buildQueryFacet(element, createElementFromParameters);
         case 'DateFacetCustom':
           return <DateFacetCustom />;
+        case 'RangeFacet':
+          return (
+            <RangeFacet dividerClassName={classes.facetDivider} {...element} />
+          );
         case 'HierarchicalFacet':
           return buildHierarchicalFacet(element);
         case 'SearchInformation':
