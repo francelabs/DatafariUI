@@ -70,7 +70,7 @@
       {
         "type": "ResultsList",
         "data": ["title", "url", "logo", "previewButton", "extract"],
-        "folderLinkSources": [],
+        "folderLinkSources": ["enron"],
         "folderTarget": "_blank",
         "previewTarget": "_self"
       }
