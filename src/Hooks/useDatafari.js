@@ -68,6 +68,26 @@ const useDatafari = () => {
     []
   );
 
+  const prepareAndSetRangeFacets = useCallback(
+    (rangeFacetsResult, newResults) => {
+      const rangeFacets = {};
+      for (const facetKey in rangeFacetsResult) {
+        rangeFacets[facetKey] = {};
+        const currentRangeFacetResult = rangeFacetsResult[facetKey];
+        for (
+          let index = 0;
+          index < currentRangeFacetResult.counts.length;
+          index += 2
+        ) {
+          rangeFacets[facetKey][currentRangeFacetResult.counts[index]] =
+            currentRangeFacetResult.counts[index + 1];
+        }
+      }
+      newResults.rangeFacets = rangeFacets;
+    },
+    []
+  );
+
   /**
    * Everytime the makeRequest function changes, we need to execute the
    * new available request. But to avoid unnecessary request calls (some
@@ -129,6 +149,12 @@ const useDatafari = () => {
         if (data.facet_counts) {
           newResults.fieldFacets = data.facet_counts.facet_fields;
           prepareAndSetQueryFacets(data.facet_counts.facet_queries, newResults);
+          if (data.facet_counts.facet_ranges) {
+            prepareAndSetRangeFacets(
+              data.facet_counts.facet_ranges,
+              newResults
+            );
+          }
         }
         newResults.numFound = data.response.numFound;
         newResults.rows = parseInt(data.responseHeader.params.rows, 10);
@@ -150,7 +176,14 @@ const useDatafari = () => {
       }
     }
     resultsDispatch({ type: SET_RESULTS, results: newResults });
-  }, [isLoading, data, error, prepareAndSetQueryFacets, resultsDispatch]);
+  }, [
+    isLoading,
+    data,
+    error,
+    prepareAndSetQueryFacets,
+    resultsDispatch,
+    prepareAndSetRangeFacets,
+  ]);
 
   return {
     makeRequest,

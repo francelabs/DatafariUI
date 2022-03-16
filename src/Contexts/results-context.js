@@ -10,6 +10,7 @@ export const DEFAULT_RESULT = {
   results: [],
   fieldFacets: {},
   queryFacets: {},
+  rangeFacets: {},
   elements: [],
   spellcheck: undefined,
   numFound: 0,
