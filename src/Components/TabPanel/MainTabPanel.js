@@ -205,11 +205,9 @@ function MainTabPanel() {
     <Spinner />
   ) : (
     <div className={classes.container}>
-      {uiDefinition.left?.length ? (
-        <div className={classes.facetsSection}>
-          {buildContentFor(uiDefinition.left)}
-        </div>
-      ) : null}
+      <div className={classes.facetsSection}>
+        {buildContentFor(uiDefinition.left)}
+      </div>
 
       <div className={classes.centerContainer}>
         {buildContentFor(uiDefinition.center.main)}
@@ -218,11 +216,9 @@ function MainTabPanel() {
         </div>
       </div>
 
-      {uiDefinition.right?.length ? (
-        <div className={classes.facetsSection}>
-          {buildContentFor(uiDefinition.right)}
-        </div>
-      ) : null}
+      <div className={classes.facetsSection}>
+        {buildContentFor(uiDefinition.right)}
+      </div>
     </div>
   );
 }
