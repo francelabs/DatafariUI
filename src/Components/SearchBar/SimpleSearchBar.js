@@ -6,47 +6,47 @@ import {
   InputAdornment,
   InputBase,
   LinearProgress,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import ClearIcon from "@material-ui/icons/Clear";
-import SearchIcon from "@material-ui/icons/Search";
-import qs from "qs";
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ClearIcon from '@material-ui/icons/Clear';
+import SearchIcon from '@material-ui/icons/Search';
+import qs from 'qs';
 import React, {
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
-} from "react";
-import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router";
-import { QueryContext } from "../../Contexts/query-context";
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router';
+import { QueryContext } from '../../Contexts/query-context';
 import {
   SearchContext,
   SearchContextActions,
-} from "../../Contexts/search-context";
-import { UIConfigContext } from "../../Contexts/ui-config-context";
+} from '../../Contexts/search-context';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
 import useHotkey, {
   ACTIVE_SEARCH_BAR_ID,
   DEACTIVE_SEARCH_BAR_ID,
-} from "../../Hooks/useHotkey";
-import AutocompleteContainer from "./Autocompletes/AutocompleteContainer/AutocompleteContainer";
-import "./SimpleSearchBar.css";
+} from '../../Hooks/useHotkey';
+import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
+import './SimpleSearchBar.css';
 
 const useStyles = makeStyles((theme) => {
   const search = {
-    position: "relative",
+    position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.grey[200],
     marginRight: theme.spacing(2),
     marginLeft: 0,
 
-    "&:hover": {
+    '&:hover': {
       backgroundColor: theme.palette.grey[300],
     },
 
-    "&::first-letter": {
-      textTransform: "lowercase",
+    '&::first-letter': {
+      textTransform: 'lowercase',
     },
   };
 
@@ -55,63 +55,63 @@ const useStyles = makeStyles((theme) => {
 
     searchWithSuggestion: {
       ...search,
-      borderRadius: "none",
+      borderRadius: 'none',
       borderTopLeftRadius: theme.shape.borderRadius,
       borderTopRightRadius: theme.shape.borderRadius,
     },
 
     suggestions: {
-      display: (props) => (props.showQuerySuggestion ? "block" : "none"),
+      display: (props) => (props.showQuerySuggestion ? 'block' : 'none'),
       zIndex: 2,
     },
 
     clearButton: {
-      borderRight: "solid 1px rgba(0,0,0,0.12)",
-      borderRadius: "0",
+      borderRight: 'solid 1px rgba(0,0,0,0.12)',
+      borderRadius: '0',
 
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down('sm')]: {
         minWidth: 25,
       },
     },
 
     searchButton: {
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down('sm')]: {
         minWidth: 25,
       },
     },
 
     inputRoot: {
-      color: "inherit",
+      color: 'inherit',
     },
 
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-      transition: theme.transitions.create("width"),
-      width: "100%",
+      transition: theme.transitions.create('width'),
+      width: '100%',
 
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down('xs')]: {
         paddingLeft: 5,
       },
     },
 
     formContainer: {
-      position: "relative",
+      position: 'relative',
       zIndex: 2,
-      width: "100%",
+      width: '100%',
     },
 
     searchBackground: {
-      display: (props) => (props.showQuerySuggestion ? "block" : "none"),
-      width: "100%",
-      height: "100%",
-      background: theme.palette.grey[600] + "AA", // grey with alpha
-      position: "fixed",
+      display: (props) => (props.showQuerySuggestion ? 'block' : 'none'),
+      width: '100%',
+      height: '100%',
+      background: theme.palette.grey[600] + 'AA', // grey with alpha
+      position: 'fixed',
       top: 0,
       left: 0,
       zIndex: 1,
-      backdropFilter: "blur(2px)",
+      backdropFilter: 'blur(2px)',
     },
   };
 });
@@ -122,7 +122,7 @@ const SPACE_REGEX = /\s$/;
 const SimpleSearchBar = () => {
   const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
-    queryText: "",
+    queryText: '',
     triggerSuggestion: false,
   });
   const { queryText } = textState;
@@ -137,7 +137,10 @@ const SimpleSearchBar = () => {
   const { searchState, searchDispatch } = useContext(SearchContext);
 
   const {
-    uiDefinition: { hotkeys = {} },
+    uiDefinition: {
+      hotkeys = {},
+      searchBar: { backdrop = false },
+    },
   } = useContext(UIConfigContext);
 
   // Hotkey handlers
@@ -185,7 +188,7 @@ const SimpleSearchBar = () => {
         timeoutId.current = setTimeout(() => {
           searchDispatch(
             SearchContextActions.setSearchingAction(
-              SPACE_REGEX.test(userText) ? "" : userText
+              SPACE_REGEX.test(userText) ? '' : userText
             )
           );
         }, DEBOUCE_TIME_MS);
@@ -205,10 +208,10 @@ const SimpleSearchBar = () => {
   const search = useCallback(
     (suggestion) => {
       const params = {
-        elements: suggestion === "" ? undefined : suggestion,
+        elements: suggestion === '' ? undefined : suggestion,
       };
       const newLocation = {
-        pathname: "/search",
+        pathname: '/search',
         search: qs.stringify(params, { addQueryPrefix: true }),
       };
       history.push(newLocation);
@@ -219,7 +222,7 @@ const SimpleSearchBar = () => {
   );
 
   const handleClear = () => {
-    setTextState({ queryText: "" });
+    setTextState({ queryText: '' });
     setShowQuerySuggestion(false);
   };
 
@@ -230,7 +233,7 @@ const SimpleSearchBar = () => {
 
   return (
     <>
-      <div className={classes.searchBackground} />
+      {backdrop ? <div className={classes.searchBackground} /> : null}
       <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
         <div className={classes.formContainer}>
           <form onSubmit={handleSubmit}>
@@ -245,15 +248,15 @@ const SimpleSearchBar = () => {
               <InputBase
                 inputRef={inputSearchRef}
                 fullWidth
-                placeholder={t("Search")}
+                placeholder={t('Search')}
                 classes={{
                   root: classes.inputRoot,
                   input: classes.inputInput,
                 }}
                 inputProps={{
-                  "aria-label": "search",
-                  autocomplete: "off",
-                  autoCapitalize: "none",
+                  'aria-label': 'search',
+                  autocomplete: 'off',
+                  autoCapitalize: 'none',
                 }}
                 id="datafari-search-input"
                 type="text"
@@ -285,8 +288,8 @@ const SimpleSearchBar = () => {
               />
             </FormControl>
             {searchState.isSearching && (
-              <Box sx={{ width: "100%" }}>
-                <LinearProgress style={{ height: 2 }} color={"secondary"} />
+              <Box sx={{ width: '100%' }}>
+                <LinearProgress style={{ height: 2 }} color={'secondary'} />
               </Box>
             )}
           </form>
