@@ -7,18 +7,18 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@material-ui/core";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import React, { useCallback, useContext, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+} from '@material-ui/core';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import React, { useCallback, useContext, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   QueryContext,
   SET_FIELD_FACET_SELECTED,
-} from "../../Contexts/query-context";
-import { ResultsContext } from "../../Contexts/results-context";
-import FacetEntry from "./FacetEntry";
+} from '../../Contexts/query-context';
+import { ResultsContext } from '../../Contexts/results-context';
+import FacetEntry from './FacetEntry';
 
 const DISPLAY_ENTRIES = [10, 100];
 
@@ -27,12 +27,13 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   facetHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   showMore: {
-    width: "100%",
+    width: '100%',
     marginBottom: theme.spacing(1),
+    paddingInline: theme.spacing(2),
   },
 }));
 
@@ -167,9 +168,9 @@ const CheckboxFieldFacet = (props) => {
           open={menuOpen}
           onClose={handleCloseMenu}
         >
-          <MenuItem onClick={handleSelectAllClick}>{t("Select All")}</MenuItem>
+          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>
-            {t("Clear Filter")}
+            {t('Clear Filter')}
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
@@ -178,7 +179,7 @@ const CheckboxFieldFacet = (props) => {
         <IconButton
           onClick={handleExpandClick}
           aria-label={t(
-            `${expanded ? "Collapse" : "Expand"} {{ facetTitle }} facet`,
+            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
             {
               facetTitle: t(props.title),
             }
@@ -199,7 +200,7 @@ const CheckboxFieldFacet = (props) => {
               className={classes.showMore}
             >
               <Typography variant="caption">
-                {t("Show More")} &gt;&gt;
+                {t('Show More')} &gt;&gt;
               </Typography>
             </Link>
           )}
@@ -212,7 +213,7 @@ const CheckboxFieldFacet = (props) => {
               className={classes.showMore}
             >
               <Typography variant="caption">
-                {t("Show Less")} &lt;&lt;
+                {t('Show Less')} &lt;&lt;
               </Typography>
             </Link>
           )}

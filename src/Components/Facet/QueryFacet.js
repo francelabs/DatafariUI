@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   showMore: {
     width: '100%',
     marginBottom: theme.spacing(1),
+    paddingInline: theme.spacing(2),
   },
 }));
 
