@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { UIConfigContext } from '../../Contexts/ui-config-context';
 import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
-import RangeFacet from '../Facet/RangeFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
+import RangeFacet from '../Facet/RangeFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
 import Pager from '../Pager/Pager';
+import Promolink from '../Promolink/Promolink';
 import ResultsList from '../ResultsList/ResultsList';
 import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
@@ -154,7 +155,12 @@ function MainTabPanel() {
   );
 
   const buildSearchInformation = useCallback((element) => {
-    return <SearchInformation data={element.data} />;
+    return (
+      <>
+        <SearchInformation data={element.data} />
+        <Promolink />
+      </>
+    );
   }, []);
 
   const buildResultList = useCallback((element) => {

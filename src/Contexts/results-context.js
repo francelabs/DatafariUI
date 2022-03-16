@@ -15,6 +15,7 @@ export const DEFAULT_RESULT = {
   numFound: 0,
   rows: 10,
   start: 0,
+  promolinks: [],
 };
 /*
 Note error evaluates to false (null / undefined / false) when there are no errors 

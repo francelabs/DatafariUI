@@ -1,16 +1,15 @@
-import { useContext, useEffect, useCallback } from "react";
-import { APIEndpointsContext } from "../Contexts/api-endpoints-context";
-
-import { QueryContext, FILL_FROM_URL_PARAMS } from "../Contexts/query-context";
+import produce from 'immer';
+import qs from 'qs';
+import { useCallback, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router';
+import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
+import { FILL_FROM_URL_PARAMS, QueryContext } from '../Contexts/query-context';
 import {
+  DEFAULT_RESULT,
   ResultsContext,
   SET_RESULTS,
-  DEFAULT_RESULT,
-} from "../Contexts/results-context";
-import useHttp from "./useHttp";
-import produce from "immer";
-import qs from "qs";
-import { useHistory, useLocation } from "react-router";
+} from '../Contexts/results-context';
+import useHttp from './useHttp';
 
 const useDatafari = () => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
@@ -37,13 +36,13 @@ const useDatafari = () => {
     if (history.location.search !== urlParamsString) {
       const newLocation = produce(history.location, (locationDraft) => {
         locationDraft.search = urlParamsString;
-        locationDraft.pathname = "/search";
+        locationDraft.pathname = '/search';
       });
 
       history.push(newLocation);
     }
     const queryString = buildSearchQueryString();
-    sendRequest(baseURL + "/select?" + queryString, "GET", null);
+    sendRequest(baseURL + '/select?' + queryString, 'GET', null);
   }, [
     history,
     buildSearchQueryString,
@@ -56,9 +55,9 @@ const useDatafari = () => {
     (queryFacetsResult, newResults) => {
       const result = {};
       for (const key in queryFacetsResult) {
-        const splitKey = key.split("_");
+        const splitKey = key.split('_');
         const queryIndex = splitKey.splice(-1, 1);
-        const facetId = splitKey.join("_");
+        const facetId = splitKey.join('_');
         if (!result[facetId]) {
           result[facetId] = {};
         }
@@ -86,12 +85,12 @@ const useDatafari = () => {
   }, [makeRequest]);
 
   useEffect(() => {
-    if (location.pathname === "/search") {
+    if (location.pathname === '/search') {
       let urlParamsString = qs.stringify(buildParamsForURL(), {
         addQueryPrefix: true,
       });
-      if (urlParamsString === "?") {
-        urlParamsString = "";
+      if (urlParamsString === '?') {
+        urlParamsString = '';
       }
       if (location.search !== urlParamsString) {
         queryDispatch({
@@ -143,6 +142,11 @@ const useDatafari = () => {
         const spellcheck = {};
         spellcheck.collation = data.spellcheck.collations[1];
         newResults.spellcheck = spellcheck;
+      }
+
+      // Extract promolinks
+      if (Array.isArray(data.promolinkSearchComponent)) {
+        newResults.promolinks = [...data.promolinkSearchComponent];
       }
     }
     resultsDispatch({ type: SET_RESULTS, results: newResults });
