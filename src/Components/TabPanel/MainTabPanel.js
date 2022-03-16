@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     gap: 15,
-    marginTop: 15,
+    margin: 15,
 
     [theme.breakpoints.down('sm')]: {
       gap: 5,
