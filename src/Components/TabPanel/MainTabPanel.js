@@ -6,7 +6,7 @@ import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
-import RangeFacet from '../Facet/RangeFacet/RangeFacet';
+// import RangeFacet from '../Facet/RangeFacet/RangeFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
 import Pager from '../Pager/Pager';
 import Promolink from '../Promolink/Promolink';
@@ -68,8 +68,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function MainTabPanel() {
-  const { uiDefinition, maskFieldFacet, isLoading } =
-    useContext(UIConfigContext);
+  const { uiDefinition, maskFieldFacet, isLoading } = useContext(UIConfigContext);
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -110,9 +109,7 @@ function MainTabPanel() {
       if (element.id && element.title && element.queries && element.labels) {
         const minShow = element.minShow ? element.minShow : 3;
         const maxShow = element.maxShow ? element.maxShow : 5;
-        const multipleSelect = element.multipleSelect
-          ? element.multipleSelect
-          : false;
+        const multipleSelect = element.multipleSelect ? element.multipleSelect : false;
         return (
           <QueryFacet
             title={t(element.title)}
@@ -124,8 +121,7 @@ function MainTabPanel() {
             minShow={minShow}
             maxShow={maxShow}
             multipleSelect={multipleSelect}
-            sendToSolr={element.sendToSolr}
-          >
+            sendToSolr={element.sendToSolr}>
             {element.children &&
               Array.isArray(element.children) &&
               element.children
@@ -178,10 +174,10 @@ function MainTabPanel() {
           return buildQueryFacet(element, createElementFromParameters);
         case 'DateFacetCustom':
           return <DateFacetCustom />;
-        case 'RangeFacet':
-          return (
-            <RangeFacet dividerClassName={classes.facetDivider} {...element} />
-          );
+        // case 'RangeFacet':
+        //   return (
+        //     <RangeFacet dividerClassName={classes.facetDivider} {...element} />
+        //   );
         case 'HierarchicalFacet':
           return buildHierarchicalFacet(element);
         case 'SearchInformation':
@@ -213,9 +209,7 @@ function MainTabPanel() {
     <Spinner />
   ) : (
     <div className={classes.container}>
-      <div className={classes.facetsSection}>
-        {buildContentFor(uiDefinition.left)}
-      </div>
+      <div className={classes.facetsSection}>{buildContentFor(uiDefinition.left)}</div>
 
       <div className={classes.centerContainer}>
         {buildContentFor(uiDefinition.center.main)}
@@ -224,9 +218,7 @@ function MainTabPanel() {
         </div>
       </div>
 
-      <div className={classes.facetsSection}>
-        {buildContentFor(uiDefinition.right)}
-      </div>
+      <div className={classes.facetsSection}>{buildContentFor(uiDefinition.right)}</div>
     </div>
   );
 }
