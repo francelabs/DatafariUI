@@ -1,6 +1,11 @@
 {
   "left": [
     {
+      "type": "RangeFacet",
+      "field": "creation_date",
+      "title": "Date Range"
+    },
+    {
       "type": "FieldFacet",
       "title": "Extension",
       "field": "extension",

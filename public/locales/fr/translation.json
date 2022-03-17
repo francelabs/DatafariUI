@@ -197,6 +197,9 @@
   "Reset": "Réinitialiser",
   "Aggregator facet": "Aggrégateur",
   "url": "url",
-  "Date Range": "Date interval",
-  "promolink": "Annonce"
+  "Date Range": "Date intervalle",
+  "promolink": "Annonce",
+  "Start": "Début",
+  "End": "Fin",
+  "Month": "Mois"
 }

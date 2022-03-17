@@ -1,21 +1,10 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  Button,
-  createTheme,
-  makeStyles,
-  ThemeProvider,
-} from '@material-ui/core';
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
+import { Button, createTheme, makeStyles, ThemeProvider } from '@material-ui/core';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { format } from 'date-fns';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  QueryContext,
-  REGISTER_FILTER,
-  UNREGISTER_FILTER,
-} from '../../Contexts/query-context';
+import { QueryContext, REGISTER_FILTER, UNREGISTER_FILTER } from '../../Contexts/query-context';
 import { UserContext } from '../../Contexts/user-context';
 import { DATE_RANGE } from '../../Hooks/useFilterFormater';
 
@@ -65,9 +54,7 @@ const DateFacetCustom = (props) => {
     e.preventDefault();
 
     if (selectedToDate || selectedFromDate) {
-      const fromDateString = selectedFromDate
-        ? selectedFromDate.toISOString()
-        : '*';
+      const fromDateString = selectedFromDate ? selectedFromDate.toISOString() : '*';
       const toDateString = selectedToDate ? selectedToDate.toISOString() : '*';
       const field = props.field ? props.field : 'creation_date';
       const newFilter = {
@@ -125,13 +112,9 @@ const DateFacetCustom = (props) => {
               },
             },
           })
-        }
-      >
+        }>
         <div className={classes.containerSpacing}>
-          <MuiPickersUtilsProvider
-            utils={DateFnsUtils}
-            locale={userState.userLocale.locale}
-          >
+          <MuiPickersUtilsProvider utils={DateFnsUtils} locale={userState.userLocale.locale}>
             <form onSubmit={handleGoClick} style={{ display: 'flex' }}>
               <KeyboardDatePicker
                 format={userState.userLocale.dateFormat}
@@ -163,12 +146,7 @@ const DateFacetCustom = (props) => {
                 size="small"
                 className={classes.dateSelectors}
               />
-              <Button
-                type="submit"
-                size="small"
-                color="primary"
-                onClick={handleGoClick}
-              >
+              <Button type="submit" size="small" color="primary" onClick={handleGoClick}>
                 {t('Go')}
               </Button>
             </form>
