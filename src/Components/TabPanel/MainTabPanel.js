@@ -6,7 +6,7 @@ import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
-import RangeFacet from '../Facet/RangeFacet';
+import RangeFacet from '../Facet/RangeFacet/RangeFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
 import Pager from '../Pager/Pager';
 import Promolink from '../Promolink/Promolink';
@@ -27,19 +27,21 @@ const allowedElementTypes = [
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: 'flex',
+    display: 'grid',
+    gridTemplateColumns: 'minmax(300px, 1fr) 3fr minmax(300px, 1fr)',
     gap: 15,
     margin: 15,
 
     [theme.breakpoints.down('sm')]: {
       gap: 5,
+      gridTemplateColumns: 'auto',
     },
   },
 
   facetsSection: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: '5px',
-    minWidth: '300px',
+    // maxWidth: '300px',
     height: 'min-content',
 
     [theme.breakpoints.down('sm')]: {
