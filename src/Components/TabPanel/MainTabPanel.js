@@ -6,6 +6,7 @@ import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
 import FieldFacet from '../Facet/FieldFacet';
 import QueryFacet from '../Facet/QueryFacet';
+import DateRangeFacet from '../Facet/RangeFacet/DateRangeFacet';
 import RangeFacet from '../Facet/RangeFacet/RangeFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
 import Pager from '../Pager/Pager';
@@ -175,7 +176,14 @@ function MainTabPanel() {
         case 'DateFacetCustom':
           return <DateFacetCustom />;
         case 'RangeFacet':
-          return <RangeFacet dividerClassName={classes.facetDivider} {...element} />;
+          const RangeFacetProps = { dividerClassName: classes.facetDivider, ...element };
+          let RangeFacetComponent = RangeFacet; // Default range facet
+
+          if (element.field === 'creation_date') {
+            RangeFacetComponent = DateRangeFacet;
+          }
+
+          return <RangeFacetComponent {...RangeFacetProps} />;
         case 'HierarchicalFacet':
           return buildHierarchicalFacet(element);
         case 'SearchInformation':

@@ -1,10 +1,16 @@
-import { Divider, IconButton, Menu, MenuItem, Radio, Typography } from '@material-ui/core';
+import {
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+  Radio,
+  Typography,
+} from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/styles';
-import { add, differenceInCalendarDays, format } from 'date-fns';
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   QueryContext,
@@ -12,7 +18,6 @@ import {
   SET_RANGE_FACET_SELECTED,
 } from '../../../Contexts/query-context';
 import { ResultsContext } from '../../../Contexts/results-context';
-import { UserContext } from '../../../Contexts/user-context';
 import RangeBarchart from '../../Chart/RangeBarChart';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   chartContainer: {
-    marginLeft: -20,
+    marginLeft: -10,
+    marginRight: 20,
   },
 
   bounds: {
@@ -60,13 +66,34 @@ const useStyles = makeStyles((theme) => ({
 
 const REF_KEY = 'RangeFacet';
 
-function RangeFacet({ title, dividerClassName, ...elementProps }) {
+function RangeFacet({
+  title,
+  dividerClassName,
+  refKey = REF_KEY,
+  tag = 'rangeFacet',
+  xAxisLabelFormatter = (value) => value,
+  brushTickFormatter,
+  ...elementProps
+}) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { field } = elementProps;
+  const {
+    field,
+    start,
+    end,
+    gap,
+    yDataKey,
+    ranges = [],
+    rangeLabel,
+    showBrushBounds = false,
+  } = elementProps;
 
   const [startIndex, setStartIndex] = useState();
   const [endIndex, setEndIndex] = useState();
+  const [radioInterval, setRadioInterval] = useState();
+  const [brushStart, setBrushStart] = useState();
+  const [brushEnd, setBrushEnd] = useState();
+  const facetKey = refKey + field;
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -82,29 +109,27 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
     results: { rangeFacets = {} },
   } = useContext(ResultsContext);
 
-  const { state: userState } = useContext(UserContext);
-
   const [data, setData] = useState([]);
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
     const newFacet = {
       field,
-      start: 'NOW-300MONTH',
-      end: 'NOW/MONTH',
-      gap: '+1MONTH',
-      tag: 'dateHisto',
-      title: 'Date range',
+      start,
+      end,
+      gap,
+      tag,
+      title,
     };
     queryDispatch({ type: REGISTER_RANGE_FACET, rangeFacet: newFacet });
-  }, [field, queryDispatch]);
+  }, [field, start, end, gap, tag, title, queryDispatch]);
 
   // Effect to format and set new range data
   useEffect(() => {
     if (rangeFacets && typeof rangeFacets === 'object' && rangeFacets[field]) {
-      const newData = Object.entries(rangeFacets[field]).map(([date, value]) => ({
-        x: date,
-        doc: value,
+      const newData = Object.entries(rangeFacets[field]).map(([xValue, value]) => ({
+        x: xValue,
+        [t(yDataKey)]: value,
       }));
 
       setData(newData);
@@ -112,17 +137,40 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
       // Set start end end index for brush tool
       if (selectedRangeFacets && selectedRangeFacets[field]) {
         const selection = selectedRangeFacets[field].find(
-          (selectionRange) => selectionRange.refKey === REF_KEY
+          (selectionRange) => selectionRange.refKey === facetKey
         );
-        const start = parseInt(selection?.startIndex);
-        const end = parseInt(selection?.endIndex);
-        if (!isNaN(start) && !isNaN(end)) {
-          setStartIndex(start);
-          setEndIndex(end);
+
+        if (selection) {
+          const selectionStart = +selection.startIndex;
+          const selectionEnd = +selection.endIndex;
+
+          if (!isNaN(selectionStart) && !isNaN(selectionEnd)) {
+            setStartIndex(
+              selectionStart < 0 ? 0 : Math.min(selectionStart, data.length - 1)
+            );
+            setEndIndex(
+              selectionEnd < 0 ? data.length - 1 : Math.min(selectionEnd, data.length - 1)
+            );
+          }
         }
       }
     }
-  }, [field, rangeFacets, selectedRangeFacets]);
+  }, [field, yDataKey, rangeFacets, selectedRangeFacets, data.length, facetKey, t]);
+
+  useEffect(() => {
+    let start = '',
+      end = '';
+    if (startIndex >= 0 && endIndex >= 0) {
+      start = data[startIndex]?.x;
+      end = data[endIndex]?.x;
+    } else if (data.length) {
+      start = data[0].x;
+      end = data[data.length - 1].x;
+    }
+
+    setBrushStart(start);
+    setBrushEnd(end);
+  }, [data, startIndex, endIndex, brushStart, brushEnd]);
 
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
@@ -137,9 +185,20 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
   };
 
   const handleResetFilterClick = () => {
-    setStartIndex(0);
-    setEndIndex(data.length - 1);
-    setData([...data]); // Reset graph display
+    const newSelected = [
+      {
+        refKey: facetKey,
+        startIndex: 0,
+        endIndex: -1,
+        filter: `[${start} TO ${end}]`,
+      },
+    ];
+    queryDispatch({
+      type: SET_RANGE_FACET_SELECTED,
+      facetId: field,
+      selected: newSelected,
+    });
+
     setMenuOpen(false);
   };
 
@@ -150,7 +209,7 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
 
       const newSelected = [
         {
-          refKey: REF_KEY,
+          refKey: facetKey,
           startIndex: start,
           endIndex: end,
           filter: `[${startX} TO ${endX}]`,
@@ -158,23 +217,21 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
       ];
       queryDispatch({
         type: SET_RANGE_FACET_SELECTED,
-        facetId: 'creation_date',
+        facetId: field,
         selected: newSelected,
       });
     }
   };
 
-  const dateFormatter = (value) => {
-    const date = new Date(value);
-    return isNaN(date) ? '' : format(date, userState.userLocale.dateFormat);
-  };
+  const hanleRadioChecked = (e) => {
+    const radioInterval = +e.target.value;
+    setRadioInterval(radioInterval);
+    setStartIndex(0);
+    setEndIndex(Math.min(radioInterval, data.length - 1));
 
-  let brushStart = '',
-    brushEnd = '';
-  if (data.length && startIndex >= 0 && endIndex >= 0) {
-    brushStart = data[startIndex].x;
-    brushEnd = data[endIndex].x;
-  }
+    // Reset data to take in account the new range
+    setData([...data]);
+  };
 
   return (
     <>
@@ -213,40 +270,49 @@ function RangeFacet({ title, dividerClassName, ...elementProps }) {
             <RangeBarchart
               data={data}
               xDataKey="x"
-              yDataKey="doc"
+              yDataKey={yDataKey}
               maxHeight="15em"
               startIndex={startIndex}
               endIndex={endIndex}
               onSelectionChanged={onSelectionChanged}
-              tickFormatter={dateFormatter}
+              xTickFormatter={xAxisLabelFormatter}
+              brushTickFormatter={brushTickFormatter}
               {...elementProps}
             />
           </div>
           <div className={classes.bounds}>
-            <div className={classes.radioGroup}>
-              {[1, 3, 6, 12, 36].map((month) => (
-                <div>
-                  <Radio
-                    className={classes.radio}
-                    // checked={selectedValue === 'd'}
-                    // onChange={handleChange}
-                    value={month}
-                    // color="d"
-                    name="radio-button"
-                    inputProps={{ 'aria-label': month }}
-                  />{' '}
-                  <Typography display="inline" variant="body2" className={classes.radioLabel}>
-                    {month} {t('Month')}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-            <Typography variant="body2" className={classes.label}>
-              {t('Start')} : {dateFormatter(brushStart)}
-            </Typography>
-            <Typography variant="body2" className={classes.label}>
-              {t('End')} : {dateFormatter(brushEnd)}
-            </Typography>
+            {ranges.length ? (
+              <div className={classes.radioGroup}>
+                {ranges.map((range) => (
+                  <div key={'range-facet-' + range}>
+                    <Radio
+                      className={classes.radio}
+                      checked={radioInterval === range}
+                      onChange={hanleRadioChecked}
+                      value={range}
+                      name="radio-button"
+                      inputProps={{ 'aria-label': range }}
+                    />{' '}
+                    <Typography
+                      display="inline"
+                      variant="body2"
+                      className={classes.radioLabel}>
+                      {range} {t(rangeLabel)}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {showBrushBounds ? (
+              <>
+                <Typography variant="body2" className={classes.label}>
+                  {t('Start')} : {xAxisLabelFormatter(brushStart)}
+                </Typography>
+                <Typography variant="body2" className={classes.label}>
+                  {t('End')} : {xAxisLabelFormatter(brushEnd)}
+                </Typography>
+              </>
+            ) : null}
           </div>
         </div>
       ) : null}

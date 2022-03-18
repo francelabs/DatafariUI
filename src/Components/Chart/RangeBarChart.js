@@ -24,7 +24,8 @@ function RangeBarchart({
   width = '100%',
   brushStrokeColor = '#679439',
   barFillColor = '#679439AA',
-  tickFormatter,
+  xTickFormatter,
+  brushTickFormatter,
   onSelectionChanged,
 }) {
   let timer = useRef();
@@ -34,7 +35,10 @@ function RangeBarchart({
     }
     if (onSelectionChanged) {
       // Add a debounce time to avoid firing event too much
-      timer.current = setTimeout(() => onSelectionChanged(startIndex, endIndex), DEBOUNCE_TIME);
+      timer.current = setTimeout(
+        () => onSelectionChanged(startIndex, endIndex),
+        DEBOUNCE_TIME
+      );
     }
   };
 
@@ -45,12 +49,10 @@ function RangeBarchart({
           data={data}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
             bottom: 5,
           }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={xDataKey} tickFormatter={tickFormatter} />
+          <XAxis dataKey={xDataKey} tickFormatter={xTickFormatter} />
           <YAxis />
           <Tooltip />
           <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
@@ -61,7 +63,7 @@ function RangeBarchart({
             stroke={brushStrokeColor}
             startIndex={startIndex}
             endIndex={endIndex}
-            tickFormatter={() => ''} // No tooltip for the brush tool
+            tickFormatter={brushTickFormatter} // No tooltip for the brush tool
             onChange={handleRangeSelection}
           />
           <Bar dataKey={yDataKey} fill={barFillColor} />
