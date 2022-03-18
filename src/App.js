@@ -38,7 +38,7 @@ function Main() {
   const { t } = useTranslation();
 
   const {
-    uiDefinition: { devMode = { enable: false }, direction = 'ltr' },
+    uiDefinition: { devMode = { enable: false } },
   } = useContext(UIConfigContext);
 
   useTitleUpdater();
@@ -50,7 +50,7 @@ function Main() {
   document.title = t('Datafari Enterprise Search');
 
   return (
-    <div style={{ direction }}>
+    <>
       <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/" exact>
@@ -69,7 +69,7 @@ function Main() {
       </BrowserRouter>
 
       {devMode.enable ? <Banner {...devMode.banner} /> : null}
-    </div>
+    </>
   );
 }
 

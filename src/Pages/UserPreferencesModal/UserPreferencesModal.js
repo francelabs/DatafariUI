@@ -5,44 +5,41 @@ import {
   DialogActions,
   DialogContent,
   Divider,
-  FormControlLabel,
   IconButton,
   makeStyles,
-  Radio,
-  RadioGroup
-} from "@material-ui/core";
-import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
-import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowLeftIcon from "@material-ui/icons/ArrowLeft";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import DialogTitle from "../../Components/DialogTitle/DialogTitle";
-import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
-import { UIConfigContext } from "../../Contexts/ui-config-context";
-import { UserContext } from "../../Contexts/user-context";
-import useHttp from "../../Hooks/useHttp";
-import UserPreferenceTitle from "./UserPreferenceTitle";
+} from '@material-ui/core';
+import ArrowDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import DialogTitle from '../../Components/DialogTitle/DialogTitle';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
+import { UserContext } from '../../Contexts/user-context';
+import useHttp from '../../Hooks/useHttp';
+import UserPreferenceTitle from './UserPreferenceTitle';
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    display: "grid",
-    gap: "1em",
+    display: 'grid',
+    gap: '1em',
   },
 
   title: {
-    paddingBottom: "0.5em",
+    paddingBottom: '0.5em',
   },
 
   facetsContent: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
-    gap: "0.85em",
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+    gap: '0.85em',
   },
 
   listOrder: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
   },
 
   fieldsPadding: {
@@ -62,7 +59,7 @@ const UserPreferencesModal = (props) => {
 
   // States
   const [facetsPosition, setFacetPosition] = useState(
-    user?.userUi?.direction || defaultUiDefinition.direction || "ltr" // default is ltr
+    user?.userUi?.direction || defaultUiDefinition.direction || 'ltr' // default is ltr
   );
   const [leftFacetsOrder, setLeftFacetsOrder] = useState(
     user?.userUi?.left || defaultUiDefinition.left || []
@@ -77,7 +74,7 @@ const UserPreferencesModal = (props) => {
     let newQueryID = Math.random().toString(36).substring(2, 15);
     sendRequest(
       `${apiEndpointsContext.searchURL}/select?q=*:*&facet.field=repo_source&facet=true`,
-      "GET",
+      'GET',
       null,
       newQueryID
     );
@@ -92,24 +89,18 @@ const UserPreferencesModal = (props) => {
   function formatSource(data) {
     const { facet_counts } = data;
 
-    return (
-      facet_counts?.facet_fields?.repo_source.filter(
-        (source, index) => index % 2 === 0
-      ) || []
-    );
+    return facet_counts?.facet_fields?.repo_source.filter((source, index) => index % 2 === 0) || [];
   }
 
-  const handleFacetLocationChange = ({ target: { value = "" } }) => {
-    setFacetPosition(value);
-  };
+  // const handleFacetLocationChange = ({ target: { value = '' } }) => {
+  //   setFacetPosition(value);
+  // };
 
   const handleEntityOrder = (entity, entities, stateCallback, isUp) => {
     const facetIndex = entities.findIndex((f) => entity === f);
     const newEntities = entities.filter((f, index) => index !== facetIndex);
     newEntities.splice(
-      isUp
-        ? Math.max(facetIndex - 1, 0)
-        : Math.min(facetIndex + 1, entities.length),
+      isUp ? Math.max(facetIndex - 1, 0) : Math.min(facetIndex + 1, entities.length),
       0,
       entity
     );
@@ -117,13 +108,7 @@ const UserPreferencesModal = (props) => {
     stateCallback(newEntities);
   };
 
-  const handleChangeFacetPosition = (
-    facet,
-    source,
-    setSource,
-    target,
-    setTarget
-  ) => {
+  const handleChangeFacetPosition = (facet, source, setSource, target, setTarget) => {
     setSource(source.filter((f) => f !== facet));
     setTarget([...target, facet]);
   };
@@ -144,7 +129,7 @@ const UserPreferencesModal = (props) => {
 
   const handleReset = () => {
     // Reset from uiDefinition values
-    setFacetPosition(defaultUiDefinition.direction || "ltr");
+    setFacetPosition(defaultUiDefinition.direction || 'ltr');
     setLeftFacetsOrder(defaultUiDefinition.left || []);
     setRightFacetsOrder(defaultUiDefinition.right || []);
     setSources(defaultUiDefinition.sources || formatSource(data));
@@ -158,14 +143,7 @@ const UserPreferencesModal = (props) => {
       sources,
     });
     props.onClose();
-  }, [
-    props,
-    actions,
-    facetsPosition,
-    leftFacetsOrder,
-    rightFacetsOrder,
-    sources,
-  ]);
+  }, [props, actions, facetsPosition, leftFacetsOrder, rightFacetsOrder, sources]);
 
   return (
     <Dialog
@@ -173,14 +151,14 @@ const UserPreferencesModal = (props) => {
       onClose={props.onClose}
       fullWidth
       maxWidth="md"
-      className={classes.dialog}
-    >
-      <DialogTitle onClose={props.onClose}>{t("User Preferences")}</DialogTitle>
+      className={classes.dialog}>
+      <DialogTitle onClose={props.onClose}>{t('User Preferences')}</DialogTitle>
       <Divider />
       <DialogContent>
         <div className={classes.content}>
           {/* FACETS POSITION */}
-          <div>
+          {/* TODO: TBD: Left/right reading to be implemented in main panel only */}
+          {/* <div>
             <UserPreferenceTitle
               title={t("Facets position")}
               tooltip={t("Facets position tooltip")}
@@ -202,15 +180,15 @@ const UserPreferencesModal = (props) => {
                 label={t("Right")}
               />
             </RadioGroup>
-          </div>
+          </div> */}
 
           {/* FACETS ORDER */}
           <div className={classes.facetsContent}>
             {/* LEFT FACETS ORDER */}
             <div>
               <UserPreferenceTitle
-                title={t("Left facets order")}
-                tooltip={t("Left facets order tooltip")}
+                title={t('Left facets order')}
+                tooltip={t('Left facets order tooltip')}
               />
 
               {leftFacetsOrder.map((facet, index) => (
@@ -227,33 +205,20 @@ const UserPreferencesModal = (props) => {
                           setLeftFacetsOrder
                         )
                       }
-                    />{" "}
-                    {index + 1} - {t(facet.title)}{" "}
+                    />{' '}
+                    {index + 1} - {t(facet.title)}{' '}
                   </div>
                   <div>
                     <IconButton
                       size="small"
                       onClick={() =>
-                        handleEntityOrder(
-                          facet,
-                          leftFacetsOrder,
-                          setLeftFacetsOrder,
-                          true
-                        )
-                      }
-                    >
+                        handleEntityOrder(facet, leftFacetsOrder, setLeftFacetsOrder, true)
+                      }>
                       <ArrowUpIcon />
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() =>
-                        handleEntityOrder(
-                          facet,
-                          leftFacetsOrder,
-                          setLeftFacetsOrder
-                        )
-                      }
-                    >
+                      onClick={() => handleEntityOrder(facet, leftFacetsOrder, setLeftFacetsOrder)}>
                       <ArrowDownIcon />
                     </IconButton>
                     <IconButton
@@ -266,8 +231,7 @@ const UserPreferencesModal = (props) => {
                           rightFacetsOrder,
                           setRightFacetsOrder
                         )
-                      }
-                    >
+                      }>
                       <ArrowRightIcon />
                     </IconButton>
                   </div>
@@ -278,8 +242,8 @@ const UserPreferencesModal = (props) => {
             {/* RIGHT FACETS ORDER */}
             <div>
               <UserPreferenceTitle
-                title={t("Right facets order")}
-                tooltip={t("Right facets order tooltip")}
+                title={t('Right facets order')}
+                tooltip={t('Right facets order tooltip')}
               />
               {rightFacetsOrder.map((facet, index) => (
                 <div className={classes.listOrder}>
@@ -295,33 +259,22 @@ const UserPreferencesModal = (props) => {
                           setRightFacetsOrder
                         )
                       }
-                    />{" "}
-                    {index + 1} - {t(facet.title)}{" "}
+                    />{' '}
+                    {index + 1} - {t(facet.title)}{' '}
                   </div>
                   <div>
                     <IconButton
                       size="small"
                       onClick={() =>
-                        handleEntityOrder(
-                          facet,
-                          rightFacetsOrder,
-                          setRightFacetsOrder,
-                          true
-                        )
-                      }
-                    >
+                        handleEntityOrder(facet, rightFacetsOrder, setRightFacetsOrder, true)
+                      }>
                       <ArrowUpIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       onClick={() =>
-                        handleEntityOrder(
-                          facet,
-                          rightFacetsOrder,
-                          setRightFacetsOrder
-                        )
-                      }
-                    >
+                        handleEntityOrder(facet, rightFacetsOrder, setRightFacetsOrder)
+                      }>
                       <ArrowDownIcon />
                     </IconButton>
                     <IconButton
@@ -334,8 +287,7 @@ const UserPreferencesModal = (props) => {
                           leftFacetsOrder,
                           setLeftFacetsOrder
                         )
-                      }
-                    >
+                      }>
                       <ArrowLeftIcon />
                     </IconButton>
                   </div>
@@ -346,32 +298,23 @@ const UserPreferencesModal = (props) => {
 
           {/* SOURCES */}
           <div>
-            <UserPreferenceTitle
-              title={t("Sources order")}
-              tooltip={t("Sources order tooltip")}
-            />
+            <UserPreferenceTitle title={t('Sources order')} tooltip={t('Sources order tooltip')} />
             <div className={classes.listOrder}>
               <div className={classes.listOrder}>
                 {sources.map((source, index) => (
                   <>
                     <div key={source}>
-                      {index + 1} - {t(source)}{" "}
+                      {index + 1} - {t(source)}{' '}
                     </div>
                     <div>
                       <IconButton
                         size="small"
-                        onClick={() =>
-                          handleEntityOrder(source, sources, setSources, true)
-                        }
-                      >
+                        onClick={() => handleEntityOrder(source, sources, setSources, true)}>
                         <ArrowUpIcon />
                       </IconButton>
                       <IconButton
                         size="small"
-                        onClick={() =>
-                          handleEntityOrder(source, sources, setSources)
-                        }
-                      >
+                        onClick={() => handleEntityOrder(source, sources, setSources)}>
                         <ArrowDownIcon />
                       </IconButton>
                     </div>
@@ -384,21 +327,11 @@ const UserPreferencesModal = (props) => {
         </div>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={handleReset}
-          color="primary"
-          variant="contained"
-          size="small"
-        >
-          {t("Reset")}
+        <Button onClick={handleReset} color="primary" variant="contained" size="small">
+          {t('Reset')}
         </Button>
-        <Button
-          onClick={handleClose}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
-          {t("Save")}
+        <Button onClick={handleClose} color="secondary" variant="contained" size="small">
+          {t('Save')}
         </Button>
       </DialogActions>
     </Dialog>

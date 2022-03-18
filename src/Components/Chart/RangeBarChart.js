@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { useSSR } from 'react-i18next';
 import {
   Bar,
   BarChart,
