@@ -1,14 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  Button,
-  createTheme,
-  makeStyles,
-  ThemeProvider,
-} from '@material-ui/core';
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
+import { Button, createTheme, makeStyles, ThemeProvider } from '@material-ui/core';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -65,9 +57,7 @@ const DateFacetCustom = (props) => {
     e.preventDefault();
 
     if (selectedToDate || selectedFromDate) {
-      const fromDateString = selectedFromDate
-        ? selectedFromDate.toISOString()
-        : '*';
+      const fromDateString = selectedFromDate ? selectedFromDate.toISOString() : '*';
       const toDateString = selectedToDate ? selectedToDate.toISOString() : '*';
       const field = props.field ? props.field : 'creation_date';
       const newFilter = {
@@ -125,13 +115,11 @@ const DateFacetCustom = (props) => {
               },
             },
           })
-        }
-      >
+        }>
         <div className={classes.containerSpacing}>
           <MuiPickersUtilsProvider
             utils={DateFnsUtils}
-            locale={userState.userLocale.locale}
-          >
+            locale={userState.userLocale.locale}>
             <form onSubmit={handleGoClick} style={{ display: 'flex' }}>
               <KeyboardDatePicker
                 format={userState.userLocale.dateFormat}
@@ -163,12 +151,7 @@ const DateFacetCustom = (props) => {
                 size="small"
                 className={classes.dateSelectors}
               />
-              <Button
-                type="submit"
-                size="small"
-                color="primary"
-                onClick={handleGoClick}
-              >
+              <Button type="submit" size="small" color="primary" onClick={handleGoClick}>
                 {t('Go')}
               </Button>
             </form>
