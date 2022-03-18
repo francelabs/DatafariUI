@@ -1,11 +1,4 @@
-import {
-  Divider,
-  IconButton,
-  Menu,
-  MenuItem,
-  Radio,
-  Typography,
-} from '@material-ui/core';
+import { Divider, IconButton, Menu, MenuItem, Radio, Typography } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -34,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
   chartContainer: {
-    marginLeft: -10,
     marginRight: 20,
   },
 
@@ -145,9 +137,7 @@ function RangeFacet({
           const selectionEnd = +selection.endIndex;
 
           if (!isNaN(selectionStart) && !isNaN(selectionEnd)) {
-            setStartIndex(
-              selectionStart < 0 ? 0 : Math.min(selectionStart, data.length - 1)
-            );
+            setStartIndex(selectionStart < 0 ? 0 : Math.min(selectionStart, data.length - 1));
             setEndIndex(
               selectionEnd < 0 ? data.length - 1 : Math.min(selectionEnd, data.length - 1)
             );
@@ -293,10 +283,7 @@ function RangeFacet({
                       name="radio-button"
                       inputProps={{ 'aria-label': range }}
                     />{' '}
-                    <Typography
-                      display="inline"
-                      variant="body2"
-                      className={classes.radioLabel}>
+                    <Typography display="inline" variant="body2" className={classes.radioLabel}>
                       {range} {t(rangeLabel)}
                     </Typography>
                   </div>
