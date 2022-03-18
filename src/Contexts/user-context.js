@@ -176,7 +176,16 @@ const UserContextProvider = (props) => {
         });
 
         // Set language according to user language
-        i18n.changeLanguage(userData.lang);
+        const { lang } = userData;
+        try {
+          if (lang) {
+            new Intl.Locale(lang); // If no error thrown, it's a valid language
+
+            i18n.changeLanguage(lang);
+          }
+        } catch (error) {
+          console.error('Error change language', error, lang);
+        }
 
         // Dispatch UI configuration from user preference, only direction, left, right and sources
         if (UPDATE_USER_PREF_ID === reqIdentifier) {
