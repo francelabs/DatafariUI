@@ -1,40 +1,33 @@
-import deLocale from "date-fns/locale/de";
-import enLocale from "date-fns/locale/en-US";
-import esLocale from "date-fns/locale/es";
-import frLocale from "date-fns/locale/fr";
-import itLocale from "date-fns/locale/it";
-import ptLocale from "date-fns/locale/pt";
-import ruLocale from "date-fns/locale/ru";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState
-} from "react";
-import { useTranslation } from "react-i18next";
-import useHttp from "../Hooks/useHttp";
-import { APIEndpointsContext } from "./api-endpoints-context";
-import { SET_UI_DEFINITION, UIConfigContext } from "./ui-config-context";
+import deLocale from 'date-fns/locale/de';
+import enLocale from 'date-fns/locale/en-US';
+import esLocale from 'date-fns/locale/es';
+import frLocale from 'date-fns/locale/fr';
+import itLocale from 'date-fns/locale/it';
+import ptLocale from 'date-fns/locale/pt';
+import ruLocale from 'date-fns/locale/ru';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import useHttp from '../Hooks/useHttp';
+import { APIEndpointsContext } from './api-endpoints-context';
+import { SET_UI_DEFINITION, UIConfigContext } from './ui-config-context';
 
 // Used UI locales
 const DatafariUILocales = {
-  de: { locale: deLocale, dateFormat: "dd.MM.yyyy" },
-  en: { locale: enLocale, dateFormat: "MM/dd/yyyy" },
-  es: { locale: esLocale, dateFormat: "dd/MM/yyyy" },
-  fr: { locale: frLocale, dateFormat: "dd/MM/yyyy" },
-  it: { locale: itLocale, dateFormat: "dd/MM/yyyy" },
-  pt: { locale: ptLocale, dateFormat: "dd/MM/yyyy" },
-  pt_br: { locale: ptLocale, dateFormat: "dd/MM/yyyy" },
-  ru: { locale: ruLocale, dateFormat: "dd.MM.yyyy" },
+  de: { locale: deLocale, dateFormat: 'dd.MM.yyyy' },
+  en: { locale: enLocale, dateFormat: 'MM/dd/yyyy' },
+  es: { locale: esLocale, dateFormat: 'dd/MM/yyyy' },
+  fr: { locale: frLocale, dateFormat: 'dd/MM/yyyy' },
+  it: { locale: itLocale, dateFormat: 'dd/MM/yyyy' },
+  pt: { locale: ptLocale, dateFormat: 'dd/MM/yyyy' },
+  pt_br: { locale: ptLocale, dateFormat: 'dd/MM/yyyy' },
+  ru: { locale: ruLocale, dateFormat: 'dd.MM.yyyy' },
 };
 
 const initialState = {
   state: {
     user: null,
-    language: "",
-    userLocale: "",
+    language: '',
+    userLocale: '',
     isLoading: false,
     error: null,
   },
@@ -45,7 +38,7 @@ const initialState = {
 
 const userReducer = (userState, action) => {
   switch (action.type) {
-    case "SET_GUEST":
+    case 'SET_GUEST':
       return {
         ...userState,
         state: {
@@ -54,7 +47,7 @@ const userReducer = (userState, action) => {
         },
       };
 
-    case "SET_AUTHENTICATED_USER":
+    case 'SET_AUTHENTICATED_USER':
       return {
         ...userState,
         state: {
@@ -63,7 +56,7 @@ const userReducer = (userState, action) => {
         },
       };
 
-    case "SET_LANGUAGE": {
+    case 'SET_LANGUAGE': {
       return {
         ...userState,
         state: {
@@ -74,7 +67,7 @@ const userReducer = (userState, action) => {
       };
     }
 
-    case "SET_USER_UI": {
+    case 'SET_USER_UI': {
       const newState = {
         ...userState,
       };
@@ -89,13 +82,12 @@ const userReducer = (userState, action) => {
 
 export const UserContext = React.createContext();
 
-const SET_USER_LANGUAGE_ID = "SET_USER_LANGUAGE_ID";
-const UPDATE_USER_PREF_ID = "UPDATE_USER_PREF_ID";
+const SET_USER_LANGUAGE_ID = 'SET_USER_LANGUAGE_ID';
+const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
-  const { uiDefinition, dispatch: uiConfigDispatch } =
-    useContext(UIConfigContext);
+  const { uiDefinition, dispatch: uiConfigDispatch } = useContext(UIConfigContext);
   const [queryID, setQueryID] = useState(null);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const { i18n } = useTranslation();
@@ -103,12 +95,7 @@ const UserContextProvider = (props) => {
   const autoConnect = useCallback(() => {
     let newQueryID = Math.random().toString(36).substring(2, 15);
     setQueryID(newQueryID);
-    sendRequest(
-      `${apiEndpointsContext.currentUserURL}`,
-      "GET",
-      null,
-      newQueryID
-    );
+    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, newQueryID);
   }, [apiEndpointsContext.currentUserURL, sendRequest]);
 
   const updateUserLanguage = useCallback(
@@ -117,7 +104,7 @@ const UserContextProvider = (props) => {
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.currentUserURL}`,
-        "PUT",
+        'PUT',
         JSON.stringify({ lang: langugage }),
         newQueryID
       );
@@ -131,8 +118,8 @@ const UserContextProvider = (props) => {
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.currentUserURL}`,
-        "PUT",
-        JSON.stringify({ userUi }),
+        'PUT',
+        JSON.stringify({ uiConfig: userUi }),
         newQueryID
       );
 
@@ -148,17 +135,12 @@ const UserContextProvider = (props) => {
       });
 
       userDispatcher({
-        type: "SET_USER_UI",
+        type: 'SET_USER_UI',
         userUi,
       });
     },
 
-    [
-      apiEndpointsContext.currentUserURL,
-      sendRequest,
-      uiConfigDispatch,
-      uiDefinition,
-    ]
+    [apiEndpointsContext.currentUserURL, sendRequest, uiConfigDispatch, uiDefinition]
   );
 
   const actions = useMemo(() => {
@@ -184,12 +166,12 @@ const UserContextProvider = (props) => {
         return;
       }
 
-      if (data.status !== "OK") {
-        userDispatcher({ type: "SET_GUEST" });
+      if (data.status !== 'OK') {
+        userDispatcher({ type: 'SET_GUEST' });
       } else {
         let userData = data.content;
         userDispatcher({
-          type: "SET_AUTHENTICATED_USER",
+          type: 'SET_AUTHENTICATED_USER',
           user: userData,
         });
 
@@ -214,7 +196,7 @@ const UserContextProvider = (props) => {
         timer = setTimeout(autoConnect, 60000);
       }
     } else if (!isLoading && error) {
-      userDispatcher({ type: "SET_GUEST" });
+      userDispatcher({ type: 'SET_GUEST' });
     }
 
     return () => {
@@ -232,7 +214,7 @@ const UserContextProvider = (props) => {
     i18n,
     userDispatcher,
     uiConfigDispatch,
-    uiDefinition
+    uiDefinition,
   ]);
 
   const getLocale = useCallback(() => {
@@ -245,17 +227,13 @@ const UserContextProvider = (props) => {
   // Effect on language change
   useEffect(() => {
     userDispatcher({
-      type: "SET_LANGUAGE",
+      type: 'SET_LANGUAGE',
       language: i18n.language,
       locale: getLocale(),
     });
   }, [i18n.language, getLocale]);
 
-  return (
-    <UserContext.Provider value={userState}>
-      {props.children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={userState}>{props.children}</UserContext.Provider>;
 };
 
 export default UserContextProvider;
