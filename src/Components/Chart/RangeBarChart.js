@@ -49,7 +49,7 @@ function RangeBarchart({
   };
 
   return (
-    <div onMouseUp={handleMouseUp}>
+    <div onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp}>
       <ResponsiveContainer minHeight={maxHeight} maxHeight={maxHeight} width={width}>
         <BarChart
           data={data}
