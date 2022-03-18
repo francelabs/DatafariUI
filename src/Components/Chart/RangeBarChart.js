@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { useSSR } from 'react-i18next';
 import {
   Bar,
   BarChart,
@@ -28,22 +29,28 @@ function RangeBarchart({
   brushTickFormatter,
   onSelectionChanged,
 }) {
+  const [currentStart, setCurrentStart] = useState(startIndex);
+  const [currentEnd, setCurrentEnd] = useState(endIndex);
+
   let timer = useRef();
+
   const handleRangeSelection = ({ startIndex, endIndex }) => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-    }
+    setCurrentStart(startIndex);
+    setCurrentEnd(endIndex);
+  };
+
+  const handleMouseUp = () => {
     if (onSelectionChanged) {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
       // Add a debounce time to avoid firing event too much
-      timer.current = setTimeout(
-        () => onSelectionChanged(startIndex, endIndex),
-        DEBOUNCE_TIME
-      );
+      timer.current = setTimeout(() => onSelectionChanged(currentStart, currentEnd), DEBOUNCE_TIME);
     }
   };
 
   return (
-    <>
+    <div onMouseUp={handleMouseUp}>
       <ResponsiveContainer minHeight={maxHeight} maxHeight={maxHeight} width={width}>
         <BarChart
           data={data}
@@ -69,7 +76,7 @@ function RangeBarchart({
           <Bar dataKey={yDataKey} fill={barFillColor} />
         </BarChart>
       </ResponsiveContainer>
-    </>
+    </div>
   );
 }
 
