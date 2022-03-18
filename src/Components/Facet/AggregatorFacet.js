@@ -1,31 +1,25 @@
-import {
-  IconButton,
-  List,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import { makeStyles } from "@material-ui/styles";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
-import { QueryContext } from "../../Contexts/query-context";
-import useHttp from "../../Hooks/useHttp";
-import FacetEntry from "./FacetEntry";
+import { IconButton, List, Menu, MenuItem, Typography } from '@material-ui/core';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { makeStyles } from '@material-ui/styles';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import { QueryContext } from '../../Contexts/query-context';
+import useHttp from '../../Hooks/useHttp';
+import FacetEntry from './FacetEntry';
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
     flexGrow: 1,
   },
   facetHeader: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   showMore: {
-    width: "100%",
+    width: '100%',
     marginBottom: theme.spacing(1),
   },
 }));
@@ -34,17 +28,7 @@ function AggregatorFacet({ title, show = true }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [queryID, setQueryID] = useState(null);
-  const [aggregators, setAggregators] = useState([
-    {
-      name: "Aggregator 1",
-    },
-    {
-      name: "Aggregator 2",
-    },
-    {
-      name: "Aggregator 3",
-    },
-  ]);
+  const [aggregators, setAggregators] = useState([]);
 
   const menuAnchorRef = useRef(null);
 
@@ -59,14 +43,16 @@ function AggregatorFacet({ title, show = true }) {
   useEffect(() => {
     let newQueryID = Math.random().toString(36).substring(2, 15);
     setQueryID(newQueryID);
-    // TODO: Call right endpoint to fetch aggregators
-    // sendRequest(`${apiEndpointsContext.getThemeURL}`, "GET", null, newQueryID);
-  }, [apiEndpointsContext.getThemeURL, sendRequest]);
+
+    sendRequest(`${apiEndpointsContext.getAggregatorURL}`, 'GET', null, newQueryID);
+  }, [apiEndpointsContext.getAggregatorURL, sendRequest]);
 
   // Set list aggregator
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      // TODO: set aggregator data
+      if (data?.aggregatorList && Array.isArray(data.aggregatorList)) {
+        setAggregators([...data.aggregatorList]);
+      }
     }
   }, [data, error, isLoading, reqIdentifier, queryID, query]);
 
@@ -86,7 +72,7 @@ function AggregatorFacet({ title, show = true }) {
   const handleClearFilterClick = () => {
     // Dispatch to query
     queryDispatch({
-      type: "SET_AGGREGATORS_FACET",
+      type: 'SET_AGGREGATORS_FACET',
       aggregators: [],
     });
     setMenuOpen(false);
@@ -96,8 +82,8 @@ function AggregatorFacet({ title, show = true }) {
   const handleSelectAllClick = () => {
     // Dispatch to query
     queryDispatch({
-      type: "SET_AGGREGATORS_FACET",
-      aggregators: aggregators.map((agg) => agg.name),
+      type: 'SET_AGGREGATORS_FACET',
+      aggregators: aggregators.map((agg) => agg.label),
     });
     setMenuOpen(false);
   };
@@ -105,14 +91,14 @@ function AggregatorFacet({ title, show = true }) {
   const handleAggregatorClick = (checked, agg) => {
     let newAggregators = [];
     if (checked) {
-      newAggregators = [...query.aggregator, agg.name];
+      newAggregators = [...query.aggregator, agg.label];
     } else {
-      newAggregators = query.aggregator.filter((a) => a !== agg.name);
+      newAggregators = query.aggregator.filter((a) => a !== agg.label);
     }
 
     // Dispatch to query
     queryDispatch({
-      type: "SET_AGGREGATORS_FACET",
+      type: 'SET_AGGREGATORS_FACET',
       aggregators: newAggregators,
     });
   };
@@ -122,47 +108,39 @@ function AggregatorFacet({ title, show = true }) {
       <div className={classes.facetHeader}>
         <IconButton
           onClick={handleOpenMenu}
-          aria-controls={"agregator-facet-menu"}
+          aria-controls={'agregator-facet-menu'}
           aria-haspopup="true"
           aria-label={t(`Open {{ facetTitle }} facet menu`, {
             facetTitle: t(title),
-          })}
-        >
+          })}>
           <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
         <Menu
-          id={"aggregator-facet-menu"}
+          id={'aggregator-facet-menu'}
           anchorEl={menuAnchorRef.current}
           open={menuOpen}
-          onClose={handleCloseMenu}
-        >
-          <MenuItem onClick={handleSelectAllClick}>{t("Select All")}</MenuItem>
-          <MenuItem onClick={handleClearFilterClick}>
-            {t("Clear Filter")}
-          </MenuItem>
+          onClose={handleCloseMenu}>
+          <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
+          <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
           {t(title)}
         </Typography>
         <IconButton
           onClick={handleExpandClick}
-          aria-label={t(
-            `${expanded ? "Collapse" : "Expand"} {{ facetTitle }} facet`,
-            {
-              facetTitle: t(title),
-            }
-          )}
-        >
+          aria-label={t(`${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`, {
+            facetTitle: t(title),
+          })}>
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
       {expanded ? (
-        <List>
+        <List dense>
           {aggregators.map((agg) => (
             <FacetEntry
-              id={agg.name}
-              value={agg.name}
-              selected={!!query.aggregator.find((a) => a === agg.name)}
+              id={agg.label}
+              value={agg.label}
+              selected={!!query.aggregator.find((a) => a === agg.label)}
               onClick={(e) => handleAggregatorClick(e.target.checked, agg)}
             />
           ))}
