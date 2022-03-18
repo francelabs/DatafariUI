@@ -1,37 +1,35 @@
-import React, { Suspense, useContext, useEffect } from "react";
-import "./App.css";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import React, { Suspense, useContext, useEffect } from 'react';
+import './App.css';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
-import TopMenu from "./Components/TopMenu/TopMenu";
-import QueryContextProvider from "./Contexts/query-context";
-import ResultsContextProvider from "./Contexts/results-context";
-import UserContextProvider, { UserContext } from "./Contexts/user-context";
-import { create } from "jss";
-import rtl from "jss-rtl";
+import TopMenu from './Components/TopMenu/TopMenu';
+import QueryContextProvider from './Contexts/query-context';
+import ResultsContextProvider from './Contexts/results-context';
+import UserContextProvider, { UserContext } from './Contexts/user-context';
+import { create } from 'jss';
+import rtl from 'jss-rtl';
 
-import SearchPage from "./Pages/Search/Search";
-import { StylesProvider, CssBaseline, jssPreset } from "@material-ui/core";
+import SearchPage from './Pages/Search/Search';
+import { StylesProvider, CssBaseline, jssPreset } from '@material-ui/core';
 
-import "fontsource-montserrat/300.css";
-import "fontsource-montserrat";
-import "fontsource-montserrat/500.css";
-import "fontsource-montserrat/700.css";
-import Preview from "./Pages/Preview/Preview";
-import APIEndpointsContextProvider from "./Contexts/api-endpoints-context";
-import LicenceContextProvider from "./Contexts/licence-context";
-import LicenceChecker from "./Components/LicenceChecker/LicenceChecker";
-import { useTranslation } from "react-i18next";
-import CustomThemeProvider from "./Components/CustomThemeProvider/CustomThemeProvider";
-import useTitleUpdater from "./Hooks/useTitleUpdater";
-import HomePage from "./Pages/HomePage/HomePage";
-import UIConfigContextProvider, {
-  UIConfigContext,
-} from "./Contexts/ui-config-context";
-import SearchContextProvider from "./Contexts/search-context";
-import Banner from "./Components/Banner";
+import 'fontsource-montserrat/300.css';
+import 'fontsource-montserrat';
+import 'fontsource-montserrat/500.css';
+import 'fontsource-montserrat/700.css';
+import Preview from './Pages/Preview/Preview';
+import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
+import LicenceContextProvider from './Contexts/licence-context';
+import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
+import { useTranslation } from 'react-i18next';
+import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
+import useTitleUpdater from './Hooks/useTitleUpdater';
+import HomePage from './Pages/HomePage/HomePage';
+import UIConfigContextProvider, { UIConfigContext } from './Contexts/ui-config-context';
+import SearchContextProvider from './Contexts/search-context';
+import Banner from './Components/Banner';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
@@ -40,7 +38,7 @@ function Main() {
   const { t } = useTranslation();
 
   const {
-    uiDefinition: { devMode = { enable: false } },
+    uiDefinition: { devMode = { enable: false }, direction = 'ltr' },
   } = useContext(UIConfigContext);
 
   useTitleUpdater();
@@ -49,17 +47,17 @@ function Main() {
     userActions.autoConnect();
   }, [userActions]);
 
-  document.title = t("Datafari Enterprise Search");
+  document.title = t('Datafari Enterprise Search');
 
   return (
-    <>
+    <div style={{ direction }}>
       <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/" exact>
             <Redirect to="/home" />
           </Route>
           <Route path="/home" component={HomePage} />
-          <Route path={["/search", "/preview"]}>
+          <Route path={['/search', '/preview']}>
             <LicenceChecker />
             <TopMenu />
             <Switch>
@@ -71,7 +69,7 @@ function Main() {
       </BrowserRouter>
 
       {devMode.enable ? <Banner {...devMode.banner} /> : null}
-    </>
+    </div>
   );
 }
 
