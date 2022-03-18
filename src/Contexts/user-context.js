@@ -188,19 +188,15 @@ const UserContextProvider = (props) => {
         }
 
         // Dispatch UI configuration from user preference, only direction, left, right and sources
-        if (UPDATE_USER_PREF_ID === reqIdentifier) {
-          const { userUi } = userData;
-          uiConfigDispatch({
-            type: SET_UI_DEFINITION,
-            definition: {
-              ...uiDefinition,
-              direction: userUi.direction,
-              left: userUi.left,
-              right: userUi.right,
-              sources: userUi.sources,
-            },
-          });
-        }
+
+        const { userUi = {} } = userData;
+        uiConfigDispatch({
+          type: SET_UI_DEFINITION,
+          definition: {
+            ...uiDefinition,
+            ...userUi,
+          },
+        });
 
         timer = setTimeout(autoConnect, 60000);
       }
