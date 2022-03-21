@@ -67,14 +67,6 @@ const userReducer = (userState, action) => {
       };
     }
 
-    case 'SET_USER_UI': {
-      const newState = {
-        ...userState,
-      };
-      newState.state.user.userUi = { ...action.userUi };
-      return newState;
-    }
-
     default:
       return userState;
   }
@@ -122,19 +114,9 @@ const UserContextProvider = (props) => {
         JSON.stringify({ uiConfig: userUi }),
         newQueryID
       );
-
-      uiConfigDispatch({
-        type: SET_UI_DEFINITION,
-        uiDefinition: userUi,
-      });
-
-      userDispatcher({
-        type: 'SET_USER_UI',
-        userUi,
-      });
     },
 
-    [apiEndpointsContext.currentUserURL, sendRequest, uiConfigDispatch]
+    [apiEndpointsContext.currentUserURL, sendRequest]
   );
 
   const actions = useMemo(() => {
@@ -182,11 +164,10 @@ const UserContextProvider = (props) => {
         }
 
         // Dispatch UI configuration from user preference, only direction, left, right and sources
-
-        const { userUi = {} } = userData;
+        const { uiConfig = {} } = userData; // uiConfig is the key from backend
         uiConfigDispatch({
           type: SET_UI_DEFINITION,
-          uiDefinition: userUi,
+          uiDefinition: uiConfig,
         });
 
         timer = setTimeout(autoConnect, 60000);

@@ -53,20 +53,15 @@ const UserPreferencesModal = (props) => {
 
   const { isLoading, data, error, sendRequest } = useHttp();
   const apiEndpointsContext = useContext(APIEndpointsContext);
-  const { defaultUiDefinition } = useContext(UIConfigContext);
-  const { state: userState, actions } = useContext(UserContext);
-  const { user = { userUi: {} } } = userState;
+  const { uiDefinition, defaultUiDefinition } = useContext(UIConfigContext);
+  const { actions } = useContext(UserContext);
 
   // States
   const [facetsPosition, setFacetPosition] = useState(
-    user?.userUi?.direction || defaultUiDefinition.direction || 'ltr' // default is ltr
+    uiDefinition.direction || 'ltr' // default is ltr
   );
-  const [leftFacetsOrder, setLeftFacetsOrder] = useState(
-    user?.userUi?.left || defaultUiDefinition.left || []
-  );
-  const [rightFacetsOrder, setRightFacetsOrder] = useState(
-    user?.userUi?.right || defaultUiDefinition.right || []
-  );
+  const [leftFacetsOrder, setLeftFacetsOrder] = useState(uiDefinition.left || []);
+  const [rightFacetsOrder, setRightFacetsOrder] = useState(uiDefinition.right || []);
 
   const [sources, setSources] = useState([]);
 
@@ -130,9 +125,9 @@ const UserPreferencesModal = (props) => {
   const handleReset = () => {
     // Reset from uiDefinition values
     setFacetPosition(defaultUiDefinition.direction || 'ltr');
-    setLeftFacetsOrder(defaultUiDefinition.left || []);
-    setRightFacetsOrder(defaultUiDefinition.right || []);
-    setSources(defaultUiDefinition.sources || formatSource(data));
+    setLeftFacetsOrder([...defaultUiDefinition.left] || []);
+    setRightFacetsOrder([...defaultUiDefinition.right] || []);
+    setSources([...defaultUiDefinition.sources] || formatSource(data));
   };
 
   const handleClose = useCallback(() => {
