@@ -74,6 +74,7 @@ const userReducer = (userState, action) => {
 
 export const UserContext = React.createContext();
 
+const USER_LOGIN = 'USER_LOGIN';
 const SET_USER_LANGUAGE_ID = 'SET_USER_LANGUAGE_ID';
 const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 
@@ -85,20 +86,18 @@ const UserContextProvider = (props) => {
   const { i18n } = useTranslation();
 
   const autoConnect = useCallback(() => {
-    let newQueryID = Math.random().toString(36).substring(2, 15);
-    setQueryID(newQueryID);
-    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, newQueryID);
+    setQueryID(USER_LOGIN);
+    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, USER_LOGIN);
   }, [apiEndpointsContext.currentUserURL, sendRequest]);
 
   const updateUserLanguage = useCallback(
     (langugage) => {
-      let newQueryID = SET_USER_LANGUAGE_ID;
-      setQueryID(newQueryID);
+      setQueryID(SET_USER_LANGUAGE_ID);
       sendRequest(
         `${apiEndpointsContext.currentUserURL}`,
         'PUT',
         JSON.stringify({ lang: langugage }),
-        newQueryID
+        SET_USER_LANGUAGE_ID
       );
     },
     [apiEndpointsContext.currentUserURL, sendRequest]
@@ -106,13 +105,12 @@ const UserContextProvider = (props) => {
 
   const updateUserUiDefinition = useCallback(
     (userUi) => {
-      let newQueryID = UPDATE_USER_PREF_ID;
-      setQueryID(newQueryID);
+      setQueryID(UPDATE_USER_PREF_ID);
       sendRequest(
         `${apiEndpointsContext.currentUserURL}`,
         'PUT',
         JSON.stringify({ uiConfig: userUi }),
-        newQueryID
+        UPDATE_USER_PREF_ID
       );
     },
 
@@ -133,15 +131,9 @@ const UserContextProvider = (props) => {
     actions,
   });
 
+  // Effect when user changed language, user logged in or user saved preferences
   useEffect(() => {
-    let timer = null;
-
     if (!isLoading && !error && data) {
-      if (SET_USER_LANGUAGE_ID === reqIdentifier) {
-        // nothing to do in return when setting user language
-        return;
-      }
-
       if (data.status !== 'OK') {
         userDispatcher({ type: 'SET_GUEST' });
       } else {
@@ -170,17 +162,14 @@ const UserContextProvider = (props) => {
           uiDefinition: uiConfig,
         });
 
-        timer = setTimeout(autoConnect, 60000);
+        // add a timeout for autoconnect
+        const timer = setTimeout(autoConnect, 60000);
+
+        return () => clearTimeout(timer);
       }
     } else if (!isLoading && error) {
       userDispatcher({ type: 'SET_GUEST' });
     }
-
-    return () => {
-      if (timer !== null) {
-        clearTimeout(timer);
-      }
-    };
   }, [
     autoConnect,
     data,
