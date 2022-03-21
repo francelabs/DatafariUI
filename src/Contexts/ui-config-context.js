@@ -1,101 +1,101 @@
-import React, { useContext, useEffect, useReducer } from "react";
-import useHttp from "../Hooks/useHttp";
-import { APIEndpointsContext } from "./api-endpoints-context";
-import Spinner from "../Components/Spinner/Spinner";
+import React, { useContext, useEffect, useReducer } from 'react';
+import useHttp from '../Hooks/useHttp';
+import { APIEndpointsContext } from './api-endpoints-context';
+import Spinner from '../Components/Spinner/Spinner';
 
 const DEFAULT_UI = {
   left: [
     {
-      type: "FieldFacet",
-      title: "Extension",
-      field: "extension",
-      op: "OR",
+      type: 'FieldFacet',
+      title: 'Extension',
+      field: 'extension',
+      op: 'OR',
       minShow: 2,
       maxShow: 5,
     },
     {
-      type: "FieldFacet",
-      title: "Language",
-      field: "language",
-      op: "OR",
+      type: 'FieldFacet',
+      title: 'Language',
+      field: 'language',
+      op: 'OR',
       minShow: 2,
       maxShow: 5,
     },
     {
-      type: "FieldFacet",
-      title: "Source",
-      field: "repo_source",
-      op: "OR",
+      type: 'FieldFacet',
+      title: 'Source',
+      field: 'repo_source',
+      op: 'OR',
       minShow: 2,
       maxShow: 5,
     },
     {
-      type: "QueryFacet",
-      title: "Creation Date",
+      type: 'QueryFacet',
+      title: 'Creation Date',
       queries: [
-        "creation_date:[NOW/DAY TO NOW]",
-        "creation_date:[NOW/DAY-7DAY TO NOW/DAY]",
-        "creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]",
-        "creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])",
-        "creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]",
+        'creation_date:[NOW/DAY TO NOW]',
+        'creation_date:[NOW/DAY-7DAY TO NOW/DAY]',
+        'creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]',
+        'creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
+        'creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
       ],
       labels: [
-        "Today",
-        "From Yesterday Up To 7 days",
-        "From 8 Days Up To 30 days",
-        "Older than 31 days",
-        "No date",
+        'Today',
+        'From Yesterday Up To 7 days',
+        'From 8 Days Up To 30 days',
+        'Older than 31 days',
+        'No date',
       ],
-      id: "date_facet",
+      id: 'date_facet',
       minShow: 5,
       children: [
         {
-          type: "DateFacetCustom",
+          type: 'DateFacetCustom',
         },
       ],
     },
     {
-      type: "HierarchicalFacet",
-      field: "urlHierarchy",
-      title: "hierarchical facet",
-      separator: "/",
+      type: 'HierarchicalFacet',
+      field: 'urlHierarchy',
+      title: 'hierarchical facet',
+      separator: '/',
     },
   ],
   center: {
     main: [
       {
-        type: "SearchInformation",
-        data: ["filters", "facets"],
+        type: 'SearchInformation',
+        data: ['filters', 'facets'],
       },
       {
-        type: "ResultsList",
-        data: ["title", "url", "logo", "previewButton", "extract"],
+        type: 'ResultsList',
+        data: ['title', 'url', 'logo', 'previewButton', 'extract'],
       },
     ],
-    tabs: [{ type: "FieldFacet", field: "repo_source", max: 3 }],
+    tabs: [{ type: 'FieldFacet', field: 'repo_source', max: 3 }],
   },
   right: [],
 
   searchBar: {
     suggesters: [
       {
-        type: "BASIC",
+        type: 'BASIC',
         props: {
           maxSuggestion: 5,
-          title: "SUGGESTED QUERIES",
-          subtitle: "Queries extending your current query terms",
+          title: 'SUGGESTED QUERIES',
+          subtitle: 'Queries extending your current query terms',
         },
       },
       {
-        type: "ENTITY",
+        type: 'ENTITY',
         props: {
-          field: "authorTokens",
-          suggester: "suggestAuthors",
-          dictionary: "suggesterEntityAuthors",
+          field: 'authorTokens',
+          suggester: 'suggestAuthors',
+          dictionary: 'suggesterEntityAuthors',
           asFacet: false,
           maxSuggestion: 5,
-          title: "Entities suggested",
-          subtitle: "Queries extending your current query terms",
+          title: 'Entities suggested',
+          subtitle: 'Queries extending your current query terms',
         },
       },
     ],
@@ -105,14 +105,14 @@ const DEFAULT_UI = {
 export const UIConfigContext = React.createContext();
 
 // ACTION TYPES
-const SET_DEFAULT_UI_DEFINITION = "SET_DEFAULT_UI_DEFINITION";
-export const SET_UI_DEFINITION = "SET_UI_DEFINITION";
-export const SET_MASK_FIELD = "SET_MASK_FIELD";
+const SET_DEFAULT_UI_DEFINITION = 'SET_DEFAULT_UI_DEFINITION';
+export const SET_UI_DEFINITION = 'SET_UI_DEFINITION';
+export const SET_MASK_FIELD = 'SET_MASK_FIELD';
 
 const initialState = {
   defaultUiDefinition: DEFAULT_UI,
   uiDefinition: DEFAULT_UI,
-  maskFieldFacet: "",
+  maskFieldFacet: '',
   isLoading: true,
 };
 
@@ -129,7 +129,10 @@ const uiConfigReducer = (state, action) => {
     case SET_UI_DEFINITION: {
       return {
         ...state,
-        uiDefinition: action.definition,
+        uiDefinition: {
+          ...state.uiDefinition,
+          ...action.uiDefinition,
+        },
         isLoading: false,
       };
     }
@@ -153,13 +156,13 @@ const UIConfigContextProvider = ({ children }) => {
 
   // Sends request to get ui definition json file
   useEffect(() => {
-    sendRequest(getUIDefinitionURL, "GET");
+    sendRequest(getUIDefinitionURL, 'GET');
   }, [getUIDefinitionURL, sendRequest]);
 
   // Process request events (loading status change, data reception, error)
   useEffect(() => {
     if (!isLoading) {
-      if (!error && data && typeof data === "object") {
+      if (!error && data && typeof data === 'object') {
         dispatch({
           type: SET_DEFAULT_UI_DEFINITION,
           definition: data,

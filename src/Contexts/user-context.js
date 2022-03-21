@@ -87,7 +87,7 @@ const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
-  const { uiDefinition, dispatch: uiConfigDispatch } = useContext(UIConfigContext);
+  const { dispatch: uiConfigDispatch } = useContext(UIConfigContext);
   const [queryID, setQueryID] = useState(null);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const { i18n } = useTranslation();
@@ -125,13 +125,7 @@ const UserContextProvider = (props) => {
 
       uiConfigDispatch({
         type: SET_UI_DEFINITION,
-        definition: {
-          ...uiDefinition,
-          direction: userUi.direction,
-          left: userUi.left,
-          right: userUi.right,
-          sources: userUi.sources,
-        },
+        uiDefinition: userUi,
       });
 
       userDispatcher({
@@ -140,7 +134,7 @@ const UserContextProvider = (props) => {
       });
     },
 
-    [apiEndpointsContext.currentUserURL, sendRequest, uiConfigDispatch, uiDefinition]
+    [apiEndpointsContext.currentUserURL, sendRequest, uiConfigDispatch]
   );
 
   const actions = useMemo(() => {
@@ -192,10 +186,7 @@ const UserContextProvider = (props) => {
         const { userUi = {} } = userData;
         uiConfigDispatch({
           type: SET_UI_DEFINITION,
-          definition: {
-            ...uiDefinition,
-            ...userUi,
-          },
+          uiDefinition: userUi,
         });
 
         timer = setTimeout(autoConnect, 60000);
@@ -219,7 +210,6 @@ const UserContextProvider = (props) => {
     i18n,
     userDispatcher,
     uiConfigDispatch,
-    uiDefinition,
   ]);
 
   const getLocale = useCallback(() => {
