@@ -1,4 +1,4 @@
-import { useReducer, useCallback } from "react";
+import { useReducer, useCallback } from 'react';
 
 const initialState = {
   loading: false,
@@ -9,21 +9,21 @@ const initialState = {
 
 const httpReducer = (curHttpState, action) => {
   switch (action.type) {
-    case "SEND":
+    case 'SEND':
       return {
         loading: true,
         error: null,
         data: null,
         identifier: action.identifier,
       };
-    case "RESPONSE":
+    case 'RESPONSE':
       return {
         ...curHttpState,
         loading: false,
         data: action.responseData,
         identifier: action.identifier,
       };
-    case "ERROR":
+    case 'ERROR':
       return {
         ...curHttpState,
         loading: false,
@@ -33,37 +33,38 @@ const httpReducer = (curHttpState, action) => {
           identifier: action.identifier,
         },
       };
-    case "CLEAR":
+    case 'CLEAR':
       return initialState;
     default:
-      throw new Error("Should not be reached!");
+      throw new Error('Should not be reached!');
   }
 };
 
 const useHttp = () => {
   const [httpState, dispatchHttp] = useReducer(httpReducer, initialState);
 
-  const clear = useCallback(() => dispatchHttp({ type: "CLEAR" }), []);
+  const clear = useCallback(() => dispatchHttp({ type: 'CLEAR' }), []);
 
   const sendRequest = useCallback(
     (url, method, body, reqIdentifier, headers) => {
       const currentID = reqIdentifier;
-      dispatchHttp({ type: "SEND", identifier: reqIdentifier });
+      dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
       fetch(url, {
         method: method,
         body: body,
         headers: headers
           ? headers
           : {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
+        credentials: 'include',
       })
         .then(async (response) => {
           if (currentID === reqIdentifier) {
             if (response.ok) {
               let data;
               if (
-                response.headers.get("content-type").indexOf("text/html") !== -1
+                response.headers.get('content-type').indexOf('text/html') !== -1
               ) {
                 data = await response.text();
               } else {
@@ -71,13 +72,13 @@ const useHttp = () => {
               }
 
               dispatchHttp({
-                type: "RESPONSE",
+                type: 'RESPONSE',
                 responseData: data,
                 identifier: reqIdentifier,
               });
             } else {
               dispatchHttp({
-                type: "ERROR",
+                type: 'ERROR',
                 errorCode: response.status,
                 errorMessage: response.statusText,
                 identifier: reqIdentifier,
@@ -88,7 +89,7 @@ const useHttp = () => {
         .catch((error) => {
           if (currentID === reqIdentifier) {
             dispatchHttp({
-              type: "ERROR",
+              type: 'ERROR',
               errorMessage: error.message,
               errorCode: -1,
               identifier: reqIdentifier,
