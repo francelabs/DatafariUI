@@ -1,12 +1,12 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
-import useHttp from "../../../../Hooks/useHttp";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
+import useHttp from '../../../../Hooks/useHttp';
 import {
   QueryContext,
   SET_ELEMENTS,
   SET_FIELD_FACET_SELECTED,
-} from "../../../../Contexts/query-context";
-import { ResultsContext } from "../../../../Contexts/results-context";
+} from '../../../../Contexts/query-context';
+import { ResultsContext } from '../../../../Contexts/results-context';
 
 const useEntityAutocomplete = ({
   field,
@@ -41,12 +41,12 @@ const useEntityAutocomplete = ({
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       const suggesterQueryText =
-        queryText.lastIndexOf(" ") === -1
+        queryText.lastIndexOf(' ') === -1
           ? queryText
-          : queryText.substring(queryText.lastIndexOf(" ") + 1);
+          : queryText.substring(queryText.lastIndexOf(' ') + 1);
       sendRequest(
         `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
-        "GET",
+        'GET',
         null,
         newQueryID
       );
@@ -59,9 +59,9 @@ const useEntityAutocomplete = ({
     if (!isLoading) {
       if (!error && data && reqIdentifier === queryID) {
         const suggesterQueryText =
-          queryText.lastIndexOf(" ") === -1
+          queryText.lastIndexOf(' ') === -1
             ? queryText
-            : queryText.substring(queryText.lastIndexOf(" ") + 1);
+            : queryText.substring(queryText.lastIndexOf(' ') + 1);
         if (
           !data.error &&
           data.suggest &&
@@ -69,9 +69,7 @@ const useEntityAutocomplete = ({
           data.suggest[dictionary][suggesterQueryText] &&
           data.suggest[dictionary][suggesterQueryText].suggestions
         ) {
-          const newSuggestions = data.suggest[dictionary][
-            suggesterQueryText
-          ].suggestions
+          const newSuggestions = data.suggest[dictionary][suggesterQueryText].suggestions
             .filter((element) => {
               return element && element.term;
             })
@@ -100,15 +98,12 @@ const useEntityAutocomplete = ({
   const onClickClassic = useCallback(
     (value, onSelect) => {
       if (onSelect) {
-        let queryWithLastTermRemoved = queryText.substring(
-          0,
-          queryText.lastIndexOf(" ")
-        );
+        let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
         queryWithLastTermRemoved =
           queryWithLastTermRemoved.length === 0
             ? queryWithLastTermRemoved
             : `${queryWithLastTermRemoved} `;
-        onSelect(`${queryWithLastTermRemoved}${field}:${value}`);
+        onSelect(`${queryWithLastTermRemoved}${field}:"${value}"`);
       }
     },
     [field, queryText]
@@ -122,10 +117,7 @@ const useEntityAutocomplete = ({
         // will be only the one selected in the autocomplete list
         let selected = [value];
 
-        let queryWithLastTermRemoved = queryText.substring(
-          0,
-          queryText.lastIndexOf(" ")
-        );
+        let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
         // Treat the selection as a new search launching.
         // Keep the text entered before the entity as the search text
         // and add the entity as a facet selection.

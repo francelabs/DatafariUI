@@ -75,9 +75,7 @@
         "previewTarget": "_self"
       }
     ],
-    "tabs": [
-      { "type": "FieldFacet", "field": "repo_source", "max": 3 }
-    ]
+    "tabs": [{ "type": "FieldFacet", "field": "repo_source", "max": 3 }]
   },
   "right": [],
   "searchBar": {
@@ -93,13 +91,13 @@
       {
         "type": "ENTITY",
         "props": {
-          "field": "authorTokens",
-          "suggester": "suggestAuthors",
-          "dictionary": "suggesterEntityAuthors",
+          "field": "entity_keywords",
+          "suggester": "suggestKeywords",
+          "dictionary": "suggesterEntityKeywords",
           "asFacet": false,
           "maxSuggestion": 5,
-          "title": "Entities suggested",
-          "subtitle": "Queries extending your current query terms"
+          "title": "Suggested keywords search",
+          "subtitle": "Keywords matching the text you typed"
         }
       }
     ]
@@ -109,9 +107,9 @@
       "cmd": "shift",
       "key": "S",
       "enable": false
-    }, 
+    },
     "deactiveSearchBar": {
-      "cmd": "escape", 
+      "cmd": "escape",
       "enable": false
     }
   },
