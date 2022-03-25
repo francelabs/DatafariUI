@@ -99,6 +99,18 @@
           "title": "Suggested keywords search",
           "subtitle": "Keywords matching the text you typed"
         }
+      },
+      {
+        "type": "ENTITY",
+        "props": {
+          "field": "ref_id",
+          "suggester": "suggestRefId",
+          "dictionary": "suggesterEntityRefId",
+          "asFacet": false,
+          "maxSuggestion": 5,
+          "title": "Ids of proposals",
+          "subtitle": "Queries for proposal and comments related to the clicked ID"
+        }
       }
     ]
   },
