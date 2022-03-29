@@ -1,22 +1,22 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { Menu, MenuItem, Link } from "@material-ui/core";
-import { useTranslation } from "react-i18next";
-import PrivacySettingsModal from "../../Pages/PrivacySettingsModal/PrivacySettingsModal";
-import useHttp from "../../Hooks/useHttp";
-import { APIEndpointsContext } from "../../Contexts/api-endpoints-context";
-import { useHistory } from "react-router-dom";
-import { UserContext } from "../../Contexts/user-context";
-import { makeStyles } from "@material-ui/core/styles";
-import UserPreferencesModal from "../../Pages/UserPreferencesModal/UserPreferencesModal";
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { Menu, MenuItem, Link } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+import PrivacySettingsModal from '../../Pages/PrivacySettingsModal/PrivacySettingsModal';
+import useHttp from '../../Hooks/useHttp';
+import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
+import { useHistory } from 'react-router-dom';
+import { UserContext } from '../../Contexts/user-context';
+import { makeStyles } from '@material-ui/core/styles';
+import UserPreferencesModal from '../../Pages/UserPreferencesModal/UserPreferencesModal';
 
 const useStyles = makeStyles((theme) => ({
   menuLink: {
-    color: "inherit",
+    color: 'inherit',
   },
 }));
 
-const PRIVACY_MODAL = "privacy";
-const USER_PREF_MODAL = "userPreferences";
+const PRIVACY_MODAL = 'privacy';
+const USER_PREF_MODAL = 'userPreferences';
 
 const UserMenu = (props) => {
   const classes = useStyles();
@@ -34,7 +34,7 @@ const UserMenu = (props) => {
 
   const handleLogout = useCallback(
     (event) => {
-      sendRequest(apiEndpointsContext.logoutURL, "GET");
+      sendRequest(apiEndpointsContext.logoutURL, 'GET');
       props.onClose();
     },
     [apiEndpointsContext.logoutURL, sendRequest, props]
@@ -56,7 +56,6 @@ const UserMenu = (props) => {
   const adminURL = new URL(apiEndpointsContext.adminURL);
   adminURL.search = `?lang=${i18n.language}`;
 
-  console.log("USERPREFES MODAL", open === USER_PREF_MODAL);
   return (
     <Menu
       id={props.id}
@@ -66,27 +65,25 @@ const UserMenu = (props) => {
       keepMounted
       getContentAnchorEl={null}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
+        vertical: 'bottom',
+        horizontal: 'center',
       }}
       transformOrigin={{
-        vertical: "top",
-        horizontal: "center",
-      }}
-    >
-      <MenuItem onClick={handleLogout}>{t("Logout")}</MenuItem>
+        vertical: 'top',
+        horizontal: 'center',
+      }}>
+      <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
       {userState.user &&
         userState.user.roles &&
-        (userState.user.roles.indexOf("SearchAdministrator") !== -1 ||
-          userState.user.roles.indexOf("SearchExpert") !== -1) && (
+        (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
+          userState.user.roles.indexOf('SearchExpert') !== -1) && (
           <MenuItem
             onClick={props.onClose}
             component={Link}
             href={adminURL}
             target="_blank"
-            className={classes.menuLink}
-          >
-            {t("Admin")}
+            className={classes.menuLink}>
+            {t('Admin')}
           </MenuItem>
         )}
       <MenuItem
@@ -94,11 +91,10 @@ const UserMenu = (props) => {
         component={Link}
         href={apiEndpointsContext.datafariBaseURL}
         target="_blank"
-        className={classes.menuLink}
-      >
-        {t("Go to the legacy Datafari UI")}
+        className={classes.menuLink}>
+        {t('Go to the legacy Datafari UI')}
       </MenuItem>
-      <MenuItem onClick={privacyClick}>{t("Privacy Settings")}</MenuItem>
+      <MenuItem onClick={privacyClick}>{t('Privacy Settings')}</MenuItem>
       <PrivacySettingsModal
         open={open === PRIVACY_MODAL}
         onClose={() => {
@@ -106,13 +102,10 @@ const UserMenu = (props) => {
         }}
       />
 
-      <MenuItem onClick={onUserPrefsClick}>{t("User Preferences")}</MenuItem>
+      <MenuItem onClick={onUserPrefsClick}>{t('User Preferences')}</MenuItem>
 
       {open === USER_PREF_MODAL ? (
-        <UserPreferencesModal
-          open={open === USER_PREF_MODAL}
-          onClose={setOpen}
-        />
+        <UserPreferencesModal open={open === USER_PREF_MODAL} onClose={setOpen} />
       ) : null}
     </Menu>
   );
