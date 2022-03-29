@@ -13,7 +13,7 @@ const LangSelectionMenu = (props) => {
   const handleChangeLanguage = (lang) => {
     return () => {
       // Save user language if logged in
-      state.user && updateUserLanguage && updateUserLanguage(lang);
+      (state.user && updateUserLanguage && updateUserLanguage(lang)) || i18n.changeLanguage(lang);
       props.onClose();
     };
   };
