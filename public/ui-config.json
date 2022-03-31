@@ -5,24 +5,34 @@
       "title": "Extension",
       "field": "extension",
       "op": "OR",
-      "minShow": 2,
-      "maxShow": 5
+      "minShow": 3,
+      "maxShow": 15
     },
     {
       "type": "FieldFacet",
       "title": "Language",
       "field": "language",
       "op": "OR",
-      "minShow": 2,
-      "maxShow": 5
+      "minShow": 3,
+      "maxShow": 15
+    },
+    {
+      "type": "FieldFacet",
+      "title": "Auteurs",
+      "field": "authorTokens",
+      "op": "OR",
+      "variant": "autocomplete",
+      "minShow": 3,
+      "maxShow": 15,
+      "show": false
     },
     {
       "type": "FieldFacet",
       "title": "Source",
       "field": "repo_source",
       "op": "OR",
-      "minShow": 2,
-      "maxShow": 5
+      "minShow": 3,
+      "maxShow": 15
     },
     {
       "type": "QueryFacet",
@@ -53,7 +63,8 @@
       "type": "HierarchicalFacet",
       "field": "urlHierarchy",
       "title": "hierarchical facet",
-      "separator": "/"
+      "separator": "/",
+      "show": false
     }
   ],
   "center": [
@@ -63,7 +74,9 @@
     },
     {
       "type": "ResultsList",
-      "data": ["title", "url", "logo", "previewButton", "extract"]
+      "data": ["title", "url", "logo", "previewButton", "extract"],
+      "folderLinkSources": ["Enron"],
+      "folderTarget": "_blank"
     }
   ],
   "right": []
