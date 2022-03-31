@@ -18,8 +18,8 @@
     },
     {
       "type": "FieldFacet",
-      "title": "Auteurs",
-      "field": "authorTokens",
+      "title": "Authors",
+      "field": "author",
       "op": "OR",
       "variant": "autocomplete",
       "minShow": 3,
