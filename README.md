@@ -75,7 +75,7 @@ Open the file `src/index.js` and change the line declaring the datafariBaseURL t
 (it should end in /Datafari if you have followed the documentation for the installation):
 
 ```js
-window.datafariBaseURL = new URL("https://myhost.test.com/Datafari");
+window.datafariBaseURL = new URL('https://myhost.test.com/Datafari');
 ```
 
 In the file `.env.production` change the PUBLIC_URL variable to match the path you will be using to access Datafari UI on the server you will deploy it to.
@@ -233,30 +233,30 @@ const defaultTheme = createMuiTheme({
   overrides: {
     MuiFilledInput: {
       root: {
-        backgroundColor: "#fafafa",
+        backgroundColor: '#fafafa',
       },
     },
   },
 
   typography: {
-    fontFamily: "montserrat, Helvetica, Arial, sans-serif",
+    fontFamily: 'montserrat, Helvetica, Arial, sans-serif',
   },
 
   palette: {
     primary: {
-      light: "#ffffff",
+      light: '#ffffff',
 
-      main: "#ffffff",
+      main: '#ffffff',
 
-      dark: "#fafafa",
+      dark: '#fafafa',
     },
 
     secondary: {
-      light: "#99cc33",
+      light: '#99cc33',
 
-      main: "#679439",
+      main: '#679439',
 
-      dark: "#648542",
+      dark: '#648542',
     },
   },
 });
@@ -315,7 +315,7 @@ SimpleSearchBar is the main component that defines a input search with a list of
 
 - `BASIC` : basic suggester based on words
 - `ENTITY` : suggester based on entities like authors names
-- `CUSTOM` : suggester based on user custom search
+- `CUSTOM` : suggester based on custom solr suggesters (Work in progress)
 
 #### SimpleSearchBar Composition
 
@@ -367,60 +367,7 @@ Here an exemple of suggesters configuration :
 ```
 
 Suggester types are limited to : `BASIC`, `ENTITY` and `CUSTOM`.
-For each one, you can configured props :
-
-- Some fields are mandatory to perform suggestion request
-- `maxSuggestion` defined the number of results displayed in suggestions
-- `title` Key name for translation of the title suggester section
-- `subtitle` Key name for translation of the subtitle suggester section
-
-It is allowed to use multiple suggesters of the same **type** like 2 ENTITY suggesters on different fields. Each will appear on different section.
-
-#### Add new suggester configuration
-
-In the configuration below, we have 3 suggesters : 1 basic et 2 entities.
-The 2 entities suggesters differ on the field. Title/subtitle can be different as well.
-
-```json
-  ...
-  "searchBar": {
-    "suggesters": [
-      {
-        "type": "BASIC",
-        "props": {
-          "maxSuggestion": 5,
-          "title": "SUGGESTED QUERIES",
-          "subtitle": "Queries extending your current query terms",
-        },
-      },
-      {
-        "type": "ENTITY",
-        "props": {
-          "field": "authorTokens",
-          "suggester": "suggestAuthors",
-          "dictionary": "suggesterEntityAuthors",
-          "asFacet": false,
-          "maxSuggestion": 5,
-          "title": "Entities suggested",
-          "subtitle": "Queries extending your current query terms"
-        }
-      },
-      {
-        "type": "ENTITY",
-        "props": {
-          "field": "authorSocialSecurityNumber",
-          "suggester": "suggestAuthors",
-          "dictionary": "suggesterEntityAuthors",
-          "asFacet": false,
-          "maxSuggestion": 5,
-          "title": "Entities suggested by social security number",
-          "subtitle": "Queries extending your current query terms"
-        }
-      }
-    ]
-  }
-  ...
-```
+For more information about suggester configuration in the ui-config file / object, please check this documentation: [Configure suggester into ui-config.json](https://datafari.atlassian.net/wiki/spaces/DATAFARI/pages/2625634305/Customizing+DatafariUI#Configure-suggester-into-ui-config.json)
 
 #### Add new type suggester
 
@@ -432,7 +379,7 @@ To do it, following these steps :
 2. in `useSuggester.js`, add a new suggester type and export it :
 
 ```jsx
-export const NEW_TYPE = "myNewTypeSuggester";
+export const NEW_TYPE = 'myNewTypeSuggester';
 ```
 
 Then add the new suggester hook in the array `definedSuggester` :
@@ -552,9 +499,8 @@ The `ResultEntry` component defines how a single result is displayed while the `
 
 ### Logo
 
-The logo displayed in the top left corner is an SVG file that must be changed in the app before building it.
-
-The file to change is `src/Icons/top_left_logo.svg`.
+Logos and banners are stored as png files in the public directory.
+For details about how to change them when the app is deployed and their preferred sizes, please refer to this documentation: [Customizing top left logo and background image](https://datafari.atlassian.net/wiki/spaces/DATAFARI/pages/2625634305/Customizing+DatafariUI#Customizing-top-left-logo-and-background-image)
 
 ## Contribute
 
@@ -708,7 +654,7 @@ const getFavorites = useCallback(
     sendRequest(
       `${apiEndpointsContext.currentUserFavoritesURL}`,
 
-      "GET",
+      'GET',
 
       null,
 
@@ -730,7 +676,7 @@ const addFavorite = useCallback(
     sendRequest(
       `${apiEndpointsContext.currentUserFavoritesURL}`,
 
-      "POST",
+      'POST',
 
       JSON.stringify(favorite),
 
@@ -750,7 +696,7 @@ const removeFavorite = useCallback(
     sendRequest(
       `${apiEndpointsContext.currentUserFavoritesURL}`,
 
-      "DELETE",
+      'DELETE',
 
       JSON.stringify(body),
 
@@ -891,7 +837,7 @@ To catch such changes, another `useEffect` hook usage will be used:
 ```js
 useEffect(() => {
   if (!isLoading && !error && data && reqIdentifier === fetchQueryID) {
-    if (data.status === "OK") {
+    if (data.status === 'OK') {
       setFavorites(data.content.favorites.map((favorite) => favorite.id));
     }
   }
@@ -953,7 +899,7 @@ const addFavoriteCallback = useCallback(
       setModifQueries((currentQueries) => {
         const newQueries = { ...currentQueries };
 
-        newQueries[favoriteID] = "add";
+        newQueries[favoriteID] = 'add';
 
         return newQueries;
       });
@@ -971,7 +917,7 @@ const removeFavoriteCallback = useCallback(
       setModifQueries((currentQueries) => {
         const newQueries = { ...currentQueries };
 
-        newQueries[favoriteID] = "remove";
+        newQueries[favoriteID] = 'remove';
 
         return newQueries;
       });
@@ -1000,9 +946,9 @@ This will be again done using useEffect:
 useEffect(() => {
   if (modifQueries[reqIdentifier]) {
     if (!isLoading && !error && data) {
-      if (data.code === 0 || data.status === "OK") {
+      if (data.code === 0 || data.status === 'OK') {
         setFavorites((currentFavorites) => {
-          if (modifQueries[reqIdentifier] === "add") {
+          if (modifQueries[reqIdentifier] === 'add') {
             return currentFavorites.concat(reqIdentifier);
           } else {
             return currentFavorites.filter((docID) => docID !== reqIdentifier);
@@ -1021,21 +967,7 @@ useEffect(() => {
       }
     }
   }
-}, [
-  data,
-
-  error,
-
-  isLoading,
-
-  reqIdentifier,
-
-  setFavorites,
-
-  modifQueries,
-
-  setModifQueries,
-]);
+}, [data, error, isLoading, reqIdentifier, setFavorites, modifQueries, setModifQueries]);
 ```
 
 Note that there is no problem having several separate effects tied to the same state variables.
@@ -1077,11 +1009,7 @@ We will now update our `ResultEntry` component to use this click callback functi
 
 ```js
 <ListItemSecondaryAction className={classes.bookmarkAction}>
-  <IconButton
-    edge="end"
-    aria-label="bookmark"
-    onClick={props.bookmarkClickCallback}
-  >
+  <IconButton edge="end" aria-label="bookmark" onClick={props.bookmarkClickCallback}>
     {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
   </IconButton>
 </ListItemSecondaryAction>
@@ -1116,11 +1044,11 @@ These command keys can be associated with another key like any alphanumeric key,
 `useHotkey` hook can be used anywhere in the react application. Exemple of use :
 
 ```jsx
-import { CTRL } from "src/Hooks/useHotkey";
+import { CTRL } from 'src/Hooks/useHotkey';
 
 const { hotkey: ctrlHotkey } = useHotkey({
   cmd: CTRL,
-  key: "D",
+  key: 'D',
   enable: true,
   callback: handleHotkey,
 });
