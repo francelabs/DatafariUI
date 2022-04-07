@@ -62,7 +62,7 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
-    if (sendToSolr) {
+    if (sendToSolr || show) {
       const newFacet = {
         id: id,
         labels: labels,
@@ -71,7 +71,7 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
       };
       queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
     }
-  }, [id, queryDispatch, labels, queries, props.title, sendToSolr]);
+  }, [id, queryDispatch, labels, queries, props.title, sendToSolr, show]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
@@ -79,9 +79,7 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
   const onClick = (value) => {
     return () => {
       // Remember query is immutable, copy array before modifying it.
-      let selected = query.selectedQueryFacets[id]
-        ? [...query.selectedQueryFacets[id]]
-        : [];
+      let selected = query.selectedQueryFacets[id] ? [...query.selectedQueryFacets[id]] : [];
       if (multipleSelect) {
         const selectedIndex = selected.indexOf(value);
         if (selectedIndex === -1) {
@@ -177,37 +175,25 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
           ref={menuAnchorRef}
           aria-label={t(`Open {{ facetTitle }} facet menu`, {
             facetTitle: t(props.title),
-          })}
-        >
+          })}>
           <MoreVertIcon />
         </IconButton>
         <Menu
           id={`${id}-facet-menu`}
           anchorEl={menuAnchorRef.current}
           open={menuOpen}
-          onClose={handleCloseMenu}
-        >
-          {multipleSelect && (
-            <MenuItem onClick={handleSelectAllClick}>
-              {t('Select All')}
-            </MenuItem>
-          )}
-          <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
-          </MenuItem>
+          onClose={handleCloseMenu}>
+          {multipleSelect && <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>}
+          <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
           {t(props.title)}
         </Typography>
         <IconButton
           onClick={handleExpandClick}
-          aria-label={t(
-            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
-            {
-              facetTitle: t(props.title),
-            }
-          )}
-        >
+          aria-label={t(`${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`, {
+            facetTitle: t(props.title),
+          })}>
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
@@ -220,11 +206,8 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
               color="secondary"
               onClick={handleShowMoreClick}
               align="right"
-              className={classes.showMore}
-            >
-              <Typography variant="caption">
-                {t('Show More')} &gt;&gt;
-              </Typography>
+              className={classes.showMore}>
+              <Typography variant="caption">{t('Show More')} &gt;&gt;</Typography>
             </Link>
           )}
           {showMore && (
@@ -233,11 +216,8 @@ const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
               color="secondary"
               onClick={handleShowMoreClick}
               align="right"
-              className={classes.showMore}
-            >
-              <Typography variant="caption">
-                {t('Show Less')} &lt;&lt;
-              </Typography>
+              className={classes.showMore}>
+              <Typography variant="caption">{t('Show Less')} &lt;&lt;</Typography>
             </Link>
           )}
         </>
