@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const QueryFacet = ({ show = true, sendToSolr = true, ...props }) => {
+const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(true);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
