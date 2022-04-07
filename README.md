@@ -214,6 +214,10 @@ Once all of this is done, you should be able to use the default UI proposed by D
 
 ## Creating a search experience
 
+This documentation will focus on how to create new components or modify existing ones in the code.
+If you are looking for a documentation about things that can be configured once the app is deployed, please refer to: [Customizing DatafariUI](https://datafari.atlassian.net/wiki/spaces/DATAFARI/pages/2625634305/Customizing+DatafariUI).
+Many things can be configured without the need of coding anything, so check this first.
+
 DatafariUI comes with a default interface that you are free to update and modify as you need.
 
 You can update only the theme (colors, font), logos and parameters of certain components or dive deeper and add new components or change the look and feel of existing ones.
