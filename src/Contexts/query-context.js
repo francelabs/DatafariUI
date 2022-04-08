@@ -297,16 +297,13 @@ const QueryContextProvider = (props) => {
         case 'facet.field':
         case 'facet.range':
         case 'fq':
-          let currentParamString = queryParams[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + key + '=' + encodeURIComponent(element);
-              if (index < array.length - 1) {
-                next += '&';
-              }
-              return next;
-            },
-            ''
-          );
+          let currentParamString = queryParams[key].reduce((accu, element, index, array) => {
+            let next = accu + key + '=' + encodeURIComponent(element);
+            if (index < array.length - 1) {
+              next += '&';
+            }
+            return next;
+          }, '');
           result += currentParamString;
           break;
         case 'aggregator': {
@@ -342,16 +339,13 @@ const QueryContextProvider = (props) => {
         case 'facet.field':
         case 'facet.range':
         case 'fq':
-          let currentParamString = queryParams[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + key + '=' + element;
-              if (index < array.length - 1) {
-                next += '&';
-              }
-              return next;
-            },
-            ''
-          );
+          let currentParamString = queryParams[key].reduce((accu, element, index, array) => {
+            let next = accu + key + '=' + element;
+            if (index < array.length - 1) {
+              next += '&';
+            }
+            return next;
+          }, '');
           result += currentParamString;
           break;
         case 'aggregator': {
@@ -382,26 +376,18 @@ const QueryContextProvider = (props) => {
     const fieldFacetsParams = [];
     const selectedFieldFacets = [];
     for (const key in query.fieldFacets) {
-      fieldFacetsParams.push(
-        `{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`
-      );
-      if (
-        query.selectedFieldFacets[key] &&
-        query.selectedFieldFacets[key].length > 0
-      ) {
+      fieldFacetsParams.push(`{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`);
+      if (query.selectedFieldFacets[key] && query.selectedFieldFacets[key].length > 0) {
         selectedFieldFacets.push(
-          query.selectedFieldFacets[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
-              if (index < array.length - 1) {
-                next += ` ${query.fieldFacets[key].op} `;
-              } else {
-                next += ')';
-              }
-              return next;
-            },
-            `{!tag=${query.fieldFacets[key].tag}}(`
-          )
+          query.selectedFieldFacets[key].reduce((accu, element, index, array) => {
+            let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
+            if (index < array.length - 1) {
+              next += ` ${query.fieldFacets[key].op} `;
+            } else {
+              next += ')';
+            }
+            return next;
+          }, `{!tag=${query.fieldFacets[key].tag}}(`)
         );
       }
     }
@@ -411,23 +397,17 @@ const QueryContextProvider = (props) => {
   const prepareFieldFacetsForAlerts = useCallback(() => {
     const selectedFieldFacets = [];
     for (const key in query.fieldFacets) {
-      if (
-        query.selectedFieldFacets[key] &&
-        query.selectedFieldFacets[key].length > 0
-      ) {
+      if (query.selectedFieldFacets[key] && query.selectedFieldFacets[key].length > 0) {
         selectedFieldFacets.push(
-          query.selectedFieldFacets[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
-              if (index < array.length - 1) {
-                next += ` ${query.fieldFacets[key].op} `;
-              } else {
-                next += ')';
-              }
-              return next;
-            },
-            `(`
-          )
+          query.selectedFieldFacets[key].reduce((accu, element, index, array) => {
+            let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
+            if (index < array.length - 1) {
+              next += ` ${query.fieldFacets[key].op} `;
+            } else {
+              next += ')';
+            }
+            return next;
+          }, `(`)
         );
       }
     }
@@ -443,30 +423,20 @@ const QueryContextProvider = (props) => {
       if (
         query.queryFacets[key].queries &&
         query.queryFacets[key].labels &&
-        query.queryFacets[key].queries.length ===
-          query.queryFacets[key].labels.length
+        query.queryFacets[key].queries.length === query.queryFacets[key].labels.length
       ) {
-        const currentQueryFacetParams = query.queryFacets[key].queries.map(
-          (query, index) => {
-            return `{!key=${key}_${index}}${query}`;
-          }
-        );
+        const currentQueryFacetParams = query.queryFacets[key].queries.map((query, index) => {
+          return `{!key=${key}_${index}}${query}`;
+        });
         queryFacetsParams = queryFacetsParams.concat(currentQueryFacetParams);
-        if (
-          query.selectedQueryFacets[key] &&
-          query.selectedQueryFacets[key].length > 0
-        ) {
+        if (query.selectedQueryFacets[key] && query.selectedQueryFacets[key].length > 0) {
           const currentSelectedQueries = query.selectedQueryFacets[key]
-            .filter(
-              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
-            )
+            .filter((label) => query.queryFacets[key].labels.indexOf(label) !== -1)
             .map((label) => {
               const index = query.queryFacets[key].labels.indexOf(label);
               return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
             });
-          selectedQueryFacets = selectedQueryFacets.concat(
-            currentSelectedQueries
-          );
+          selectedQueryFacets = selectedQueryFacets.concat(currentSelectedQueries);
         }
       }
     }
@@ -479,24 +449,16 @@ const QueryContextProvider = (props) => {
       if (
         query.queryFacets[key].queries &&
         query.queryFacets[key].labels &&
-        query.queryFacets[key].queries.length ===
-          query.queryFacets[key].labels.length
+        query.queryFacets[key].queries.length === query.queryFacets[key].labels.length
       ) {
-        if (
-          query.selectedQueryFacets[key] &&
-          query.selectedQueryFacets[key].length > 0
-        ) {
+        if (query.selectedQueryFacets[key] && query.selectedQueryFacets[key].length > 0) {
           const currentSelectedQueries = query.selectedQueryFacets[key]
-            .filter(
-              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
-            )
+            .filter((label) => query.queryFacets[key].labels.indexOf(label) !== -1)
             .map((label) => {
               const index = query.queryFacets[key].labels.indexOf(label);
               return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
             });
-          selectedQueryFacets = selectedQueryFacets.concat(
-            currentSelectedQueries
-          );
+          selectedQueryFacets = selectedQueryFacets.concat(currentSelectedQueries);
         }
       }
     }
@@ -521,37 +483,25 @@ const QueryContextProvider = (props) => {
     const rangeCustomParams = {};
     for (const key in query.rangeFacets) {
       rangeFacetsParams.push(`{!ex=${query.rangeFacets[key].tag}}${key}`);
-      rangeCustomParams[`f.${key}.facet.range.start`] =
-        query.rangeFacets[key].start;
-      rangeCustomParams[`f.${key}.facet.range.end`] =
-        query.rangeFacets[key].end;
-      rangeCustomParams[`f.${key}.facet.range.gap`] =
-        query.rangeFacets[key].gap;
+      rangeCustomParams[`f.${key}.facet.range.start`] = query.rangeFacets[key].start;
+      rangeCustomParams[`f.${key}.facet.range.end`] = query.rangeFacets[key].end;
+      rangeCustomParams[`f.${key}.facet.range.gap`] = query.rangeFacets[key].gap;
       if (query.rangeFacets[key].hardened) {
-        rangeCustomParams[`f.${key}.facet.range.hardened`] =
-          query.rangeFacets[key].hardened;
+        rangeCustomParams[`f.${key}.facet.range.hardened`] = query.rangeFacets[key].hardened;
       }
       if (query.rangeFacets[key].include) {
-        rangeCustomParams[`f.${key}.facet.range.include`] =
-          query.rangeFacets[key].include;
+        rangeCustomParams[`f.${key}.facet.range.include`] = query.rangeFacets[key].include;
       }
       if (query.rangeFacets[key].other) {
-        rangeCustomParams[`f.${key}.facet.range.other`] =
-          query.rangeFacets[key].other;
+        rangeCustomParams[`f.${key}.facet.range.other`] = query.rangeFacets[key].other;
       }
       if (query.rangeFacets[key].method) {
-        rangeCustomParams[`f.${key}.facet.range.method`] =
-          query.rangeFacets[key].method;
+        rangeCustomParams[`f.${key}.facet.range.method`] = query.rangeFacets[key].method;
       }
-      if (
-        query.selectedRangeFacets[key] &&
-        query.selectedRangeFacets[key].length > 0
-      ) {
-        selectedRangeFacetsParams = query.selectedRangeFacets[key].map(
-          (selectedRange) => {
-            return `{!tag=${query.rangeFacets[key].tag}}${key}:${selectedRange.filter}`;
-          }
-        );
+      if (query.selectedRangeFacets[key] && query.selectedRangeFacets[key].length > 0) {
+        selectedRangeFacetsParams = query.selectedRangeFacets[key].map((selectedRange) => {
+          return `{!tag=${query.rangeFacets[key].tag}}${key}:${selectedRange.filter}`;
+        });
       }
     }
     return [rangeFacetsParams, rangeCustomParams, selectedRangeFacetsParams];
@@ -587,8 +537,7 @@ const QueryContextProvider = (props) => {
     }
 
     // Range facet gathering
-    const [rangeFacetsParams, rangeCustomParams, selectedRangeFacets] =
-      prepareRangeFacets();
+    const [rangeFacetsParams, rangeCustomParams, selectedRangeFacets] = prepareRangeFacets();
     if (rangeFacetsParams.length > 0) {
       facetParams.facet = true;
       facetParams['facet.range'] = rangeFacetsParams;
@@ -616,12 +565,7 @@ const QueryContextProvider = (props) => {
     }
 
     return facetParams;
-  }, [
-    prepareFieldFacets,
-    prepareQueryFacets,
-    prepareRangeFacets,
-    prepareOtherFilters,
-  ]);
+  }, [prepareFieldFacets, prepareQueryFacets, prepareRangeFacets, prepareOtherFilters]);
 
   // Builds a parameter object that will be passed down to buildQueryStringFromParams
   // to build the query string used when querying the backend search endpoint.
@@ -680,11 +624,7 @@ const QueryContextProvider = (props) => {
     } else {
       return '';
     }
-  }, [
-    prepareFacetsParams,
-    prepareFieldFacetsForAlerts,
-    prepareQueryFacetsForAlerts,
-  ]);
+  }, [prepareFacetsParams, prepareFieldFacetsForAlerts, prepareQueryFacetsForAlerts]);
 
   const buildSavedSearchQuery = useCallback(() => {
     const facetsParams = prepareFacetsParams();
@@ -734,9 +674,11 @@ const QueryContextProvider = (props) => {
                   draft.selectedFieldFacets[tag] = [];
                 }
                 while (fieldFacetResult) {
-                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[
-                    tag
-                  ].concat(fieldFacetResult[2]);
+                  let value = fieldFacetResult[2];
+                  if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length - 1);
+                  }
+                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[tag].concat(value);
                   fieldFacetResult = regexFieldFacet.exec(filterInfo);
                 }
               } else {
@@ -757,10 +699,9 @@ const QueryContextProvider = (props) => {
                       draft.selectedQueryFacets[facetName] = [];
                     }
                     // It is correctly defined and references an existing query lets use it
-                    draft.selectedQueryFacets[facetName] =
-                      draft.selectedQueryFacets[facetName].concat(
-                        draft.queryFacets[facetName].labels[selectedIndex]
-                      );
+                    draft.selectedQueryFacets[facetName] = draft.selectedQueryFacets[
+                      facetName
+                    ].concat(draft.queryFacets[facetName].labels[selectedIndex]);
                   } else {
                     // index out of range, put it in other filters
                     draft.filters[`${facetName}_${index}`] = {
@@ -856,10 +797,7 @@ const QueryContextProvider = (props) => {
       if (!draft.op || draft.op === defaultQuery.op) {
         delete draft.op;
       }
-      if (
-        !draft.sort ||
-        (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')
-      ) {
+      if (!draft.sort || (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')) {
         delete draft.sort;
       }
 
@@ -879,8 +817,7 @@ const QueryContextProvider = (props) => {
         buildSavedSearchQuery: buildSavedSearchQuery,
         runQueryFromSavedSearch: runQueryFromSavedSearch,
         buildParamsForURL: buildParamsForURL,
-      }}
-    >
+      }}>
       {props.children}
     </QueryContext.Provider>
   );

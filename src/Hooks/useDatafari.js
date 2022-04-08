@@ -4,11 +4,7 @@ import { useCallback, useContext, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import { FILL_FROM_URL_PARAMS, QueryContext } from '../Contexts/query-context';
-import {
-  DEFAULT_RESULT,
-  ResultsContext,
-  SET_RESULTS,
-} from '../Contexts/results-context';
+import { DEFAULT_RESULT, ResultsContext, SET_RESULTS } from '../Contexts/results-context';
 import useHttp from './useHttp';
 
 const useDatafari = () => {
@@ -27,7 +23,7 @@ const useDatafari = () => {
 
   /**
    * The buildQueryString function will change anytime an element in the query
-   * object change, effectively matking this function geeing rebuilt too.
+   * object change, effectively matking this function beeing rebuilt too.
    */
   const makeRequest = useCallback(() => {
     let urlParamsString = qs.stringify(buildParamsForURL(), {
@@ -43,50 +39,34 @@ const useDatafari = () => {
     }
     const queryString = buildSearchQueryString();
     sendRequest(baseURL + '/select?' + queryString, 'GET', null);
-  }, [
-    history,
-    buildSearchQueryString,
-    sendRequest,
-    baseURL,
-    buildParamsForURL,
-  ]);
+  }, [history, buildSearchQueryString, sendRequest, baseURL, buildParamsForURL]);
 
-  const prepareAndSetQueryFacets = useCallback(
-    (queryFacetsResult, newResults) => {
-      const result = {};
-      for (const key in queryFacetsResult) {
-        const splitKey = key.split('_');
-        const queryIndex = splitKey.splice(-1, 1);
-        const facetId = splitKey.join('_');
-        if (!result[facetId]) {
-          result[facetId] = {};
-        }
-        result[facetId][queryIndex] = queryFacetsResult[key];
+  const prepareAndSetQueryFacets = useCallback((queryFacetsResult, newResults) => {
+    const result = {};
+    for (const key in queryFacetsResult) {
+      const splitKey = key.split('_');
+      const queryIndex = splitKey.splice(-1, 1);
+      const facetId = splitKey.join('_');
+      if (!result[facetId]) {
+        result[facetId] = {};
       }
-      newResults.queryFacets = result;
-    },
-    []
-  );
+      result[facetId][queryIndex] = queryFacetsResult[key];
+    }
+    newResults.queryFacets = result;
+  }, []);
 
-  const prepareAndSetRangeFacets = useCallback(
-    (rangeFacetsResult, newResults) => {
-      const rangeFacets = {};
-      for (const facetKey in rangeFacetsResult) {
-        rangeFacets[facetKey] = {};
-        const currentRangeFacetResult = rangeFacetsResult[facetKey];
-        for (
-          let index = 0;
-          index < currentRangeFacetResult.counts.length;
-          index += 2
-        ) {
-          rangeFacets[facetKey][currentRangeFacetResult.counts[index]] =
-            currentRangeFacetResult.counts[index + 1];
-        }
+  const prepareAndSetRangeFacets = useCallback((rangeFacetsResult, newResults) => {
+    const rangeFacets = {};
+    for (const facetKey in rangeFacetsResult) {
+      rangeFacets[facetKey] = {};
+      const currentRangeFacetResult = rangeFacetsResult[facetKey];
+      for (let index = 0; index < currentRangeFacetResult.counts.length; index += 2) {
+        rangeFacets[facetKey][currentRangeFacetResult.counts[index]] =
+          currentRangeFacetResult.counts[index + 1];
       }
-      newResults.rangeFacets = rangeFacets;
-    },
-    []
-  );
+    }
+    newResults.rangeFacets = rangeFacets;
+  }, []);
 
   /**
    * Everytime the makeRequest function changes, we need to execute the
@@ -150,21 +130,14 @@ const useDatafari = () => {
           newResults.fieldFacets = data.facet_counts.facet_fields;
           prepareAndSetQueryFacets(data.facet_counts.facet_queries, newResults);
           if (data.facet_counts.facet_ranges) {
-            prepareAndSetRangeFacets(
-              data.facet_counts.facet_ranges,
-              newResults
-            );
+            prepareAndSetRangeFacets(data.facet_counts.facet_ranges, newResults);
           }
         }
         newResults.numFound = data.response.numFound;
         newResults.rows = parseInt(data.responseHeader.params.rows, 10);
         newResults.start = data.response.start;
       }
-      if (
-        data.spellcheck &&
-        data.spellcheck.collations &&
-        data.spellcheck.collations.length > 0
-      ) {
+      if (data.spellcheck && data.spellcheck.collations && data.spellcheck.collations.length > 0) {
         const spellcheck = {};
         spellcheck.collation = data.spellcheck.collations[1];
         newResults.spellcheck = spellcheck;
@@ -176,14 +149,7 @@ const useDatafari = () => {
       }
     }
     resultsDispatch({ type: SET_RESULTS, results: newResults });
-  }, [
-    isLoading,
-    data,
-    error,
-    prepareAndSetQueryFacets,
-    resultsDispatch,
-    prepareAndSetRangeFacets,
-  ]);
+  }, [isLoading, data, error, prepareAndSetQueryFacets, resultsDispatch, prepareAndSetRangeFacets]);
 
   return {
     makeRequest,
