@@ -77,12 +77,7 @@ function MainTabPanel() {
   const buildFieldFacet = useCallback(
     (element) => {
       let result = null;
-      if (
-        element.op &&
-        element.title &&
-        element.field &&
-        element.field !== maskFieldFacet
-      ) {
+      if (element.op && element.title && element.field && element.field !== maskFieldFacet) {
         const minShow = element.minShow ? element.minShow : 3;
         const maxShow = element.maxShow ? element.maxShow : 5;
         return (
@@ -122,7 +117,8 @@ function MainTabPanel() {
             minShow={minShow}
             maxShow={maxShow}
             multipleSelect={multipleSelect}
-            sendToSolr={element.sendToSolr}>
+            sendToSolr={element.sendToSolr}
+            variant={element.variant}>
             {element.children &&
               Array.isArray(element.children) &&
               element.children

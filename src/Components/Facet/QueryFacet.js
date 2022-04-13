@@ -23,6 +23,12 @@ import { useTranslation } from 'react-i18next';
 
 const DISPLAY_ENTRIES = [10, 100];
 
+// Variant for QueryFacet - Default is 'both' => query and children
+const QUERIES_VARIANT = 'queries_only';
+const CHILDREN_VARIANT = 'children_only';
+const DEFAULT_VARIANT = 'both';
+const VARIANTS_AVAILABLE = [QUERIES_VARIANT, CHILDREN_VARIANT, DEFAULT_VARIANT]; //
+
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
     color: theme.palette.secondary.main,
@@ -49,6 +55,9 @@ const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
+  const [variant] = useState(
+    props.variant && VARIANTS_AVAILABLE.includes(props.variant) ? props.variant : DEFAULT_VARIANT
+  );
 
   const minShow = props.minShow ? props.minShow : DISPLAY_ENTRIES[0];
   const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
@@ -197,32 +206,38 @@ const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
-      {expanded && (
-        <>
-          <List dense>{facetValues.slice(0, numShowed)}</List>
-          {!showMore && numShowed < facetValues.length && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}>
-              <Typography variant="caption">{t('Show More')} &gt;&gt;</Typography>
-            </Link>
-          )}
-          {showMore && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}>
-              <Typography variant="caption">{t('Show Less')} &lt;&lt;</Typography>
-            </Link>
-          )}
-        </>
-      )}
-      {props.children}
+
+      {expanded &&
+        // Display queries list only if variant is queries or default
+        (variant === QUERIES_VARIANT || variant === DEFAULT_VARIANT) && (
+          <>
+            <List dense>{facetValues.slice(0, numShowed)}</List>
+            {!showMore && numShowed < facetValues.length && (
+              <Link
+                component="button"
+                color="secondary"
+                onClick={handleShowMoreClick}
+                align="right"
+                className={classes.showMore}>
+                <Typography variant="caption">{t('Show More')} &gt;&gt;</Typography>
+              </Link>
+            )}
+            {showMore && (
+              <Link
+                component="button"
+                color="secondary"
+                onClick={handleShowMoreClick}
+                align="right"
+                className={classes.showMore}>
+                <Typography variant="caption">{t('Show Less')} &lt;&lt;</Typography>
+              </Link>
+            )}
+          </>
+        )}
+
+      {/* Display only children if variant is children or default */}
+      {(variant === CHILDREN_VARIANT || variant === DEFAULT_VARIANT) && props.children}
+
       <Divider className={props.dividerClassName} />
     </>
   ) : null;
