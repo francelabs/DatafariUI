@@ -53,7 +53,7 @@
       ],
       "id": "date_facet",
       "minShow": 5,
-      "variant": children_only,
+      "variant": "children_only",
       "children": [
         {
           "type": "DateFacetCustom"
