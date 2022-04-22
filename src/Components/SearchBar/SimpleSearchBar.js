@@ -11,25 +11,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import qs from 'qs';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { QueryContext } from '../../Contexts/query-context';
-import {
-  SearchContext,
-  SearchContextActions,
-} from '../../Contexts/search-context';
+import { SearchContext, SearchContextActions } from '../../Contexts/search-context';
 import { UIConfigContext } from '../../Contexts/ui-config-context';
-import useHotkey, {
-  ACTIVE_SEARCH_BAR_ID,
-  DEACTIVE_SEARCH_BAR_ID,
-} from '../../Hooks/useHotkey';
+import useHotkey, { ACTIVE_SEARCH_BAR_ID, DEACTIVE_SEARCH_BAR_ID } from '../../Hooks/useHotkey';
 import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
 import './SimpleSearchBar.css';
 
@@ -137,17 +125,11 @@ const SimpleSearchBar = () => {
   const { searchState, searchDispatch } = useContext(SearchContext);
 
   const {
-    uiDefinition: {
-      hotkeys = {},
-      searchBar: { backdrop = false },
-    },
+    uiDefinition: { hotkeys = {}, searchBar: { backdrop = false } = { backdrop: false } },
   } = useContext(UIConfigContext);
 
   // Hotkey handlers
-  const handleHotkey = useCallback(
-    () => inputSearchRef.current.focus(),
-    [inputSearchRef]
-  );
+  const handleHotkey = useCallback(() => inputSearchRef.current.focus(), [inputSearchRef]);
 
   const handeEscapeHotkey = useCallback(() => {
     setShowQuerySuggestion(false);
@@ -187,9 +169,7 @@ const SimpleSearchBar = () => {
 
         timeoutId.current = setTimeout(() => {
           searchDispatch(
-            SearchContextActions.setSearchingAction(
-              SPACE_REGEX.test(userText) ? '' : userText
-            )
+            SearchContextActions.setSearchingAction(SPACE_REGEX.test(userText) ? '' : userText)
           );
         }, DEBOUCE_TIME_MS);
       }
@@ -239,12 +219,7 @@ const SimpleSearchBar = () => {
           <form onSubmit={handleSubmit}>
             <FormControl
               fullWidth
-              className={
-                showQuerySuggestion
-                  ? classes.searchWithSuggestion
-                  : classes.search
-              }
-            >
+              className={showQuerySuggestion ? classes.searchWithSuggestion : classes.search}>
               <InputBase
                 inputRef={inputSearchRef}
                 fullWidth
@@ -267,11 +242,7 @@ const SimpleSearchBar = () => {
                   <InputAdornment position="end">
                     {showQuerySuggestion ? escapeHotkey : searchHotkey}
                     {queryText && (
-                      <Button
-                        onClick={handleClear}
-                        size="small"
-                        className={classes.clearButton}
-                      >
+                      <Button onClick={handleClear} size="small" className={classes.clearButton}>
                         <ClearIcon />
                       </Button>
                     )}
@@ -279,8 +250,7 @@ const SimpleSearchBar = () => {
                       onClick={handleSubmit}
                       size="small"
                       color="secondary"
-                      className={classes.searchButton}
-                    >
+                      className={classes.searchButton}>
                       <SearchIcon />
                     </Button>
                   </InputAdornment>
