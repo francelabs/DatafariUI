@@ -21,6 +21,7 @@ import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import { QueryContext } from '../../Contexts/query-context';
 import useSavedSearches from '../../Hooks/useSavedSearches';
 import Spinner from '../../Components/Spinner/Spinner';
+import { isArray } from '@material-ui/data-grid';
 
 const useStyles = makeStyles((theme) => ({
   fieldsPadding: {
@@ -78,7 +79,7 @@ const ModifySavedQueryModal = (props) => {
   }, [props.open, query.elements, getSavedSearches]);
 
   useEffect(() => {
-    setFormError(userSavedSearch.some((search) => search.name === savedSearch.name));
+    setFormError((userSavedSearch || []).some((search) => search.name === savedSearch.name));
   }, [savedSearch, userSavedSearch]);
 
   const handleNameChange = (event) => {
@@ -118,7 +119,7 @@ const ModifySavedQueryModal = (props) => {
       if (data.status === 'OK') {
         // Case fetch saved queries
         if (reqIdentifier === 'FETCH_SAVED_SEARCH') {
-          setUserSavedSearch(data);
+          setUserSavedSearch(data?.content?.savedsearches || []);
         } else {
           handleClose();
         }
