@@ -38,9 +38,13 @@ const ModifySavedQueryModal = (props) => {
   const { query, buildSavedSearchQuery } = useContext(QueryContext);
   const classes = useStyles();
   const [keepFacets, setKeepFacets] = useState(false);
+  const [userSavedSearch, setUserSavedSearch] = useState([]);
+  const [formError, setFormError] = useState(false);
+
   const {
     addSavedSearch,
     getEmptySavedSearchObject,
+    getSavedSearches,
     // eslint-disable-next-line no-unused-vars
     isLoading,
     // eslint-disable-next-line no-unused-vars
@@ -52,9 +56,7 @@ const ModifySavedQueryModal = (props) => {
     clear,
   } = useSavedSearches();
   const [savedSearch, setSavedSearch] = useState(
-    props.savedSearch
-      ? { ...props.savedSearch }
-      : { ...getEmptySavedSearchObject() }
+    props.savedSearch ? { ...props.savedSearch } : { ...getEmptySavedSearchObject() }
   );
 
   const keepFacetsChange = () => {
@@ -72,7 +74,12 @@ const ModifySavedQueryModal = (props) => {
         ...newSearchElements,
       };
     });
-  }, [props.open, query.elements]);
+    getSavedSearches('FETCH_SAVED_SEARCH');
+  }, [props.open, query.elements, getSavedSearches]);
+
+  useEffect(() => {
+    setFormError(userSavedSearch.some((search) => search.name === savedSearch.name));
+  }, [savedSearch, userSavedSearch]);
 
   const handleNameChange = (event) => {
     const newName = event.target.value;
@@ -103,26 +110,25 @@ const ModifySavedQueryModal = (props) => {
       }
       addSavedSearch('createSavedSearch', searchToSave);
     }
-  }, [
-    addSavedSearch,
-    buildSavedSearchQuery,
-    keepFacets,
-    savedSearch,
-    validateForm,
-  ]);
+  }, [addSavedSearch, buildSavedSearchQuery, keepFacets, savedSearch, validateForm]);
 
   useEffect(() => {
     // Handling response from the server, close if OK, show error else
     if (!isLoading && !error && data) {
       if (data.status === 'OK') {
-        handleClose();
+        // Case fetch saved queries
+        if (reqIdentifier === 'FETCH_SAVED_SEARCH') {
+          setUserSavedSearch(data);
+        } else {
+          handleClose();
+        }
       } else {
         // Servlet returns error code handling (not connected or other...)
       }
     } else if (!isLoading && error) {
       // Network / parsing error handling
     }
-  }, [data, isLoading, error, handleClose, clear]);
+  }, [data, isLoading, error, reqIdentifier, handleClose, clear]);
 
   return (
     <Dialog open={props.open} onClose={handleClose} fullWidth maxWidth="md">
@@ -153,22 +159,23 @@ const ModifySavedQueryModal = (props) => {
                 label={t('Query Name')}
                 value={savedSearch.name}
                 onChange={handleNameChange}
-                helperText={t('Type here the name used to store your query')}
+                helperText={
+                  formError
+                    ? t('This name already exists. Please choose another name')
+                    : t('Type here the name used to store your query')
+                }
                 variant="filled"
                 color="secondary"
                 fullWidth={true}
                 className={classes.fieldsPadding}
+                error={formError}
               />
             </Grid>
             <Grid item xs={1} />
             <Grid item xs={1} />
             <Grid item xs={10}>
               <FormControl component="fieldset">
-                <FormLabel
-                  variant="filled"
-                  color="secondary"
-                  component="legend"
-                >
+                <FormLabel variant="filled" color="secondary" component="legend">
                   {t('Keep facets')}
                 </FormLabel>
                 <FormGroup>
@@ -199,7 +206,7 @@ const ModifySavedQueryModal = (props) => {
             color="secondary"
             variant="contained"
             size="small"
-          >
+            disabled={formError}>
             {t('Save This Query')}
           </Button>
         </DialogActions>

@@ -202,5 +202,6 @@
   "Start": "Début",
   "End": "Fin",
   "Month": "Mois",
-  "All": "Tout"
+  "All": "Tout",
+  "This name already exists. Please choose another name": "Ce nom existe déjà. Veuillez choisir un autre nom."
 }
