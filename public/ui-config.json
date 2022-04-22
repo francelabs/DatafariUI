@@ -43,6 +43,7 @@
         "No date"
       ],
       "id": "date_facet",
+      "variant": "children_only",      
       "minShow": 5,
       "children": [
         {
