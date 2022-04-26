@@ -105,6 +105,21 @@
       }
     ]
   },
+  "queryParams": {
+    "fields": [
+      "title",
+      "url",
+      "id",
+      "extension",
+      "preview_content",
+      "last_modified",
+      "crawl_date",
+      "author",
+      "original_file_size",
+      "emptied",
+      "repo_source"
+    ]
+  },
   "hotkeys": {
     "activeSearchBar": {
       "cmd": "shift",

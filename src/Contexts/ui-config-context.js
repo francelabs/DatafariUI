@@ -3,6 +3,20 @@ import useHttp from '../Hooks/useHttp';
 import { APIEndpointsContext } from './api-endpoints-context';
 import Spinner from '../Components/Spinner/Spinner';
 
+export const DEFAULT_FIELDS = [
+  'title',
+  'url',
+  'id',
+  'extension',
+  'preview_content',
+  'last_modified',
+  'crawl_date',
+  'author',
+  'original_file_size',
+  'emptied',
+  'repo_source',
+];
+
 const DEFAULT_UI = {
   left: [
     {
@@ -99,6 +113,10 @@ const DEFAULT_UI = {
         },
       },
     ],
+  },
+
+  queryParams: {
+    fields: DEFAULT_FIELDS,
   },
 };
 

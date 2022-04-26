@@ -1,5 +1,6 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useContext, useReducer } from 'react';
 import produce from 'immer';
+import { DEFAULT_FIELDS, UIConfigContext } from '../Contexts/ui-config-context';
 
 export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
 export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
@@ -285,6 +286,9 @@ export const QueryContext = React.createContext({
 
 const QueryContextProvider = (props) => {
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
+
+  const { queryParams: { fields = DEFAULT_FIELDS } = { fields: DEFAULT_FIELDS } } =
+    useContext(UIConfigContext);
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
     let result = '';
@@ -573,19 +577,7 @@ const QueryContextProvider = (props) => {
     const facetsParams = prepareFacetsParams();
     const queryParameters = {
       q: query.elements,
-      fl: [
-        'title',
-        'url',
-        'id',
-        'extension',
-        'preview_content',
-        'last_modified',
-        'crawl_date',
-        'author',
-        'original_file_size',
-        'emptied',
-        'repo_source',
-      ].join(','),
+      fl: fields.join(','),
       sort: query.sort.value,
       'q.op': 'AND',
       rows: query.rows,
@@ -606,6 +598,7 @@ const QueryContextProvider = (props) => {
     query.rows,
     query.sort.value,
     query.aggregator,
+    fields,
   ]);
 
   const prepareFiltersForAlerts = useCallback(() => {
