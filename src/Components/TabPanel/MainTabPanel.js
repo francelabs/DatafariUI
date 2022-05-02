@@ -29,7 +29,7 @@ const allowedElementTypes = [
 const useStyles = makeStyles((theme) => ({
   container: {
     display: 'grid',
-    gridTemplateColumns: 'minmax(300px, 1fr) minmax(min-content, 63rem) minmax(300px, 1fr)',
+    gridTemplateColumns: 'minmax(300px, 1fr) minmax(min-content, 90rem) minmax(300px, 1fr)',
     gap: 15,
     margin: 15,
 
