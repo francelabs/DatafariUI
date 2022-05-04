@@ -287,8 +287,9 @@ export const QueryContext = React.createContext({
 const QueryContextProvider = (props) => {
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
 
-  const { queryParams: { fields = DEFAULT_FIELDS } = { fields: DEFAULT_FIELDS } } =
-    useContext(UIConfigContext);
+  const { uiDefinition } = useContext(UIConfigContext);
+  const { queryParams = { fields: DEFAULT_FIELDS } } = uiDefinition;
+  const { fields = DEFAULT_FIELDS } = queryParams;
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
     let result = '';
