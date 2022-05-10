@@ -1,177 +1,279 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-
-import { QueryContext } from '../../Contexts/query-context';
-
-import './SimpleSearchBar.css';
-import { fade, makeStyles } from '@material-ui/core/styles';
 import {
+  Box,
+  Button,
+  ClickAwayListener,
   FormControl,
   InputAdornment,
   InputBase,
-  Button,
+  LinearProgress,
 } from '@material-ui/core';
-import BasicAutocomplete from './Autocompletes/BasicAutoComplete/BasicAutocomplete';
-import SearchIcon from '@material-ui/icons/Search';
+import { makeStyles } from '@material-ui/core/styles';
 import ClearIcon from '@material-ui/icons/Clear';
-import { useHistory } from 'react-router';
+import SearchIcon from '@material-ui/icons/Search';
 import qs from 'qs';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router';
+import { QueryContext } from '../../Contexts/query-context';
+import { SearchContext, SearchContextActions } from '../../Contexts/search-context';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
+import useHotkey, { ACTIVE_SEARCH_BAR_ID, DEACTIVE_SEARCH_BAR_ID } from '../../Hooks/useHotkey';
 import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
+import './SimpleSearchBar.css';
 
-const useStyles = makeStyles((theme) => ({
-  search: {
+const useStyles = makeStyles((theme) => {
+  const search = {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.primary.dark,
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.black, 0.05),
-    },
+    backgroundColor: theme.palette.grey[200],
     marginRight: theme.spacing(2),
     marginLeft: 0,
-  },
-  clearButton: {
-    borderRight: 'solid 1px rgba(0,0,0,0.12)',
-    borderRadius: '0',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-  },
-  inputFocused: {
-    backgroundColor: fade(theme.palette.common.black, 0.05),
-  },
-}));
 
-const SimpleSearchBar = (props) => {
-  const classes = useStyles();
-  const { query } = useContext(QueryContext);
-  const history = useHistory();
+    '&:hover': {
+      backgroundColor: theme.palette.grey[300],
+    },
 
-  const [querySuggestion, setQuerySuggestion] = useState(false);
+    '&::first-letter': {
+      textTransform: 'lowercase',
+    },
+  };
+
+  return {
+    search,
+
+    searchWithSuggestion: {
+      ...search,
+      borderRadius: 'none',
+      borderTopLeftRadius: theme.shape.borderRadius,
+      borderTopRightRadius: theme.shape.borderRadius,
+    },
+
+    suggestions: {
+      display: (props) => (props.showQuerySuggestion ? 'block' : 'none'),
+      zIndex: 2,
+    },
+
+    clearButton: {
+      borderRight: 'solid 1px rgba(0,0,0,0.12)',
+      borderRadius: '0',
+
+      [theme.breakpoints.down('sm')]: {
+        minWidth: 25,
+      },
+    },
+
+    searchButton: {
+      [theme.breakpoints.down('sm')]: {
+        minWidth: 25,
+      },
+    },
+
+    inputRoot: {
+      color: 'inherit',
+    },
+
+    inputInput: {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      transition: theme.transitions.create('width'),
+      width: '100%',
+
+      [theme.breakpoints.down('xs')]: {
+        paddingLeft: 5,
+      },
+    },
+
+    formContainer: {
+      position: 'relative',
+      zIndex: 2,
+      width: '100%',
+    },
+
+    searchBackground: {
+      display: (props) => (props.showQuerySuggestion ? 'block' : 'none'),
+      width: '100%',
+      height: '100%',
+      background: theme.palette.grey[600] + 'AA', // grey with alpha
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      zIndex: 1,
+      backdropFilter: 'blur(2px)',
+    },
+  };
+});
+
+const DEBOUCE_TIME_MS = 500;
+const SPACE_REGEX = /\s$/;
+
+const SimpleSearchBar = () => {
+  const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
   const [textState, setTextState] = useState({
     queryText: '',
     triggerSuggestion: false,
   });
-  const { queryText, triggerSuggestion } = textState;
+  const { queryText } = textState;
+
+  const inputSearchRef = useRef();
+  const { t } = useTranslation();
+
+  const classes = useStyles({ showQuerySuggestion });
+
+  const { query } = useContext(QueryContext);
+  const history = useHistory();
+  const { searchState, searchDispatch } = useContext(SearchContext);
+
+  const {
+    uiDefinition: { hotkeys = {}, searchBar: { backdrop = false } = { backdrop: false } },
+  } = useContext(UIConfigContext);
+
+  // Hotkey handlers
+  const handleHotkey = useCallback(() => inputSearchRef.current.focus(), [inputSearchRef]);
+
+  const handeEscapeHotkey = useCallback(() => {
+    setShowQuerySuggestion(false);
+    inputSearchRef.current.blur();
+  }, [inputSearchRef, setShowQuerySuggestion]);
+
+  // Focus on input search bar
+  const { hotkey: searchHotkey } = useHotkey({
+    ...hotkeys[ACTIVE_SEARCH_BAR_ID],
+    callback: handleHotkey,
+  });
+
+  // Hide suggestions panel and blur input
+  const { hotkey: escapeHotkey } = useHotkey({
+    ...hotkeys[DEACTIVE_SEARCH_BAR_ID],
+    callback: handeEscapeHotkey,
+  });
 
   useEffect(() => {
-    setQuerySuggestion(false);
-    let timer = undefined;
-    if (queryText && triggerSuggestion) {
-      timer = setTimeout(() => {
-        setQuerySuggestion(true);
-      }, 500);
-    }
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [setQuerySuggestion, queryText, triggerSuggestion]);
-
-  useEffect(() => {
-    setTextState({ queryText: query.elements, triggerSuggestion: false });
+    setTextState({ queryText: query.elements });
   }, [query]);
 
+  let timeoutId = useRef();
+
   const handleChange = useCallback(
-    (event) => {
-      setTextState({ queryText: event.target.value, triggerSuggestion: true });
+    (userText, triggerSuggestion = true) => {
+      setTextState({
+        queryText: userText,
+      });
+
+      setShowQuerySuggestion(true);
+
+      if (triggerSuggestion) {
+        if (timeoutId.current) {
+          clearTimeout(timeoutId.current);
+        }
+
+        timeoutId.current = setTimeout(() => {
+          searchDispatch(
+            SearchContextActions.setSearchingAction(SPACE_REGEX.test(userText) ? '' : userText)
+          );
+        }, DEBOUCE_TIME_MS);
+      }
     },
-    [setTextState]
+    [setTextState, searchDispatch]
   );
 
   const handleSubmit = (e) => {
-    setQuerySuggestion(false);
+    setTextState({ queryText: textState.queryText });
+    setShowQuerySuggestion(false);
+
     e.preventDefault();
-    search(e);
+    search(textState.queryText);
   };
 
   const search = useCallback(
-    (event) => {
-      event.stopPropagation();
-      const params = {
-        elements: queryText === '' ? undefined : queryText,
-      };
-      const newLocation = {
-        pathname: '/search',
-        search: qs.stringify(params, { addQueryPrefix: true }),
-      };
-      history.push(newLocation);
-    },
-    [history, queryText]
-  );
-
-  const handleSuggestSelect = useCallback(
     (suggestion) => {
-      setTextState({ queryText: suggestion, triggerSuggestion: false });
-      setQuerySuggestion(false);
       const params = {
-        elements: suggestion,
+        elements: suggestion === '' ? undefined : suggestion,
       };
       const newLocation = {
         pathname: '/search',
         search: qs.stringify(params, { addQueryPrefix: true }),
       };
       history.push(newLocation);
+
+      setShowQuerySuggestion(false); // Hide suggestions
     },
     [history]
   );
 
   const handleClear = () => {
-    setTextState({ queryText: '', triggerSuggestion: false });
+    setTextState({ queryText: '' });
+    setShowQuerySuggestion(false);
+  };
+
+  const onClickSuggestion = (suggestion) => {
+    handleChange(suggestion, false);
+    search(suggestion);
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth className={classes.search}>
-          <InputBase
-            fullWidth
-            placeholder="Search…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-              focused: classes.inputFocused,
-            }}
-            inputProps={{ 'aria-label': 'search', autocomplete: 'off' }}
-            id="datafari-search-input"
-            type="text"
-            value={queryText}
-            onChange={handleChange}
-            endAdornment={
-              <InputAdornment position="end">
-                {queryText && (
-                  <Button
-                    onClick={handleClear}
-                    size="small"
-                    className={classes.clearButton}
-                  >
-                    <ClearIcon />
-                  </Button>
-                )}
-                <Button onClick={handleSubmit} size="small" color="secondary">
-                  <SearchIcon />
-                </Button>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-      </form>
-      <AutocompleteContainer queryText={queryText}>
-        <BasicAutocomplete
-          active={querySuggestion}
-          onSelect={handleSuggestSelect}
-          queryText={queryText}
-          op={query.op}
-        />
-      </AutocompleteContainer>
-    </div>
+    <>
+      {backdrop ? <div className={classes.searchBackground} /> : null}
+      <ClickAwayListener onClickAway={() => setShowQuerySuggestion(false)}>
+        <div className={classes.formContainer}>
+          <form onSubmit={handleSubmit}>
+            <FormControl
+              fullWidth
+              className={showQuerySuggestion ? classes.searchWithSuggestion : classes.search}>
+              <InputBase
+                inputRef={inputSearchRef}
+                fullWidth
+                placeholder={t('Search')}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{
+                  'aria-label': 'search',
+                  autocomplete: 'off',
+                  autoCapitalize: 'none',
+                }}
+                id="datafari-search-input"
+                type="text"
+                value={queryText}
+                onChange={(event) => handleChange(event.target.value)}
+                onFocus={() => setShowQuerySuggestion(true)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    {showQuerySuggestion ? escapeHotkey : searchHotkey}
+                    {queryText && (
+                      <Button onClick={handleClear} size="small" className={classes.clearButton}>
+                        <ClearIcon />
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleSubmit}
+                      size="small"
+                      color="secondary"
+                      className={classes.searchButton}>
+                      <SearchIcon />
+                    </Button>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+            {searchState.isSearching && (
+              <Box sx={{ width: '100%' }}>
+                <LinearProgress style={{ height: 2 }} color={'secondary'} />
+              </Box>
+            )}
+          </form>
+
+          <div className={classes.suggestions}>
+            <AutocompleteContainer
+              inputRef={inputSearchRef.current}
+              onSelect={handleChange}
+              onClick={onClickSuggestion}
+            />
+          </div>
+        </div>
+      </ClickAwayListener>
+    </>
   );
 };
 

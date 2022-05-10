@@ -13,5 +13,7 @@
   "Save Query As Alert": "انشاء التنبيهات",
   "Will search for EXACTLY the sentence you entered": "التعبير الصحيح",
   "Will search for documents with AT LEAST ONE of these terms": "كلمة واحدة على الاقل ",
-  "less than five years": ""
+  "less than five years": "",
+  "Aggregator facet": "المجمع",
+  "User Preferences": "خيارات المستخدم"
 }

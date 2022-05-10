@@ -10,11 +10,13 @@ export const DEFAULT_RESULT = {
   results: [],
   fieldFacets: {},
   queryFacets: {},
+  rangeFacets: {},
   elements: [],
   spellcheck: undefined,
   numFound: 0,
   rows: 10,
   start: 0,
+  promolinks: [],
 };
 /*
 Note error evaluates to false (null / undefined / false) when there are no errors 

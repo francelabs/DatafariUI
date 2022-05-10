@@ -1,18 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   MenuItem,
   ListSubheader,
   Typography,
   Divider,
   makeStyles,
-} from '@material-ui/core';
-import useHttp from '../../../../Hooks/useHttp';
-import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
-import { useTranslation } from 'react-i18next';
+} from "@material-ui/core";
+import useHttp from "../../../../Hooks/useHttp";
+import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
+import { useTranslation } from "react-i18next";
+import { ResultsContext } from "../../../../Contexts/results-context";
 
 const useStyles = makeStyles((theme) => ({
   autocompleteTitleContainer: {
-    display: 'flex',
+    display: "flex",
   },
 
   autocompleteTitle: {
@@ -30,6 +31,13 @@ const CustomSuggesterAutocomplete = (props) => {
   const [queryID, setQueryID] = useState(null);
   const classes = useStyles();
 
+  const { results } = useContext(ResultsContext);
+
+  // Effect to clear suggestion when a search is performed
+  useEffect(() => {
+    setSuggestions([]);
+  }, [results]);
+
   useEffect(() => {
     if (active) {
       setSuggestions([]);
@@ -38,7 +46,7 @@ const CustomSuggesterAutocomplete = (props) => {
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
-        'GET',
+        "GET",
         null,
         newQueryID
       );
@@ -67,7 +75,7 @@ const CustomSuggesterAutocomplete = (props) => {
               queryText
             ].suggestions
               .filter((element) => {
-                return element.term && typeof element.term === 'string';
+                return element.term && typeof element.term === "string";
               })
               .map((element) => {
                 return element.term;
@@ -105,10 +113,10 @@ const CustomSuggesterAutocomplete = (props) => {
           disableSticky={true}
         >
           <Typography className={classes.autocompleteTitle}>
-            {t('SUGGESTED QUERIES')}
+            {t("SUGGESTED QUERIES")}
           </Typography>
           <Typography>
-            {t('Queries extending your current query terms')}
+            {t("Queries extending your current query terms")}
           </Typography>
         </ListSubheader>
         <Divider />

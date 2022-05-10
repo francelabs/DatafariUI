@@ -57,17 +57,25 @@ const useHttp = () => {
           : {
               'Content-Type': 'application/json',
             },
+        credentials: 'include',
       })
-        .then((response) => {
+        .then(async (response) => {
           if (currentID === reqIdentifier) {
             if (response.ok) {
+              let data;
               if (
                 response.headers.get('content-type').indexOf('text/html') !== -1
               ) {
-                return response.text();
+                data = await response.text();
               } else {
-                return response.json();
+                data = await response.json();
               }
+
+              dispatchHttp({
+                type: 'RESPONSE',
+                responseData: data,
+                identifier: reqIdentifier,
+              });
             } else {
               dispatchHttp({
                 type: 'ERROR',
@@ -76,15 +84,6 @@ const useHttp = () => {
                 identifier: reqIdentifier,
               });
             }
-          }
-        })
-        .then((responseData) => {
-          if (currentID === reqIdentifier) {
-            dispatchHttp({
-              type: 'RESPONSE',
-              responseData: responseData,
-              identifier: reqIdentifier,
-            });
           }
         })
         .catch((error) => {

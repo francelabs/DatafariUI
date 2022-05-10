@@ -1,40 +1,54 @@
-import React, { useContext, useEffect, useState } from 'react';
 import {
   AppBar,
-  Divider,
-  Tabs,
-  Tab,
   Button,
+  Divider,
+  Hidden,
+  makeStyles,
   Menu,
   MenuItem,
+  Tabs,
   Toolbar,
-  Hidden,
 } from '@material-ui/core';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import FavortiesModal from '../../Pages/FavoritesModal/FavoritesModal';
 import { UserContext } from '../../Contexts/user-context';
+import useFavorites from '../../Hooks/useFavorites';
 import AdvancedSearchModal from '../../Pages/AdvancedSearchModal/AdvancedSearchModal';
+import ExportResultsModal from '../../Pages/ExportResultsModal/ExportResultsModal';
+import FavortiesModal from '../../Pages/FavoritesModal/FavoritesModal';
 import ManageAlertsModal from '../../Pages/ManageAlertsModal/ManageAlertsModal';
 import ManageSavedQueriesModal from '../../Pages/ManageSavedQueriesModal/ManageSavedQueriesModal';
 import ModifyAlertModal from '../../Pages/ModifyAlertModal/ModifyAlertModal';
-import ExportResultsModal from '../../Pages/ExportResultsModal/ExportResultsModal';
 import ModifySavedQueryModal from '../../Pages/ModifySavedQueryModal/ModifySavedQueryModal';
-import useFavorites from '../../Hooks/useFavorites';
 
-const SearchTopMenu = () => {
-  const [value, setValue] = useState(0);
+const useStyles = makeStyles((theme) => ({
+  toolbar: {
+    justifyContent: 'space-between',
+
+    '& button': {
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '0.65em',
+      },
+    },
+  },
+
+  searchTools: {
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+}));
+
+const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { t } = useTranslation();
   const [open, setOpen] = useState(undefined);
   const { state: userState } = useContext(UserContext);
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getFavoritesStatus,
-  } = useFavorites();
+  const { isLoading, data, error, reqIdentifier, getFavoritesStatus } =
+    useFavorites();
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
+
+  const classes = useStyles();
 
   useEffect(() => {
     getFavoritesStatus('FETCH_FAVORITES_STATUS');
@@ -56,10 +70,6 @@ const SearchTopMenu = () => {
     }
   }, [data, error, favoritesEnabled, isLoading, reqIdentifier]);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -77,14 +87,22 @@ const SearchTopMenu = () => {
 
   return (
     <AppBar position="static" elevation={0}>
-      <Toolbar>
-        <Tabs value={value} onChange={handleChange}>
-          <Tab label={t('All Content')} />
+      <Toolbar className={classes.toolbar}>
+        <Tabs
+          indicatorColor="secondary"
+          textColor="secondary"
+          variant="scrollable"
+          value={selectedTab}
+          onChange={(event, newValue) => onSelectTab(newValue)}
+        >
+          {tabs}
         </Tabs>
+
         <Button
           aria-controls="search-tools-menu"
           aria-haspopup="true"
           onClick={handleClick}
+          className={classes.searchTools}
         >
           {t('Search Tools')}
         </Button>

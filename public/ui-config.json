@@ -31,8 +31,9 @@
       "title": "Source",
       "field": "repo_source",
       "op": "OR",
-      "minShow": 3,
-      "maxShow": 15
+      "minShow": 2,
+      "maxShow": 5,
+      "show": false
     },
     {
       "type": "QueryFacet",
@@ -52,6 +53,7 @@
         "No date"
       ],
       "id": "date_facet",
+      "variant": "children_only",      
       "minShow": 5,
       "variant": "children_only",
       "children": [
@@ -64,21 +66,90 @@
       "type": "HierarchicalFacet",
       "field": "urlHierarchy",
       "title": "hierarchical facet",
-      "separator": "/",
-      "show": false
-    }
-  ],
-  "center": [
-    {
-      "type": "SearchInformation",
-      "data": ["filters", "facets"]
+      "separator": "/"
     },
     {
-      "type": "ResultsList",
-      "data": ["title", "url", "logo", "previewButton", "extract"],
-      "folderLinkSources": ["Enron"],
-      "folderTarget": "_blank"
+      "type": "AggregatorFacet",
+      "title": "Aggregator facet"
     }
   ],
-  "right": []
+  "center": {
+    "main": [
+      {
+        "type": "SearchInformation",
+        "data": ["filters", "facets"]
+      },
+      {
+        "type": "ResultsList",
+        "data": ["title", "url", "logo", "previewButton", "extract"],
+        "folderLinkSources": ["enron"],
+        "folderTarget": "_blank",
+        "previewTarget": "_self"
+      }
+    ],
+    "tabs": [
+      { "type": "FieldFacet", "field": "repo_source", "max": 3 }
+    ]
+  },
+  "right": [],
+  "searchBar": {
+    "suggesters": [
+      {
+        "type": "BASIC",
+        "props": {
+          "maxSuggestion": 5,
+          "title": "SUGGESTED QUERIES",
+          "subtitle": "Queries extending your current query terms"
+        }
+      },
+      {
+        "type": "ENTITY",
+        "props": {
+          "field": "authorTokens",
+          "suggester": "suggestAuthors",
+          "dictionary": "suggesterEntityAuthors",
+          "asFacet": false,
+          "maxSuggestion": 5,
+          "title": "Entities suggested",
+          "subtitle": "Queries extending your current query terms"
+        }
+      }
+    ]
+  },
+  "queryParams": {
+    "fields": [
+      "title",
+      "url",
+      "id",
+      "extension",
+      "preview_content",
+      "last_modified",
+      "crawl_date",
+      "author",
+      "original_file_size",
+      "emptied",
+      "repo_source"
+    ]
+  },
+  "hotkeys": {
+    "activeSearchBar": {
+      "cmd": "shift",
+      "key": "S",
+      "enable": false
+    }, 
+    "deactiveSearchBar": {
+      "cmd": "escape", 
+      "enable": false
+    }
+  },
+  "devMode": {
+    "enable": false,
+    "banner": {
+      "location": "BOTTOM",
+      "content": "Dev mode banner content",
+      "props": {
+        "backgroundColor": "orange"
+      }
+    }
+  }
 }

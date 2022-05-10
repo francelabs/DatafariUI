@@ -1,0 +1,30 @@
+{
+  "palette": {
+    "type": "light",
+    "primary": {
+      "main": "#ffffff",
+      "contrastText": "#000000"
+    },
+    "secondary": {
+      "main": "#679439"
+    },
+    "background": {
+      "default": "#fafafa",
+      "paper": "#ffffff"
+    }
+  },
+  "typography": {
+    "fontFamily": "Montserrat, Helvetica, Arial, sans-serif",
+
+    "body1": {
+      "@media (max-width:600px)": {
+        "fontSize": "0.65em"
+      }
+    },
+    "body2": {
+      "@media (max-width:600px)": {
+        "fontSize": "0.65em"
+      }
+    }
+  }
+}

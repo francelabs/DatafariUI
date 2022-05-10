@@ -1,320 +1,198 @@
-import React, {
-  Fragment,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { useTranslation } from 'react-i18next';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Grid, makeStyles, Tab } from "@material-ui/core";
+import React, { Fragment, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import Modal from "../../Components/Modal/Modal";
+import SearchTopMenu from "../../Components/SearchTopMenu/SearchTopMenu";
+import MainTabPanel from "../../Components/TabPanel/MainTabPanel";
+import {
+  CLEAR_FIELDS_FACET_SELECTED,
+  QueryContext,
+  SET_FIELD_FACET_SELECTED,
+} from "../../Contexts/query-context";
+import { ResultsContext } from "../../Contexts/results-context";
+import { UIConfigContext } from "../../Contexts/ui-config-context";
+import useDatafari from "../../Hooks/useDatafari";
+import "./Search.css";
 
-import Modal from '../../Components/Modal/Modal';
-
-import './Search.css';
-import ResultsList from '../../Components/ResultsList/ResultsList';
-import FieldFacet from '../../Components/Facet/FieldFacet';
-import QueryFacet from '../../Components/Facet/QueryFacet';
-import Pager from '../../Components/Pager/Pager';
-import SearchTopMenu from '../../Components/SearchTopMenu/SearchTopMenu';
-import useDatafari from '../../Hooks/useDatafari';
-import { Grid, makeStyles, Hidden } from '@material-ui/core';
-import SearchInformation from '../../Components/SearchInformation/SearchInformation';
-import DateFacetCustom from '../../Components/DateFacetCustom/DateFacetCustom';
-import HierarchicalFacet from '../../Components/HierarchicalFacet/HierarchicalFacet';
-import useHttp from '../../Hooks/useHttp';
-import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
-import Spinner from '../../Components/Spinner/Spinner';
-
-const allowedElementTypes = [
-  'FieldFacet',
-  'QueryFacet',
-  'DateFacetCustom',
-  'HierarchicalFacet',
-  'SearchInformation',
-  'ResultsList',
-];
-
-const DEFAULT_UI = {
-  left: [
-    {
-      type: 'FieldFacet',
-      title: 'Extension',
-      field: 'extension',
-      op: 'OR',
-      minShow: 2,
-      maxShow: 5,
-    },
-    {
-      type: 'FieldFacet',
-      title: 'Language',
-      field: 'language',
-      op: 'OR',
-      minShow: 2,
-      maxShow: 5,
-    },
-    {
-      type: 'FieldFacet',
-      title: 'Source',
-      field: 'repo_source',
-      op: 'OR',
-      minShow: 2,
-      maxShow: 5,
-    },
-    {
-      type: 'QueryFacet',
-      title: 'Creation Date',
-      queries: [
-        'creation_date:[NOW/DAY TO NOW]',
-        'creation_date:[NOW/DAY-7DAY TO NOW/DAY]',
-        'creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]',
-        'creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
-        'creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
-      ],
-      labels: [
-        'Today',
-        'From Yesterday Up To 7 days',
-        'From 8 Days Up To 30 days',
-        'Older than 31 days',
-        'No date',
-      ],
-      id: 'date_facet',
-      minShow: 5,
-      children: [
-        {
-          type: 'DateFacetCustom',
-        },
-      ],
-    },
-    {
-      type: 'HierarchicalFacet',
-      field: 'urlHierarchy',
-      title: 'hierarchical facet',
-      separator: '/',
-    },
-  ],
-  center: [
-    {
-      type: 'SearchInformation',
-      data: ['filters', 'facets'],
-    },
-    {
-      type: 'ResultsList',
-      data: ['title', 'url', 'logo', 'previewButton', 'extract'],
-    },
-  ],
-  right: [],
-};
-
+// STYLES
 const useStyles = makeStyles((theme) => ({
   searchGrid: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.background.default,
   },
 
-  facetsSection: {
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: '5px',
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
-    minWidth: '280px',
-  },
-
-  pagerContainer: {
-    margin: theme.spacing(2),
-    float: 'right',
-  },
-
-  facetDivider: {
-    '&:last-of-type': {
-      display: 'none',
-    },
+  rawTab: {
+    color: theme.palette.secondary.main,
   },
 }));
 
-const Search = (props) => {
+// Tab types
+const MAIN_TAB = "main";
+const FACET_TAB_TYPE = "FieldFacet";
+const RAW_TAB_TYPE = "Raw";
+
+// Map tab types associated to panel component
+const DEFAULT_PANEL_TABS = {
+  [MAIN_TAB]: MainTabPanel,
+  [FACET_TAB_TYPE]: MainTabPanel,
+  [RAW_TAB_TYPE]: React.Fragment,
+};
+
+const TAB_VALUE_SEPARATOR = ";";
+
+const Search = () => {
   useDatafari();
+  const { t, i18n } = useTranslation();
+
   const classes = useStyles();
   const { path } = useRouteMatch();
-  const { t } = useTranslation();
-  const { isLoading, error, data, sendRequest } = useHttp();
-  const [uiDefinition, setUiDefinition] = useState(undefined);
-  const apiEndpointsContext = useContext(APIEndpointsContext);
 
-  // Sends request to get ui definition json file
+  const { tab = MAIN_TAB } = useParams();
+
+  const { dispatch: queryDispatch } = useContext(QueryContext);
+  const { results } = useContext(ResultsContext);
+  const { uiDefinition } = useContext(UIConfigContext);
+
+  const [selectTab, setSelectTab] = useState(MAIN_TAB);
+  const [panelTabs] = useState(DEFAULT_PANEL_TABS);
+  const [tabs, setTabs] = useState([]);
+
+  // Build tabs from results and config
   useEffect(() => {
-    sendRequest(apiEndpointsContext.getUIDefinitionURL, 'GET');
-  }, [apiEndpointsContext.getUIDefinitionURL, sendRequest]);
+    const makeTabs = [
+      <Tab key={MAIN_TAB} value={MAIN_TAB} label={t("All Content")} />,
+    ];
 
-  // Process request events (loading status change, data reception, error)
-  useEffect(() => {
-    if (!isLoading) {
-      if (!error && data && typeof data === 'object') {
-        setUiDefinition(data);
-      } else {
-        setUiDefinition(DEFAULT_UI);
-      }
-    }
-  }, [data, error, isLoading, setUiDefinition]);
+    // Build other tabs
+    if (uiDefinition.center && Array.isArray(uiDefinition.center.tabs)) {
+      uiDefinition.center.tabs.forEach((tab) => {
+        switch (tab.type) {
+          case FACET_TAB_TYPE:
+            const { type, field, max = -1 } = tab;
 
-  const buildFieldFacet = useCallback(
-    (element) => {
-      let result = null;
-      if (element.op && element.title && element.field) {
-        const minShow = element.minShow ? element.minShow : 3;
-        const maxShow = element.maxShow ? element.maxShow : 5;
-        return (
-          <FieldFacet
-            title={t(element.title)}
-            field={element.field}
-            op={element.op}
-            dividerClassName={classes.facetDivider}
-            minShow={minShow}
-            maxShow={maxShow}
-          />
-        );
-      }
-      return result;
-    },
-    [classes.facetDivider, t]
-  );
+            if (results.fieldFacets[field]) {
+              const arrayLength =
+                max > -1
+                  ? Math.min(max * 2, results.fieldFacets[field].length)
+                  : results.fieldFacets[field].length;
 
-  const buildQueryFacet = useCallback(
-    (element, childrenBuilder) => {
-      let result = null;
-      if (element.id && element.title && element.queries && element.labels) {
-        const minShow = element.minShow ? element.minShow : 3;
-        const maxShow = element.maxShow ? element.maxShow : 5;
-        const multipleSelect = element.multipleSelect
-          ? element.multipleSelect
-          : false;
-        return (
-          <QueryFacet
-            title={t(element.title)}
-            queries={element.queries}
-            labels={element.labels.map((label) => t(label))}
-            id={element.id}
-            dividerClassName={classes.facetDivider}
-            minShow={minShow}
-            maxShow={maxShow}
-            multipleSelect={multipleSelect}
-          >
-            {element.children &&
-              Array.isArray(element.children) &&
-              element.children
-                .map((element) => childrenBuilder(element))
-                .filter((element) => React.isValidElement(element))}
-          </QueryFacet>
-        );
-      }
-      return result;
-    },
-    [classes.facetDivider, t]
-  );
+              for (let i = 0; i < arrayLength; i += 2) {
+                const value = results.fieldFacets[field][i];
+                const count = results.fieldFacets[field][i + 1];
 
-  const buildHierarchicalFacet = useCallback(
-    (element) => {
-      if (element.separator && element.title && element.field) {
-        return (
-          <HierarchicalFacet
-            field={element.field}
-            title={t(element.title)}
-            separator={element.separator}
-          />
-        );
-      }
-      return null;
-    },
-    [t]
-  );
+                makeTabs.push(
+                  <Tab
+                    key={type + field + value}
+                    value={formatTabValue(type, field, value)}
+                    label={
+                      value +
+                      (count
+                        ? ` (${formatNumberToLocale(count, i18n.language)})`
+                        : "")
+                    }
+                  />
+                );
+              }
+            }
+            break;
 
-  const buildSearchInformation = useCallback((element) => {
-    return <SearchInformation data={element.data} />;
-  }, []);
-
-  const buildResultList = useCallback((element) => {
-    return <ResultsList data={element.data} />;
-  }, []);
-
-  const createElementFromParameters = useCallback(
-    (element) => {
-      if (element.type && allowedElementTypes.includes(element.type)) {
-        switch (element.type) {
-          case 'FieldFacet':
-            return buildFieldFacet(element);
-          case 'QueryFacet':
-            return buildQueryFacet(element, createElementFromParameters);
-          case 'DateFacetCustom':
-            return <DateFacetCustom />;
-          case 'HierarchicalFacet':
-            return buildHierarchicalFacet(element);
-          case 'SearchInformation':
-            return buildSearchInformation(element);
-          case 'ResultsList':
-            return buildResultList(element);
+          case RAW_TAB_TYPE: {
+            const { type, label, url, target = "_self" } = tab;
+            makeTabs.push(
+              <Tab
+                key={type + label + url}
+                value={formatTabValue(type, label, url, target)}
+                label={t(label)}
+                className={classes.rawTab}
+              />
+            );
+            break;
+          }
           default:
-            return null;
+            break;
+        }
+      });
+    }
+
+    setTabs(makeTabs.filter((tab) => React.isValidElement(tab)));
+  }, [results, uiDefinition, i18n, classes.rawTab, t, queryDispatch]);
+
+  const onSelectTab = (tab) => {
+    // Set filter for other tab then main
+    if (tab === MAIN_TAB) {
+      // Reset all filters for each field from tabs
+      const fields = uiDefinition.center.tabs
+        .filter((tab) => tab.type === FACET_TAB_TYPE)
+        .map((tab) => tab.field);
+
+      queryDispatch({
+        type: CLEAR_FIELDS_FACET_SELECTED,
+        facetIds: fields,
+      });
+
+      setSelectTab(MAIN_TAB);
+    } else {
+      const [type, ...arraySplit] = tab.split(TAB_VALUE_SEPARATOR);
+
+      if (type) {
+        switch (type) {
+          case FACET_TAB_TYPE: {
+            const [field, value] = arraySplit;
+            queryDispatch({
+              type: SET_FIELD_FACET_SELECTED,
+              facetId: field,
+              selected: [value],
+            });
+
+            setSelectTab(formatTabValue(type, field, value));
+
+            break;
+          }
+          case RAW_TAB_TYPE: {
+            const [, url, target] = arraySplit;
+            window.open(url, target);
+            break;
+          }
+          default:
+            break;
         }
       }
-      return null;
-    },
-    [
-      buildFieldFacet,
-      buildHierarchicalFacet,
-      buildQueryFacet,
-      buildResultList,
-      buildSearchInformation,
-    ]
-  );
+    }
+  };
 
-  const buildContentFor = useCallback(
-    (part) => {
-      let result = null;
-      if (
-        uiDefinition[part] &&
-        Array.isArray(uiDefinition[part]) &&
-        uiDefinition[part].length !== 0
-      ) {
-        result = uiDefinition[part]
-          .map((element) => {
-            return createElementFromParameters(element);
-          })
-          .filter((element) => React.isValidElement(element));
-      }
-      return result;
-    },
-    [createElementFromParameters, uiDefinition]
-  );
+  const TabComponent = panelTabs[tab];
 
   return (
     <Fragment>
-      {uiDefinition !== undefined && !isLoading && (
-        <>
-          <SearchTopMenu />
-          <Grid container className={classes.searchGrid}>
-            <Grid item md={4} lg>
-              <Hidden smDown>
-                <div className={classes.facetsSection}>
-                  {buildContentFor('left')}
-                </div>
-              </Hidden>
-            </Grid>
-            <Grid item sm={12} md={8}>
-              {buildContentFor('center')}
-              <div className={classes.pagerContainer}>
-                <Pager />
-              </div>
-            </Grid>
-            <Grid item lg={1} />
-          </Grid>
-          <Switch>
-            <Route path={`${path}/alerts`}>
-              <Modal />
-            </Route>
-          </Switch>
-        </>
-      )}
-      {isLoading && <Spinner />}
+      <SearchTopMenu
+        tabs={tabs}
+        selectedTab={selectTab}
+        onSelectTab={onSelectTab}
+      />
+      <Grid container className={classes.searchGrid}>
+        {TabComponent && <TabComponent />}
+      </Grid>
+      <Switch>
+        <Route path={`${path}/alerts`}>
+          <Modal />
+        </Route>
+      </Switch>
     </Fragment>
   );
 };
 
 export default Search;
+
+function formatNumberToLocale(n, language) {
+  // Slice language for code that have 2 codes like pt_br. Only takes 'pt'
+  return n ? parseInt(n).toLocaleString(language.slice(0, 2)) : "";
+}
+
+function formatTabValue(...props) {
+  return props.reduce(
+    (acc, current, index) =>
+      index === 0 ? current : acc + TAB_VALUE_SEPARATOR + current,
+    ""
+  );
+}

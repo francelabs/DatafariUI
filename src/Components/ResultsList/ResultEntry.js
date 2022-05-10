@@ -1,54 +1,68 @@
-import React, { useContext } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
-  makeStyles,
+  Avatar,
+  IconButton,
+  Link,
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton,
-  SvgIcon,
-  ListItemSecondaryAction,
-  Link,
+  makeStyles,
   Tooltip,
-  Avatar,
 } from '@material-ui/core';
-
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import { ReactComponent as PreviewIcon } from '../../Icons/preview-black-18dp.svg';
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserContext } from '../../Contexts/user-context';
+import { Link as RouterLink } from 'react-router-dom';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import { QueryContext } from '../../Contexts/query-context';
+import { UserContext } from '../../Contexts/user-context';
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
     wordWrap: 'break-word',
-    minHeight: '7rem',
+    alignItems: 'normal',
+    paddingLeft: 0,
+
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(0),
+    },
   },
 
   previewIcon: {
-    display: 'block',
-    position: 'absolute',
-    top: '3.75rem',
-    left: theme.spacing(0),
+    padding: 0,
   },
   fileIcon: {
     height: '24px',
     width: '24px',
+    margin: '10px 0px',
+
+    [theme.breakpoints.down('sm')]: {
+      margin: '5px 0px',
+    },
   },
   previewIconSvg: {
+    marginBottom: 15,
     fontSize: '2rem',
+
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.25rem',
+    },
   },
   url: {
     fontStyle: 'italic',
   },
   urlContainer: {
     paddingTop: '0.5rem',
+    wordBreak: 'break-all',
   },
   bookmarkAction: {
-    top: theme.spacing(1),
     transform: 'none',
+
+    [theme.breakpoints.down('sm')]: {
+      '& button': {
+        padding: '12px 12px 0 0',
+      },
+    },
   },
   moreLikeThis: {
     float: 'right',
@@ -56,6 +70,22 @@ const useStyles = makeStyles((theme) => ({
 
   highlight: {
     fontWeight: 'bold',
+  },
+
+  iconsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    [theme.breakpoints.down('sm')]: {
+      minWidth: 35,
+
+      '& img': {
+        width: 16,
+        height: 16,
+      },
+    },
   },
 }));
 
@@ -136,9 +166,12 @@ const ResultEntry = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const classes = useStyles();
   const { t } = useTranslation();
+
   const { state: userState } = useContext(UserContext);
   const { buildSearchQueryString } = useContext(QueryContext);
+
   const data = Array.isArray(props.data) ? props.data : [];
+  const docLinkTarget = props.openDocInNewTab ? '_blank' : undefined;
 
   /*
    * Decodes HTML entities expressed as decimal or hexadecimal Unicode references.
@@ -164,13 +197,19 @@ const ResultEntry = (props) => {
         return (
           accumulator +
           props.highlighting[hlKey].reduce((innerAccu, value) => {
-            return innerAccu + value;
+            let formattedValue = value
+              .replace(/\uFFFD/g, ' ')
+              .replace(/(\s*\n){2,}/gm, '\n\n');
+            return innerAccu + formattedValue;
           }, '')
         );
       }, '');
 
       if (snippet === '') {
-        snippet = props.preview_content[0].substring(0, 200);
+        snippet = props.preview_content[0]
+          .substring(0, 200)
+          .replace(/\uFFFD/g, ' ')
+          .replace(/(\s*\n){2,}/gm, '\n\n');
       } else {
         const highlightExtract = /<span class="em">(.*?)<\/span>/gm;
         let match;
@@ -304,14 +343,10 @@ const ResultEntry = (props) => {
   const fileIcon = selectFileIcon(props.extension);
 
   return (
-    <ListItem
-      alignItems="flex-start"
-      key={props.url}
-      className={classes.resultContainer}
-    >
+    <ListItem key={props.url} className={classes.resultContainer}>
       {(data.includes(dataNames.logo) ||
         data.includes(dataNames.previewButton)) && (
-        <ListItemIcon>
+        <ListItemIcon className={classes.iconsContainer}>
           {data.includes(dataNames.logo) && (
             <Avatar
               className={classes.fileIcon}
@@ -320,27 +355,16 @@ const ResultEntry = (props) => {
               alt={`${props.extension} icon`}
             />
           )}
-          {data.includes(dataNames.previewButton) && (
-            <Link
-              component={RouterLink}
-              to={preparePreviewURL()}
-              target="_blank"
-            >
-              <IconButton aria-label="preview" className={classes.previewIcon}>
-                <SvgIcon
-                  className={classes.previewIconSvg}
-                  component={PreviewIcon}
-                  alt="preview icon"
-                />
-              </IconButton>
-            </Link>
-          )}
         </ListItemIcon>
       )}
       <ListItemText
         primary={
           data.includes(dataNames.title) ? (
-            <Link color="secondary" href={prepareDocURL()} target="_blank">
+            <Link
+              color="secondary"
+              href={prepareDocURL()}
+              target={docLinkTarget}
+            >
               {prepareTitle()}
             </Link>
           ) : null
@@ -357,6 +381,8 @@ const ResultEntry = (props) => {
                 <span className={classes.url}>{prepareUrl()}</span>
               </div>
             )}
+
+            {/* FOLDER LINK */}
             {props['folderLinkSources'] &&
               props['folderLinkSources'].indexOf(props['repo_source']) !==
                 -1 && (
@@ -364,12 +390,24 @@ const ResultEntry = (props) => {
                   <Link
                     color="secondary"
                     href={prepareFolderURL()}
-                    target="_blank"
+                    target={props.folderTarget}
                   >
                     {t('Open Folder')}
                   </Link>
                 </div>
               )}
+
+            {/* PREVIEW LINK */}
+            {data.includes(dataNames.previewButton) && (
+              <Link
+                color="secondary"
+                component={RouterLink}
+                to={preparePreviewURL()}
+                target={props.previewTarget}
+              >
+                {t('Open preview')}
+              </Link>
+            )}
             <div>
               <span>
                 {t('Source')}: {props['repo_source']}
@@ -391,7 +429,7 @@ const ResultEntry = (props) => {
       />
       {/* Favorite badge, shown only if the user is authenticated and favorites are active */}
       {props.bookmarkEnabled && userState.user && (
-        <ListItemSecondaryAction className={classes.bookmarkAction}>
+        <div className={classes.bookmarkAction}>
           <IconButton
             edge="end"
             aria-label="bookmark"
@@ -399,7 +437,7 @@ const ResultEntry = (props) => {
           >
             {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
           </IconButton>
-        </ListItemSecondaryAction>
+        </div>
       )}
     </ListItem>
   );

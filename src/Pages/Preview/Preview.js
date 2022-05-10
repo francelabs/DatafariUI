@@ -14,7 +14,6 @@ import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.primary.dark,
     flexGrow: 1,
   },
 

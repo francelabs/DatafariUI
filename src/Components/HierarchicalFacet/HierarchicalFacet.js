@@ -44,9 +44,12 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginBottom: theme.spacing(1),
   },
+  treeView: {
+    padding: '0 16px',
+  },
 }));
 
-const HierarchicalFacet = (props) => {
+const HierarchicalFacet = ({ show = true, ...props }) => {
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { t } = useTranslation();
   const classes = useStyles();
@@ -327,6 +330,8 @@ const HierarchicalFacet = (props) => {
           number={hierearchyItem.nb}
           onClick={itemClicked}
           checked={hierearchyItem.checked}
+          depth={itemDepth}
+          separator={separator}
         >
           {hierearchyItem.children.map(
             (childName) =>
@@ -510,15 +515,18 @@ const HierarchicalFacet = (props) => {
     results.fieldFacets,
     separator,
   ]);
-  return Object.getOwnPropertyNames(hierarchyState).length > 0 ? (
+  return Object.getOwnPropertyNames(hierarchyState).length > 0 && show ? (
     <>
       <div className={classes.facetHeader}>
-        <IconButton onClick={handleOpenMenu}>
-          <MoreVertIcon
-            aria-controls={`${field}-facet-menu`}
-            aria-haspopup="true"
-            ref={menuAnchorRef}
-          />
+        <IconButton
+          onClick={handleOpenMenu}
+          aria-controls={`${field}-facet-menu`}
+          aria-haspopup="true"
+          aria-label={t(`Open {{ facetTitle }} facet menu`, {
+            facetTitle: t(props.title),
+          })}
+        >
+          <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
         <Menu
           id={`${field}-facet-menu`}
@@ -532,9 +540,17 @@ const HierarchicalFacet = (props) => {
           </MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
-          {props.title}
+          {t(props.title)}
         </Typography>
-        <IconButton onClick={handleExpandClick}>
+        <IconButton
+          onClick={handleExpandClick}
+          aria-label={t(
+            `${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`,
+            {
+              facetTitle: t(props.title),
+            }
+          )}
+        >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
@@ -543,6 +559,7 @@ const HierarchicalFacet = (props) => {
           <TreeView
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpandIcon={<ChevronRightIcon />}
+            className={classes.treeView}
           >
             {hierarchyState['level0'] &&
               Object.getOwnPropertyNames(hierarchyState['level0']).map(

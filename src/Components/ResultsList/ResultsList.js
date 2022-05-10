@@ -9,9 +9,7 @@ import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
-    backgroundColor: theme.palette.primary.main,
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
+    backgroundColor: theme.palette.background.paper,
     borderRadius: '5px',
   },
   spinnerContainer: {
@@ -21,7 +19,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ResultsList = (props) => {
+const ResultsList = ({
+  data: facetData = [],
+  folderLinkSources: folderSources = [],
+  folderTarget = '_blank',
+  previewTarget = '_self',
+  ...props
+}) => {
   const defaultData = ['filters', 'facets', 'search', 'spellcheck'];
   const { results } = useContext(ResultsContext);
   const classes = useStyles();
@@ -39,9 +43,11 @@ const ResultsList = (props) => {
   const [modifQueries, setModifQueries] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
-  const [folderLinkSources] = useFolderLinkSources();
+
+  const [folderLinkSources] = useFolderLinkSources(folderSources);
+
   const displayData =
-    props.data && Array.isArray(props.data) ? props.data : defaultData;
+    facetData && Array.isArray(facetData) ? facetData : defaultData;
 
   // Retrieve favorite status on mount (getFavortiesStatus should be constant)
   useEffect(() => {
@@ -191,8 +197,10 @@ const ResultsList = (props) => {
                           : result.title
                       )
                 }
-                folderLinkSources={folderLinkSources}
                 data={displayData}
+                previewTarget={previewTarget}
+                folderLinkSources={folderLinkSources}
+                folderLinkTarget={folderTarget}
               />
               <Divider variant="inset" component="li" />
             </React.Fragment>

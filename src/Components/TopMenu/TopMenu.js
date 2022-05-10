@@ -27,12 +27,41 @@ import useHttp from '../../Hooks/useHttp';
 import UserMenu from '../UserMenu/UserMenu';
 
 const useStyles = makeStyles((theme) => ({
-  grow: {
-    flexGrow: 1,
+  topbar: {
+    backgroundImage:
+      'url(' +
+      process.env.PUBLIC_URL +
+      '/images/background_datafari_banner_big.png)',
   },
+
+  toolbar: {
+    display: 'flex',
+    minHeight: 82,
+
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      padding: theme.spacing(0),
+      minHeight: 50,
+      maxHeight: 50,
+    },
+  },
+
   logo: {
     marginRight: theme.spacing(2),
+    padding: 5,
+    '& > img': {
+      height: 50,
+    },
+
+    [theme.breakpoints.down('sm')]: {
+      margin: 0,
+      marginBottom: -15,
+      '& > img': {
+        height: 25,
+      },
+    },
   },
+
   title: {
     display: 'none',
     [theme.breakpoints.up('sm')]: {
@@ -40,16 +69,24 @@ const useStyles = makeStyles((theme) => ({
       marginRight: theme.spacing(2),
     },
   },
-  search: {
-    position: 'relative',
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
+  topContainer: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    alignSelf: 'normal',
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(3),
-      flexGrow: 1,
+      flexDirection: 'row',
     },
   },
+  search: {
+    display: 'flex',
+    flex: 1,
+  },
+
   searchIcon: {
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -215,94 +252,92 @@ const TopMenu = () => {
 
   return (
     <>
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
+      <AppBar position="static" elevation={0} className={classes.topbar}>
+        <Toolbar className={classes.toolbar}>
           <NavLink to="/search" className={classes.logo}>
-            <img
-              src={`${process.env.PUBLIC_URL}/images/logo.png`}
-              alt="logo"
-              style={{ height: '50px' }}
-            />
+            <img src={`${process.env.PUBLIC_URL}/images/logo.png`} alt="logo" />
           </NavLink>
           <div className={classes.title}>
             <Typography variant="h6" noWrap>
               Datafari
             </Typography>
           </div>
-          <div className={classes.search}>
-            <SimpleSearchBar />
-          </div>
-          <div />
-          <div className={classes.sectionDesktop}>
-            <IconButton
-              aria-label={t('Language selection')}
-              color="inherit"
-              onClick={handleOpenLangMenu}
-            >
-              <LanguageIcon fontSize="large" />
-            </IconButton>
+          <div className={classes.topContainer}>
+            <div className={classes.search}>
+              <SimpleSearchBar />
+            </div>
 
-            <IconButton
-              aria-label={t('Feedbacks')}
-              color="inherit"
-              onClick={handleOpenFeedbacksMenu}
-            >
-              <FeedbackOutlinedIcon fontSize="large" />
-            </IconButton>
-            <IconButton
-              aria-label={t('Help')}
-              color="inherit"
-              onClick={handleOpenHelpMenu}
-            >
-              <HelpOutlineIcon fontSize="large" />
-            </IconButton>
-            {userState.user === null ? (
+            <div className={classes.sectionDesktop}>
               <IconButton
-                edge="end"
-                aria-label="Login"
-                aria-haspopup="true"
-                href={`${loginURL}`}
+                aria-label={t('Language selection')}
                 color="inherit"
+                onClick={handleOpenLangMenu}
               >
-                <SvgIcon component={LoginIcon} alt="Login" />
+                <LanguageIcon fontSize="large" />
               </IconButton>
-            ) : (
+
               <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleOpenUserMenu}
+                aria-label={t('Feedbacks')}
                 color="inherit"
+                onClick={handleOpenFeedbacksMenu}
               >
-                <Avatar fontSize="small">
-                  {userState.user.name.substring(0, 2)}
-                </Avatar>
+                <FeedbackOutlinedIcon fontSize="large" />
               </IconButton>
-            )}
-          </div>
-          <div className={classes.sectionMobile}>
-            {userState.user === null ? (
               <IconButton
-                edge="end"
-                aria-label="Login"
-                aria-haspopup="true"
-                href={`${loginURL}`}
+                aria-label={t('Help')}
                 color="inherit"
+                onClick={handleOpenHelpMenu}
               >
-                <SvgIcon component={LoginIcon} alt="Login" />
+                <HelpOutlineIcon fontSize="large" />
               </IconButton>
-            ) : (
-              <IconButton
-                aria-label="show more"
-                aria-controls={mobileMenuId}
-                aria-haspopup="true"
-                onClick={handleMobileMenuOpen}
-                color="inherit"
-              >
-                <MoreIcon />
-              </IconButton>
-            )}
+              {userState.user === null ? (
+                <IconButton
+                  edge="end"
+                  aria-label="Login"
+                  aria-haspopup="true"
+                  href={`${loginURL}`}
+                  color="inherit"
+                >
+                  <SvgIcon component={LoginIcon} alt="Login" />
+                </IconButton>
+              ) : (
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleOpenUserMenu}
+                  color="inherit"
+                >
+                  <Avatar fontSize="small">
+                    {userState.user.name.substring(0, 2)}
+                  </Avatar>
+                </IconButton>
+              )}
+            </div>
+            <div className={classes.sectionMobile}>
+              {userState.user === null ? (
+                <IconButton
+                  edge="end"
+                  aria-label="Login"
+                  aria-haspopup="true"
+                  href={`${loginURL}`}
+                  color="inherit"
+                >
+                  <SvgIcon component={LoginIcon} alt="Login" />
+                </IconButton>
+              ) : (
+                <IconButton
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              )}
+            </div>
           </div>
         </Toolbar>
       </AppBar>

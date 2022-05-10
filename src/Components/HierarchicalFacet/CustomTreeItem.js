@@ -6,12 +6,14 @@ import { CHECKED_STATE, UNDETERMINATE_STATE } from './HierarchicalFacet';
 
 const useStyles = makeStyles((theme) => ({
   labelRoot: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0.5, 0),
+    display: 'grid',
+    alignItems: 'flex-start',
+    padding: theme.spacing(1, 0),
+    gridTemplate: 'auto / 0fr auto 0fr',
   },
   labelCheckbox: {
     marginRight: theme.spacing(1),
+    padding: 0,
   },
   undeterminateCheckBox: {
     color: orange[800],
@@ -22,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
   labelText: {
     fontWeight: 'inherit',
     flexGrow: 1,
+    overflow: 'auto',
+    marginInline: '0px 10px',
+    wordBreak: 'break-word',
   },
   label: {
     fontWeight: 'inherit',
@@ -30,9 +35,17 @@ const useStyles = makeStyles((theme) => ({
   caption: {},
 }));
 
-const CustomTreeItem = (props) => {
+const CustomTreeItem = ({
+  id,
+  label,
+  number,
+  children,
+  onClick,
+  checked,
+  depth = 0,
+  separator = '/',
+}) => {
   const classes = useStyles();
-  const { id, label, number, children, onClick, checked } = props;
 
   const checkboxClick = useCallback(
     (event) => {
@@ -70,7 +83,7 @@ const CustomTreeItem = (props) => {
             onClick={checkboxClick}
           />
           <Typography variant="body2" className={classes.labelText}>
-            {label}
+            {depth === 0 ? label : label.split(separator)[depth]}
           </Typography>
           <Typography variant="body2" className={classes.caption}>
             {number}

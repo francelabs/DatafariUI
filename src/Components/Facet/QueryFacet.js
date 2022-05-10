@@ -23,6 +23,12 @@ import { useTranslation } from 'react-i18next';
 
 const DISPLAY_ENTRIES = [10, 100];
 
+// Variant for QueryFacet - Default is 'both' => query and children
+const QUERIES_VARIANT = 'queries_only';
+const CHILDREN_VARIANT = 'children_only';
+const DEFAULT_VARIANT = 'both';
+const VARIANTS_AVAILABLE = [QUERIES_VARIANT, CHILDREN_VARIANT, DEFAULT_VARIANT]; //
+
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
     color: theme.palette.secondary.main,
@@ -35,10 +41,11 @@ const useStyles = makeStyles((theme) => ({
   showMore: {
     width: '100%',
     marginBottom: theme.spacing(1),
+    paddingInline: theme.spacing(2),
   },
 }));
 
-const QueryFacet = (props) => {
+const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(true);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
@@ -48,6 +55,9 @@ const QueryFacet = (props) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
+  const [variant] = useState(
+    props.variant && VARIANTS_AVAILABLE.includes(props.variant) ? props.variant : DEFAULT_VARIANT
+  );
 
   const minShow = props.minShow ? props.minShow : DISPLAY_ENTRIES[0];
   const maxShow = props.maxShow ? props.maxShow : DISPLAY_ENTRIES[1];
@@ -61,14 +71,16 @@ const QueryFacet = (props) => {
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
-    const newFacet = {
-      id: id,
-      labels: labels,
-      queries: queries,
-      title: props.title,
-    };
-    queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
-  }, [id, queryDispatch, labels, queries, props.title]);
+    if (sendToSolr || show) {
+      const newFacet = {
+        id: id,
+        labels: labels,
+        queries: queries,
+        title: props.title,
+      };
+      queryDispatch({ type: REGISTER_QUERY_FACET, queryFacet: newFacet });
+    }
+  }, [id, queryDispatch, labels, queries, props.title, sendToSolr, show]);
 
   // Handler when clicking on a facet entry.
   // Adds or remove the entry from the selected list
@@ -76,9 +88,7 @@ const QueryFacet = (props) => {
   const onClick = (value) => {
     return () => {
       // Remember query is immutable, copy array before modifying it.
-      let selected = query.selectedQueryFacets[id]
-        ? [...query.selectedQueryFacets[id]]
-        : [];
+      let selected = query.selectedQueryFacets[id] ? [...query.selectedQueryFacets[id]] : [];
       if (multipleSelect) {
         const selectedIndex = selected.indexOf(value);
         if (selectedIndex === -1) {
@@ -164,7 +174,7 @@ const QueryFacet = (props) => {
 
   // The insertion of children allow the addition of element with specific behavior
   // such as a date picker for a date query facet, range picker for weight facet etc.
-  return facetValues.length > 0 || props.children ? (
+  return (facetValues.length > 0 || props.children) && show ? (
     <>
       <div className={classes.facetHeader}>
         <IconButton
@@ -172,59 +182,62 @@ const QueryFacet = (props) => {
           aria-controls={`${id}-facet-menu`}
           aria-haspopup="true"
           ref={menuAnchorRef}
-        >
+          aria-label={t(`Open {{ facetTitle }} facet menu`, {
+            facetTitle: t(props.title),
+          })}>
           <MoreVertIcon />
         </IconButton>
         <Menu
           id={`${id}-facet-menu`}
           anchorEl={menuAnchorRef.current}
           open={menuOpen}
-          onClose={handleCloseMenu}
-        >
-          {multipleSelect && (
-            <MenuItem onClick={handleSelectAllClick}>
-              {t('Select All')}
-            </MenuItem>
-          )}
-          <MenuItem onClick={handleClearFilterClick}>
-            {t('Clear Filter')}
-          </MenuItem>
+          onClose={handleCloseMenu}>
+          {multipleSelect && <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>}
+          <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>
         <Typography color="secondary" className={classes.facetTitleText}>
-          {props.title}
+          {t(props.title)}
         </Typography>
-        <IconButton onClick={handleExpandClick}>
+        <IconButton
+          onClick={handleExpandClick}
+          aria-label={t(`${expanded ? 'Collapse' : 'Expand'} {{ facetTitle }} facet`, {
+            facetTitle: t(props.title),
+          })}>
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </div>
-      {expanded && (
-        <>
-          <List dense>{facetValues.slice(0, numShowed)}</List>
-          {!showMore && numShowed < facetValues.length && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}
-            >
-              {t('Show More')} &gt;&gt;
-            </Link>
-          )}
-          {showMore && (
-            <Link
-              component="button"
-              color="secondary"
-              onClick={handleShowMoreClick}
-              align="right"
-              className={classes.showMore}
-            >
-              {t('Show Less')} &lt;&lt;
-            </Link>
-          )}
-        </>
-      )}
-      {props.children}
+
+      {expanded &&
+        // Display queries list only if variant is queries or default
+        (variant === QUERIES_VARIANT || variant === DEFAULT_VARIANT) && (
+          <>
+            <List dense>{facetValues.slice(0, numShowed)}</List>
+            {!showMore && numShowed < facetValues.length && (
+              <Link
+                component="button"
+                color="secondary"
+                onClick={handleShowMoreClick}
+                align="right"
+                className={classes.showMore}>
+                <Typography variant="caption">{t('Show More')} &gt;&gt;</Typography>
+              </Link>
+            )}
+            {showMore && (
+              <Link
+                component="button"
+                color="secondary"
+                onClick={handleShowMoreClick}
+                align="right"
+                className={classes.showMore}>
+                <Typography variant="caption">{t('Show Less')} &lt;&lt;</Typography>
+              </Link>
+            )}
+          </>
+        )}
+
+      {/* Display only children if variant is children or default */}
+      {(variant === CHILDREN_VARIANT || variant === DEFAULT_VARIANT) && props.children}
+
       <Divider className={props.dividerClassName} />
     </>
   ) : null;

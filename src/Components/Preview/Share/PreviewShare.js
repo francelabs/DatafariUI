@@ -92,7 +92,7 @@ const PreviewShare = (props) => {
         path = `${process.env.PUBLIC_URL}${path}`;
       }
       const url = new URL(`${path}`, window.location.href);
-      url.search = `?docId=${decodeURIComponent(props.document.id)}`;
+      url.search = `?docId=${encodeURIComponent(props.document.id)}`;
       return url.toString();
     }
     return '';

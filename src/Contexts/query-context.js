@@ -1,10 +1,14 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useContext, useReducer } from 'react';
 import produce from 'immer';
+import { DEFAULT_FIELDS, UIConfigContext } from '../Contexts/ui-config-context';
 
 export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
 export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
 export const REGISTER_QUERY_FACET = 'REGISTER_QUERY_FACET';
 export const SET_QUERY_FACET_SELECTED = 'SET_QUERY_FACET_SELECTED';
+export const REGISTER_RANGE_FACET = 'REGISTER_RANGE_FACET';
+export const UPDATE_RANGE_FACET = 'UPDATE_RANGE_FACET';
+export const SET_RANGE_FACET_SELECTED = 'SET_RANGE_FACET_SELECTED';
 export const SET_ROWS = 'SET_ROWS';
 export const SET_PAGE = 'SET_PAGE';
 export const SET_ELEMENTS = 'SET_ELEMENTS';
@@ -15,13 +19,18 @@ export const UNREGISTER_FILTER = 'UNREGISTER_FILTER';
 export const SET_ELEMENTS_NO_RESET = 'SET_ELEMENTS_NO_RESET';
 export const FILL_FROM_URL_PARAMS = 'FILL_FROM_URL_PARAMS';
 export const SET_OP = 'SET_OP';
+export const CLEAR_FIELDS_FACET_SELECTED = 'CLEAR_FIELDS_FACET_SELECTED';
+export const SET_AGGREGATORS_FACET = 'SET_AGGREGATORS_FACET';
 
 const defaultQuery = {
   fieldFacets: {},
   selectedFieldFacets: {},
   queryFacets: {},
   selectedQueryFacets: {},
+  rangeFacets: {},
+  selectedRangeFacets: {},
   filters: {},
+  aggregator: [],
   elements: '',
   rows: 10,
   page: 1,
@@ -119,6 +128,73 @@ const newQueryReducer = produce((queryDraft, action) => {
         // new facet).
       }
       break;
+    case REGISTER_RANGE_FACET:
+      const candidateRangeFacet = action.rangeFacet;
+      if (
+        candidateRangeFacet &&
+        candidateRangeFacet.field &&
+        candidateRangeFacet.start &&
+        candidateRangeFacet.end &&
+        candidateRangeFacet.gap &&
+        candidateRangeFacet.tag &&
+        candidateRangeFacet.title
+      ) {
+        if (!queryDraft.rangeFacets[candidateRangeFacet.field]) {
+          // No range facet for this field exists, lets create it
+          const newFacet = {
+            field: candidateRangeFacet.field,
+            start: candidateRangeFacet.start,
+            end: candidateRangeFacet.end,
+            gap: candidateRangeFacet.gap,
+            title: candidateRangeFacet.title,
+            tag: candidateRangeFacet.tag,
+          };
+          if (candidateRangeFacet.hardened) {
+            newFacet.hardened = candidateRangeFacet.hardened;
+          }
+          if (candidateRangeFacet.include) {
+            newFacet.include = candidateRangeFacet.include;
+          }
+          if (candidateRangeFacet.other) {
+            newFacet.other = candidateRangeFacet.other;
+          }
+          if (candidateRangeFacet.method) {
+            newFacet.method = candidateRangeFacet.method;
+          }
+          queryDraft.rangeFacets[candidateRangeFacet.field] = {
+            ...newFacet,
+          };
+        }
+        // If a range facet on the same field exists, it won't be replaced
+        // It may be intentional (two visualization of the same facet) but
+        // can also come from an error (several visualization requiring range
+        // on the same field instanciated).
+      }
+      break;
+    case UPDATE_RANGE_FACET:
+      const candidateRangeFacetUpdate = action.rangeFacet;
+      if (
+        candidateRangeFacetUpdate &&
+        candidateRangeFacetUpdate.field &&
+        (candidateRangeFacetUpdate.start ||
+          candidateRangeFacetUpdate.end ||
+          candidateRangeFacetUpdate.gap ||
+          candidateRangeFacetUpdate.title ||
+          candidateRangeFacetUpdate.tag ||
+          candidateRangeFacetUpdate.hardened ||
+          candidateRangeFacetUpdate.include ||
+          candidateRangeFacetUpdate.other ||
+          candidateRangeFacetUpdate.method)
+      ) {
+        if (queryDraft.rangeFacets[candidateRangeFacetUpdate.field]) {
+          // Update the existing range facet, if it does not exist, does not create it
+          queryDraft.rangeFacets[candidateRangeFacetUpdate.field] = {
+            ...queryDraft.rangeFacets[candidateRangeFacetUpdate.field],
+            ...candidateRangeFacetUpdate,
+          };
+        }
+      }
+      break;
     case SET_FIELD_FACET_SELECTED:
       if (action.facetId && action.selected) {
         queryDraft.selectedFieldFacets[action.facetId] = action.selected;
@@ -128,6 +204,12 @@ const newQueryReducer = produce((queryDraft, action) => {
     case SET_QUERY_FACET_SELECTED:
       if (action.facetId && action.selected) {
         queryDraft.selectedQueryFacets[action.facetId] = action.selected;
+        queryDraft.page = 1;
+      }
+      break;
+    case SET_RANGE_FACET_SELECTED:
+      if (action.facetId && action.selected) {
+        queryDraft.selectedRangeFacets[action.facetId] = action.selected;
         queryDraft.page = 1;
       }
       break;
@@ -162,6 +244,7 @@ const newQueryReducer = produce((queryDraft, action) => {
       const currentRegisteredFacets = {
         queryFacets: queryDraft.queryFacets,
         fieldFacets: queryDraft.fieldFacets,
+        rangeFacets: queryDraft.rangeFacets,
       };
       // We base on the default query
       // We Keep field facets and query facets registration from current query as they should not change
@@ -173,6 +256,18 @@ const newQueryReducer = produce((queryDraft, action) => {
         ...currentRegisteredFacets,
         ...urlParams,
       };
+
+    case CLEAR_FIELDS_FACET_SELECTED: {
+      action.facetIds.forEach((facetId) => {
+        queryDraft.selectedFieldFacets[facetId] = [];
+      });
+      break;
+    }
+
+    case SET_AGGREGATORS_FACET: {
+      queryDraft.aggregator = action.aggregators;
+      break;
+    }
     default:
       // Nothing to do, query should remain unchanged
       break;
@@ -192,6 +287,10 @@ export const QueryContext = React.createContext({
 const QueryContextProvider = (props) => {
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
 
+  const { uiDefinition } = useContext(UIConfigContext);
+  const { queryParams = { fields: DEFAULT_FIELDS } } = uiDefinition;
+  const { fields = DEFAULT_FIELDS } = queryParams;
+
   const buildQueryStringFromParams = useCallback((queryParams) => {
     let result = '';
     for (const key in queryParams) {
@@ -201,19 +300,32 @@ const QueryContextProvider = (props) => {
       switch (key) {
         case 'facet.query':
         case 'facet.field':
+        case 'facet.range':
         case 'fq':
-          let currentParamString = queryParams[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + key + '=' + encodeURIComponent(element);
-              if (index < array.length - 1) {
-                next += '&';
-              }
-              return next;
-            },
-            ''
-          );
+          let currentParamString = queryParams[key].reduce((accu, element, index, array) => {
+            let next = accu + key + '=' + encodeURIComponent(element);
+            if (index < array.length - 1) {
+              next += '&';
+            }
+            return next;
+          }, '');
           result += currentParamString;
           break;
+        case 'aggregator': {
+          if (Array.isArray(queryParams[key]) && queryParams[key].length) {
+            const aggregatorParam =
+              'aggregator=' +
+              queryParams[key].reduce((acc, agg, index) => {
+                if (index > 0) {
+                  acc += encodeURIComponent(',');
+                }
+                return acc + agg;
+              }, '');
+
+            result += aggregatorParam;
+          }
+          break;
+        }
         default:
           result += key + '=' + encodeURIComponent(queryParams[key]);
       }
@@ -230,19 +342,32 @@ const QueryContextProvider = (props) => {
       switch (key) {
         case 'facet.query':
         case 'facet.field':
+        case 'facet.range':
         case 'fq':
-          let currentParamString = queryParams[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + key + '=' + element;
-              if (index < array.length - 1) {
-                next += '&';
-              }
-              return next;
-            },
-            ''
-          );
+          let currentParamString = queryParams[key].reduce((accu, element, index, array) => {
+            let next = accu + key + '=' + element;
+            if (index < array.length - 1) {
+              next += '&';
+            }
+            return next;
+          }, '');
           result += currentParamString;
           break;
+        case 'aggregator': {
+          if (Array.isArray(queryParams[key]) && queryParams[key].length) {
+            const aggregatorParam =
+              'aggregator=' +
+              queryParams[key].reduce((acc, agg, index) => {
+                if (index > 0) {
+                  acc += encodeURIComponent(',');
+                }
+                return acc + agg;
+              }, '');
+
+            result += aggregatorParam;
+          }
+          break;
+        }
         default:
           result += key + '=' + queryParams[key];
       }
@@ -250,30 +375,24 @@ const QueryContextProvider = (props) => {
     return result;
   }, []);
 
+  // Prepares field facets params that will be used in the query
+  // to the backend.
   const prepareFieldFacets = useCallback(() => {
     const fieldFacetsParams = [];
     const selectedFieldFacets = [];
     for (const key in query.fieldFacets) {
-      fieldFacetsParams.push(
-        `{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`
-      );
-      if (
-        query.selectedFieldFacets[key] &&
-        query.selectedFieldFacets[key].length > 0
-      ) {
+      fieldFacetsParams.push(`{!ex=${query.fieldFacets[key].tag}}${query.fieldFacets[key].field}`);
+      if (query.selectedFieldFacets[key] && query.selectedFieldFacets[key].length > 0) {
         selectedFieldFacets.push(
-          query.selectedFieldFacets[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
-              if (index < array.length - 1) {
-                next += ` ${query.fieldFacets[key].op} `;
-              } else {
-                next += ')';
-              }
-              return next;
-            },
-            `{!tag=${query.fieldFacets[key].tag}}(`
-          )
+          query.selectedFieldFacets[key].reduce((accu, element, index, array) => {
+            let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
+            if (index < array.length - 1) {
+              next += ` ${query.fieldFacets[key].op} `;
+            } else {
+              next += ')';
+            }
+            return next;
+          }, `{!tag=${query.fieldFacets[key].tag}}(`)
         );
       }
     }
@@ -283,29 +402,25 @@ const QueryContextProvider = (props) => {
   const prepareFieldFacetsForAlerts = useCallback(() => {
     const selectedFieldFacets = [];
     for (const key in query.fieldFacets) {
-      if (
-        query.selectedFieldFacets[key] &&
-        query.selectedFieldFacets[key].length > 0
-      ) {
+      if (query.selectedFieldFacets[key] && query.selectedFieldFacets[key].length > 0) {
         selectedFieldFacets.push(
-          query.selectedFieldFacets[key].reduce(
-            (accu, element, index, array) => {
-              let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
-              if (index < array.length - 1) {
-                next += ` ${query.fieldFacets[key].op} `;
-              } else {
-                next += ')';
-              }
-              return next;
-            },
-            `(`
-          )
+          query.selectedFieldFacets[key].reduce((accu, element, index, array) => {
+            let next = accu + `${query.fieldFacets[key].field}:"${element}"`;
+            if (index < array.length - 1) {
+              next += ` ${query.fieldFacets[key].op} `;
+            } else {
+              next += ')';
+            }
+            return next;
+          }, `(`)
         );
       }
     }
     return selectedFieldFacets;
   }, [query.fieldFacets, query.selectedFieldFacets]);
 
+  // Prepares query facets params that will be used in the query
+  // to the backend.
   const prepareQueryFacets = useCallback(() => {
     let queryFacetsParams = [];
     let selectedQueryFacets = [];
@@ -313,30 +428,20 @@ const QueryContextProvider = (props) => {
       if (
         query.queryFacets[key].queries &&
         query.queryFacets[key].labels &&
-        query.queryFacets[key].queries.length ===
-          query.queryFacets[key].labels.length
+        query.queryFacets[key].queries.length === query.queryFacets[key].labels.length
       ) {
-        const currentQueryFacetParams = query.queryFacets[key].queries.map(
-          (query, index) => {
-            return `{!key=${key}_${index}}${query}`;
-          }
-        );
+        const currentQueryFacetParams = query.queryFacets[key].queries.map((query, index) => {
+          return `{!key=${key}_${index}}${query}`;
+        });
         queryFacetsParams = queryFacetsParams.concat(currentQueryFacetParams);
-        if (
-          query.selectedQueryFacets[key] &&
-          query.selectedQueryFacets[key].length > 0
-        ) {
+        if (query.selectedQueryFacets[key] && query.selectedQueryFacets[key].length > 0) {
           const currentSelectedQueries = query.selectedQueryFacets[key]
-            .filter(
-              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
-            )
+            .filter((label) => query.queryFacets[key].labels.indexOf(label) !== -1)
             .map((label) => {
               const index = query.queryFacets[key].labels.indexOf(label);
               return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
             });
-          selectedQueryFacets = selectedQueryFacets.concat(
-            currentSelectedQueries
-          );
+          selectedQueryFacets = selectedQueryFacets.concat(currentSelectedQueries);
         }
       }
     }
@@ -349,24 +454,16 @@ const QueryContextProvider = (props) => {
       if (
         query.queryFacets[key].queries &&
         query.queryFacets[key].labels &&
-        query.queryFacets[key].queries.length ===
-          query.queryFacets[key].labels.length
+        query.queryFacets[key].queries.length === query.queryFacets[key].labels.length
       ) {
-        if (
-          query.selectedQueryFacets[key] &&
-          query.selectedQueryFacets[key].length > 0
-        ) {
+        if (query.selectedQueryFacets[key] && query.selectedQueryFacets[key].length > 0) {
           const currentSelectedQueries = query.selectedQueryFacets[key]
-            .filter(
-              (label) => query.queryFacets[key].labels.indexOf(label) !== -1
-            )
+            .filter((label) => query.queryFacets[key].labels.indexOf(label) !== -1)
             .map((label) => {
               const index = query.queryFacets[key].labels.indexOf(label);
               return `{!tag=${key}_${index}}${query.queryFacets[key].queries[index]}`;
             });
-          selectedQueryFacets = selectedQueryFacets.concat(
-            currentSelectedQueries
-          );
+          selectedQueryFacets = selectedQueryFacets.concat(currentSelectedQueries);
         }
       }
     }
@@ -383,6 +480,40 @@ const QueryContextProvider = (props) => {
     return otherFilters;
   }, [query.filters]);
 
+  // Prepares range facet parameters to include to the query to
+  // the search endpoint
+  const prepareRangeFacets = useCallback(() => {
+    const rangeFacetsParams = [];
+    let selectedRangeFacetsParams = [];
+    const rangeCustomParams = {};
+    for (const key in query.rangeFacets) {
+      rangeFacetsParams.push(`{!ex=${query.rangeFacets[key].tag}}${key}`);
+      rangeCustomParams[`f.${key}.facet.range.start`] = query.rangeFacets[key].start;
+      rangeCustomParams[`f.${key}.facet.range.end`] = query.rangeFacets[key].end;
+      rangeCustomParams[`f.${key}.facet.range.gap`] = query.rangeFacets[key].gap;
+      if (query.rangeFacets[key].hardened) {
+        rangeCustomParams[`f.${key}.facet.range.hardened`] = query.rangeFacets[key].hardened;
+      }
+      if (query.rangeFacets[key].include) {
+        rangeCustomParams[`f.${key}.facet.range.include`] = query.rangeFacets[key].include;
+      }
+      if (query.rangeFacets[key].other) {
+        rangeCustomParams[`f.${key}.facet.range.other`] = query.rangeFacets[key].other;
+      }
+      if (query.rangeFacets[key].method) {
+        rangeCustomParams[`f.${key}.facet.range.method`] = query.rangeFacets[key].method;
+      }
+      if (query.selectedRangeFacets[key] && query.selectedRangeFacets[key].length > 0) {
+        selectedRangeFacetsParams = query.selectedRangeFacets[key].map((selectedRange) => {
+          return `{!tag=${query.rangeFacets[key].tag}}${key}:${selectedRange.filter}`;
+        });
+      }
+    }
+    return [rangeFacetsParams, rangeCustomParams, selectedRangeFacetsParams];
+  }, [query.rangeFacets, query.selectedRangeFacets]);
+
+  // Prepares an object holding the parameters to be included in the query to
+  // the backend to handle current facet state.
   const prepareFacetsParams = useCallback(() => {
     const facetParams = {};
 
@@ -410,6 +541,24 @@ const QueryContextProvider = (props) => {
       }
     }
 
+    // Range facet gathering
+    const [rangeFacetsParams, rangeCustomParams, selectedRangeFacets] = prepareRangeFacets();
+    if (rangeFacetsParams.length > 0) {
+      facetParams.facet = true;
+      facetParams['facet.range'] = rangeFacetsParams;
+      // Add custom params such as range start and end
+      for (const key in rangeCustomParams) {
+        facetParams[key] = rangeCustomParams[key];
+      }
+      if (selectedRangeFacets.length > 0) {
+        if (facetParams.fq) {
+          facetParams.fq = facetParams.fq.concat(selectedRangeFacets);
+        } else {
+          facetParams.fq = selectedRangeFacets;
+        }
+      }
+    }
+
     // Other filters gathering
     const otherFilters = prepareOtherFilters();
     if (otherFilters.length > 0) {
@@ -421,32 +570,20 @@ const QueryContextProvider = (props) => {
     }
 
     return facetParams;
-  }, [prepareFieldFacets, prepareQueryFacets, prepareOtherFilters]);
+  }, [prepareFieldFacets, prepareQueryFacets, prepareRangeFacets, prepareOtherFilters]);
 
+  // Builds a parameter object that will be passed down to buildQueryStringFromParams
+  // to build the query string used when querying the backend search endpoint.
   const buildSearchQueryString = useCallback(() => {
     const facetsParams = prepareFacetsParams();
     const queryParameters = {
       q: query.elements,
-      // .map((element) => element.text.trim())
-      // .join(' ')
-      // .trim(),
-      fl: [
-        'title',
-        'url',
-        'id',
-        'extension',
-        'preview_content',
-        'last_modified',
-        'crawl_date',
-        'author',
-        'original_file_size',
-        'emptied',
-        'repo_source',
-      ].join(','),
+      fl: fields.join(','),
       sort: query.sort.value,
       'q.op': 'AND',
       rows: query.rows,
       start: (query.page - 1) * query.rows,
+      aggregator: query.aggregator,
       ...facetsParams,
     };
     if (queryParameters.q === '') {
@@ -461,6 +598,8 @@ const QueryContextProvider = (props) => {
     query.page,
     query.rows,
     query.sort.value,
+    query.aggregator,
+    fields,
   ]);
 
   const prepareFiltersForAlerts = useCallback(() => {
@@ -479,11 +618,7 @@ const QueryContextProvider = (props) => {
     } else {
       return '';
     }
-  }, [
-    prepareFacetsParams,
-    prepareFieldFacetsForAlerts,
-    prepareQueryFacetsForAlerts,
-  ]);
+  }, [prepareFacetsParams, prepareFieldFacetsForAlerts, prepareQueryFacetsForAlerts]);
 
   const buildSavedSearchQuery = useCallback(() => {
     const facetsParams = prepareFacetsParams();
@@ -533,9 +668,11 @@ const QueryContextProvider = (props) => {
                   draft.selectedFieldFacets[tag] = [];
                 }
                 while (fieldFacetResult) {
-                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[
-                    tag
-                  ].concat(fieldFacetResult[2]);
+                  let value = fieldFacetResult[2];
+                  if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length - 1);
+                  }
+                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[tag].concat(value);
                   fieldFacetResult = regexFieldFacet.exec(filterInfo);
                 }
               } else {
@@ -556,10 +693,9 @@ const QueryContextProvider = (props) => {
                       draft.selectedQueryFacets[facetName] = [];
                     }
                     // It is correctly defined and references an existing query lets use it
-                    draft.selectedQueryFacets[facetName] =
-                      draft.selectedQueryFacets[facetName].concat(
-                        draft.queryFacets[facetName].labels[selectedIndex]
-                      );
+                    draft.selectedQueryFacets[facetName] = draft.selectedQueryFacets[
+                      facetName
+                    ].concat(draft.queryFacets[facetName].labels[selectedIndex]);
                   } else {
                     // index out of range, put it in other filters
                     draft.filters[`${facetName}_${index}`] = {
@@ -629,12 +765,16 @@ const QueryContextProvider = (props) => {
       // Registered field and query facets should never come from the URL
       delete draft.fieldFacets;
       delete draft.queryFacets;
+      delete draft.rangeFacets;
       // Delete anything that is null or identical to the default object
       if (!draft.selectedFieldFacets || isEmptyObj(draft.selectedFieldFacets)) {
         delete draft.selectedFieldFacets;
       }
       if (!draft.selectedQueryFacets || isEmptyObj(draft.selectedQueryFacets)) {
         delete draft.selectedQueryFacets;
+      }
+      if (!draft.selectedRangeFacets || isEmptyObj(draft.selectedRangeFacets)) {
+        delete draft.selectedRangeFacets;
       }
       if (!draft.filters || isEmptyObj(draft.filters)) {
         delete draft.filters;
@@ -651,11 +791,12 @@ const QueryContextProvider = (props) => {
       if (!draft.op || draft.op === defaultQuery.op) {
         delete draft.op;
       }
-      if (
-        !draft.sort ||
-        (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')
-      ) {
+      if (!draft.sort || (draft.sort.label === 'Relevance' && draft.sort.value === 'score desc')) {
         delete draft.sort;
+      }
+
+      if (!draft.aggretor || isEmptyObj(draft.aggregator)) {
+        delete draft.aggegator;
       }
     });
   };
@@ -670,8 +811,7 @@ const QueryContextProvider = (props) => {
         buildSavedSearchQuery: buildSavedSearchQuery,
         runQueryFromSavedSearch: runQueryFromSavedSearch,
         buildParamsForURL: buildParamsForURL,
-      }}
-    >
+      }}>
       {props.children}
     </QueryContext.Provider>
   );

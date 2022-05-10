@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import useLicence from '../Hooks/useLicence';
-import produce from 'immer';
+import React, { useEffect, useState } from "react";
+import useLicence from "../Hooks/useLicence";
+import produce from "immer";
+import Spinner from "../Components/Spinner/Spinner";
 
 const defaultLicence = {
   type: undefined,
@@ -15,7 +16,7 @@ const defaultLicence = {
 export const LicenceContext = React.createContext(defaultLicence);
 
 const LicenceContextProvider = (props) => {
-  const queryID = 'GETLICENCEQUERY';
+  const queryID = "GETLICENCEQUERY";
   const { getLicence, isLoading, data, error, reqIdentifier } = useLicence();
   const [licence, setLicence] = useState(defaultLicence);
 
@@ -25,7 +26,7 @@ const LicenceContextProvider = (props) => {
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (data.status !== 'OK') {
+      if (data.status !== "OK") {
         // We got an error returned by the API
         setLicence((currentLicence) => {
           return produce(currentLicence, (licenceDraft) => {
@@ -72,7 +73,7 @@ const LicenceContextProvider = (props) => {
 
   return (
     <LicenceContext.Provider value={licence}>
-      {props.children}
+      {isLoading ? <Spinner /> : props.children}
     </LicenceContext.Provider>
   );
 };

@@ -13,13 +13,7 @@ import { create } from 'jss';
 import rtl from 'jss-rtl';
 
 import SearchPage from './Pages/Search/Search';
-import {
-  StylesProvider,
-  createMuiTheme,
-  ThemeProvider,
-  CssBaseline,
-  jssPreset,
-} from '@material-ui/core';
+import { StylesProvider, CssBaseline, jssPreset } from '@material-ui/core';
 
 import 'fontsource-montserrat/300.css';
 import 'fontsource-montserrat';
@@ -30,36 +24,24 @@ import APIEndpointsContextProvider from './Contexts/api-endpoints-context';
 import LicenceContextProvider from './Contexts/licence-context';
 import LicenceChecker from './Components/LicenceChecker/LicenceChecker';
 import { useTranslation } from 'react-i18next';
+import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
+import useTitleUpdater from './Hooks/useTitleUpdater';
+import HomePage from './Pages/HomePage/HomePage';
+import UIConfigContextProvider, { UIConfigContext } from './Contexts/ui-config-context';
+import SearchContextProvider from './Contexts/search-context';
+import Banner from './Components/Banner';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
-const defaultTheme = createMuiTheme({
-  overrides: {
-    MuiFilledInput: {
-      root: {
-        backgroundColor: '#fafafa',
-      },
-    },
-  },
-  typography: {
-    fontFamily: 'montserrat, Helvetica, Arial, sans-serif',
-  },
-  palette: {
-    primary: {
-      light: '#ffffff',
-      main: '#ffffff',
-      dark: '#fafafa',
-    },
-    secondary: {
-      light: '#99cc33',
-      main: '#679439',
-      dark: '#648542',
-    },
-  },
-});
 
 function Main() {
   const { actions: userActions } = useContext(UserContext);
   const { t } = useTranslation();
+
+  const {
+    uiDefinition: { devMode = { enable: false } },
+  } = useContext(UIConfigContext);
+
+  useTitleUpdater();
 
   useEffect(() => {
     userActions.autoConnect();
@@ -68,19 +50,26 @@ function Main() {
   document.title = t('Datafari Enterprise Search');
 
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <LicenceChecker />
-      <TopMenu />
-      <div>
+    <>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/" exact>
-            <Redirect to="/search" />
+            <Redirect to="/home" />
           </Route>
-          <Route path="/search" component={SearchPage} />
-          <Route path="/preview" component={Preview} />
+          <Route path="/home" component={HomePage} />
+          <Route path={['/search', '/preview']}>
+            <LicenceChecker />
+            <TopMenu />
+            <Switch>
+              <Route path="/search" component={SearchPage} />
+              <Route path="/preview" component={Preview} />
+            </Switch>
+          </Route>
         </Switch>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+
+      {devMode.enable ? <Banner {...devMode.banner} /> : null}
+    </>
   );
 }
 
@@ -96,22 +85,26 @@ function App() {
   return (
     <Suspense fallback="loading">
       <APIEndpointsContextProvider>
-        <UserContextProvider>
-          <StylesProvider jss={jss}>
-            <ThemeProvider theme={defaultTheme}>
-              <CssBaseline />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <LicenceContextProvider>
-                  <QueryContextProvider>
-                    <ResultsContextProvider>
-                      <Main />
-                    </ResultsContextProvider>
-                  </QueryContextProvider>
-                </LicenceContextProvider>
-              </MuiPickersUtilsProvider>
-            </ThemeProvider>
-          </StylesProvider>
-        </UserContextProvider>
+        <UIConfigContextProvider>
+          <UserContextProvider>
+            <StylesProvider jss={jss}>
+              <CustomThemeProvider>
+                <CssBaseline />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <LicenceContextProvider>
+                    <QueryContextProvider>
+                      <ResultsContextProvider>
+                        <SearchContextProvider>
+                          <Main />
+                        </SearchContextProvider>
+                      </ResultsContextProvider>
+                    </QueryContextProvider>
+                  </LicenceContextProvider>
+                </MuiPickersUtilsProvider>
+              </CustomThemeProvider>
+            </StylesProvider>
+          </UserContextProvider>
+        </UIConfigContextProvider>
       </APIEndpointsContextProvider>
     </Suspense>
   );
