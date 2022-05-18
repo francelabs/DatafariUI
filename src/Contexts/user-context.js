@@ -77,6 +77,7 @@ export const UserContext = React.createContext();
 const USER_LOGIN = 'USER_LOGIN';
 const SET_USER_LANGUAGE_ID = 'SET_USER_LANGUAGE_ID';
 const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
+const AUTOCONNECT_ID = 'AUTOCONNECT_ID';
 
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
@@ -87,7 +88,7 @@ const UserContextProvider = (props) => {
 
   const autoConnect = useCallback(() => {
     setQueryID(USER_LOGIN);
-    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, USER_LOGIN);
+    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', AUTOCONNECT_ID, USER_LOGIN);
   }, [apiEndpointsContext.currentUserURL, sendRequest]);
 
   const updateUserLanguage = useCallback(
@@ -138,29 +139,32 @@ const UserContextProvider = (props) => {
         userDispatcher({ type: 'SET_GUEST' });
       } else {
         let userData = data.content;
-        userDispatcher({
-          type: 'SET_AUTHENTICATED_USER',
-          user: userData,
-        });
+        // If it is an autoconnect request, perform changes only if the user name has changed
+        if (reqIdentifier !== AUTOCONNECT_ID || userData.user !== userState.state.user) {
+          userDispatcher({
+            type: 'SET_AUTHENTICATED_USER',
+            user: userData,
+          });
 
-        // Set language according to user language
-        const { lang } = userData;
-        try {
-          if (lang) {
-            new Intl.Locale(lang); // If no error thrown, it's a valid language
+          // Set language according to user language
+          const { lang } = userData;
+          try {
+            if (lang) {
+              new Intl.Locale(lang); // If no error thrown, it's a valid language
 
-            i18n.changeLanguage(lang);
+              i18n.changeLanguage(lang);
+            }
+          } catch (error) {
+            console.error('Error change language', error, lang);
           }
-        } catch (error) {
-          console.error('Error change language', error, lang);
-        }
 
-        // Dispatch UI configuration from user preference, only direction, left, right and sources
-        const { uiConfig = {} } = userData; // uiConfig is the key from backend
-        uiConfigDispatch({
-          type: SET_UI_DEFINITION,
-          uiDefinition: uiConfig,
-        });
+          // Dispatch UI configuration from user preference, only direction, left, right and sources
+          const { uiConfig = {} } = userData; // uiConfig is the key from backend
+          uiConfigDispatch({
+            type: SET_UI_DEFINITION,
+            uiDefinition: uiConfig,
+          });
+        }
 
         // add a timeout for autoconnect
         const timer = setTimeout(autoConnect, 60000);
