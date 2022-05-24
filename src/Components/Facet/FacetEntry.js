@@ -1,18 +1,17 @@
-import React from "react";
 import {
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Checkbox,
+  FormControlLabel,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   makeStyles,
   Tooltip,
-  FormControlLabel,
-} from "@material-ui/core";
-import { useState, useEffect } from "react";
+} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   facetTextContainer: {
-    display: "flex",
+    display: 'flex',
   },
   facetTextLabel: {
     flexGrow: 1,
@@ -20,89 +19,83 @@ const useStyles = makeStyles((theme) => ({
   },
 
   facetControlInputRoot: {
-    width: "100%",
-    margin: "0",
+    width: '100%',
+    margin: '0',
   },
 
   facetControlInputLabel: {
-    width: "100%",
+    width: '100%',
   },
 }));
 
-const FacetEntry = (props) => {
-  const classes = useStyles();
+const FacetEntry = ({ value, selected, onClick, id, count, mappingValues = {} }) => {
   const [isChecked, setIsChecked] = useState(false);
 
+  const classes = useStyles();
+
   useEffect(() => {
-    setIsChecked(props.selected);
-  }, [props.selected]);
+    setIsChecked(selected);
+  }, [selected]);
 
   const prepareValue = () => {
-    let value = "";
-    if (Array.isArray(props.value)) {
+    let prepareValue = '';
+    if (Array.isArray(value)) {
       try {
-        value = decodeURIComponent(props.value[0]);
+        prepareValue = decodeURIComponent(value[0]);
       } catch (e) {
-        value = props.value[0];
+        prepareValue = value[0];
       }
-    } else if (props.value !== undefined && props.value !== null) {
+    } else if (value) {
       try {
-        value = decodeURIComponent(props.value);
+        prepareValue = decodeURIComponent(value);
       } catch (e) {
-        value = props.value;
+        prepareValue = value;
       }
     }
-    if (value.length > 50) {
-      value = (
+
+    // Map the value with the given mappingValues if it does exit
+    prepareValue = mappingValues[prepareValue] || prepareValue;
+
+    if (prepareValue.length > 50) {
+      prepareValue = (
         <Tooltip title={value} aria-label={value}>
-          <span>
-            {value.substring(0, 15) +
-              "..." +
-              value.substring(value.length - 15)}
-          </span>
+          <span>{value.substring(0, 15) + '...' + value.substring(value.length - 15)}</span>
         </Tooltip>
       );
     }
-    return value;
+
+    return prepareValue;
   };
 
   return (
-    <>
-      <ListItem>
-        <FormControlLabel
-          control={
-            <ListItemIcon>
-              <Checkbox
-                checked={isChecked}
-                onChange={props.onClick}
-                edge="start"
-              />
-            </ListItemIcon>
-          }
-          label={
-            <ListItemText
-              id={props.id}
-              primary={
-                <>
-                  <span className={classes.facetTextLabel}>
-                    {prepareValue()}
-                  </span>
-                  <span>{props.count}</span>
-                </>
-              }
-              primaryTypographyProps={{
-                className: classes.facetTextContainer,
-              }}
-            />
-          }
-          classes={{
-            root: classes.facetControlInputRoot,
-            label: classes.facetControlInputLabel,
-          }}
-          margin="none"
-        />
-      </ListItem>
-    </>
+    <ListItem>
+      <FormControlLabel
+        control={
+          <ListItemIcon>
+            <Checkbox checked={isChecked} onChange={onClick} edge="start" />
+          </ListItemIcon>
+        }
+        label={
+          <ListItemText
+            id={id}
+            primary={
+              <>
+                <span className={classes.facetTextLabel}>{prepareValue()}</span>
+                <span>{count}</span>
+              </>
+            }
+            primaryTypographyProps={{
+              className: classes.facetTextContainer,
+            }}
+          />
+        }
+        classes={{
+          root: classes.facetControlInputRoot,
+          label: classes.facetControlInputLabel,
+        }}
+        margin="none"
+      />
+    </ListItem>
   );
 };
 

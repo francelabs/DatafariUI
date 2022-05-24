@@ -1,16 +1,17 @@
 import { makeStyles } from '@material-ui/core';
-import React, { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import React, { useCallback, useContext } from 'react';
+
 import { UIConfigContext } from '../../Contexts/ui-config-context';
-import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import AggregatorFacet from '../Facet/AggregatorFacet';
-import FieldFacet from '../Facet/FieldFacet';
-import QueryFacet from '../Facet/QueryFacet';
+import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import DateRangeFacet from '../Facet/RangeFacet/DateRangeFacet';
-import RangeFacet from '../Facet/RangeFacet/RangeFacet';
+import FieldFacet from '../Facet/FieldFacet/FieldFacet';
 import HierarchicalFacet from '../HierarchicalFacet/HierarchicalFacet';
 import Pager from '../Pager/Pager';
 import Promolink from '../Promolink/Promolink';
+import QueryFacet from '../Facet/QueryFacet';
+import RangeFacet from '../Facet/RangeFacet/RangeFacet';
 import ResultsList from '../ResultsList/ResultsList';
 import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
@@ -91,6 +92,7 @@ function MainTabPanel() {
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
+            mappingValues={element.mappingValues}
           />
         );
       }
