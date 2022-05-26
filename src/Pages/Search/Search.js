@@ -70,7 +70,7 @@ const Search = () => {
       uiDefinition.center.tabs.forEach((tab) => {
         switch (tab.type) {
           case FACET_TAB_TYPE:
-            const { type, field, max = -1 } = tab;
+            const { type, field, max = -1, mappingValues = {} } = tab;
 
             if (results.fieldFacets[field]) {
               const arrayLength =
@@ -80,6 +80,8 @@ const Search = () => {
 
               for (let i = 0; i < arrayLength; i += 2) {
                 const value = results.fieldFacets[field][i];
+                // Map a defined label for this value if it does exist
+                const labelValue = mappingValues[value] || value;
                 const count = results.fieldFacets[field][i + 1];
 
                 makeTabs.push(
@@ -87,7 +89,7 @@ const Search = () => {
                     key={type + field + value}
                     value={formatTabValue(type, field, value)}
                     label={
-                      value + (count ? ` (${formatNumberToLocale(count, i18n.language)})` : '')
+                      labelValue + (count ? ` (${formatNumberToLocale(count, i18n.language)})` : '')
                     }
                   />
                 );
