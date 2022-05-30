@@ -1,8 +1,6 @@
 import React, { useContext, useEffect } from 'react';
-import {
-  QueryContext,
-  REGISTER_FIELD_FACET,
-} from '../../Contexts/query-context';
+
+import { QueryContext, REGISTER_FIELD_FACET } from '../../../Contexts/query-context';
 import AutocompleteFieldFacet from './AutocompleteFieldFacet';
 import CheckboxFieldFacet from './CheckboxFieldFacet';
 
@@ -14,12 +12,7 @@ const FacetComponentsByVariant = {
   [AUTOCOMPLETE_VARIANT]: AutocompleteFieldFacet,
 };
 
-const FieldFacet = ({
-  variant = CHECKBOX_VARIANT,
-  show = true,
-  sendToSolr = true,
-  ...props
-}) => {
+const FieldFacet = ({ variant = CHECKBOX_VARIANT, show = true, sendToSolr = true, ...props }) => {
   const { field, op, title } = props;
   const { dispatch: queryDispatch } = useContext(QueryContext);
 
