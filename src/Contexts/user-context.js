@@ -153,7 +153,7 @@ const UserContextProvider = (props) => {
         const userData = loginData.content;
 
         // If already authenticated, dispatch only if user is different
-        if (userState.state.user.name !== userData.name) {
+        if (userState.state.user === null || userState.state.user.name !== userData.name) {
           userDispatcher({
             type: 'SET_AUTHENTICATED_USER',
             user: userData,
