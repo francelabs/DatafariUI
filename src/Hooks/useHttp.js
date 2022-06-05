@@ -45,60 +45,55 @@ const useHttp = () => {
 
   const clear = useCallback(() => dispatchHttp({ type: 'CLEAR' }), []);
 
-  const sendRequest = useCallback(
-    (url, method, body, reqIdentifier, headers) => {
-      const currentID = reqIdentifier;
-      dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
-      fetch(url, {
-        method: method,
-        body: body,
-        headers: headers
-          ? headers
-          : {
-              'Content-Type': 'application/json',
-            },
-        credentials: 'include',
-      })
-        .then(async (response) => {
-          if (currentID === reqIdentifier) {
-            if (response.ok) {
-              let data;
-              if (
-                response.headers.get('content-type').indexOf('text/html') !== -1
-              ) {
-                data = await response.text();
-              } else {
-                data = await response.json();
-              }
-
-              dispatchHttp({
-                type: 'RESPONSE',
-                responseData: data,
-                identifier: reqIdentifier,
-              });
+  const sendRequest = useCallback((url, method, body, reqIdentifier, headers) => {
+    const currentID = reqIdentifier;
+    dispatchHttp({ type: 'SEND', identifier: reqIdentifier });
+    fetch(url, {
+      method: method,
+      body: body,
+      headers: headers
+        ? headers
+        : {
+            'Content-Type': 'application/json',
+          },
+      credentials: 'include',
+    })
+      .then(async (response) => {
+        if (currentID === reqIdentifier) {
+          if (response.ok) {
+            let data;
+            if (response.headers.get('content-type').indexOf('text/html') !== -1) {
+              data = await response.text();
             } else {
-              dispatchHttp({
-                type: 'ERROR',
-                errorCode: response.status,
-                errorMessage: response.statusText,
-                identifier: reqIdentifier,
-              });
+              data = await response.json();
             }
-          }
-        })
-        .catch((error) => {
-          if (currentID === reqIdentifier) {
+
+            dispatchHttp({
+              type: 'RESPONSE',
+              responseData: data,
+              identifier: reqIdentifier,
+            });
+          } else {
             dispatchHttp({
               type: 'ERROR',
-              errorMessage: error.message,
-              errorCode: -1,
+              errorCode: response.status,
+              errorMessage: response.statusText,
               identifier: reqIdentifier,
             });
           }
-        });
-    },
-    []
-  );
+        }
+      })
+      .catch((error) => {
+        if (currentID === reqIdentifier) {
+          dispatchHttp({
+            type: 'ERROR',
+            errorMessage: error.message,
+            errorCode: -1,
+            identifier: reqIdentifier,
+          });
+        }
+      });
+  }, []);
 
   return {
     isLoading: httpState.loading,

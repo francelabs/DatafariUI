@@ -1,27 +1,26 @@
-import React, { useState, useCallback, useContext, useEffect } from 'react';
-
-import { useTranslation } from 'react-i18next';
 import {
+  Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
-  Button,
-  TextField,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
+  FormLabel,
   Grid,
   makeStyles,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  FormHelperText,
+  TextField,
   Typography,
 } from '@material-ui/core';
-import DialogTitle from '../../Components/DialogTitle/DialogTitle';
+import { useTranslation } from 'react-i18next';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+
 import { QueryContext } from '../../Contexts/query-context';
-import useSavedSearches from '../../Hooks/useSavedSearches';
+import DialogTitle from '../../Components/DialogTitle/DialogTitle';
 import Spinner from '../../Components/Spinner/Spinner';
-import { isArray } from '@material-ui/data-grid';
+import useSavedSearches from '../../Hooks/useSavedSearches';
 
 const useStyles = makeStyles((theme) => ({
   fieldsPadding: {
