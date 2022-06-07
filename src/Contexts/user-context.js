@@ -1,15 +1,16 @@
+import { useTranslation } from 'react-i18next';
 import deLocale from 'date-fns/locale/de';
 import enLocale from 'date-fns/locale/en-US';
 import esLocale from 'date-fns/locale/es';
 import frLocale from 'date-fns/locale/fr';
 import itLocale from 'date-fns/locale/it';
 import ptLocale from 'date-fns/locale/pt';
+import React, { useCallback, useContext, useEffect, useMemo, useReducer } from 'react';
 import ruLocale from 'date-fns/locale/ru';
-import React, { useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import useHttp from '../Hooks/useHttp';
+
 import { APIEndpointsContext } from './api-endpoints-context';
 import { SET_UI_DEFINITION, UIConfigContext } from './ui-config-context';
+import useHttp from '../Hooks/useHttp';
 
 // Used UI locales
 const DatafariUILocales = {
@@ -81,32 +82,44 @@ const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 const UserContextProvider = (props) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { dispatch: uiConfigDispatch } = useContext(UIConfigContext);
-  const [queryID, setQueryID] = useState(null);
-  const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
+
+  // Request for login
+  const {
+    isLoading: loginIsLoading,
+    data: loginData,
+    error: loginError,
+    sendRequest: loginSendRequest,
+  } = useHttp();
+
+  // Request for set language / ui definition
+  const {
+    isLoading: userIsLoading,
+    data: userData,
+    error: userError,
+    sendRequest: userSendRequest,
+  } = useHttp();
+
   const { i18n } = useTranslation();
 
   const autoConnect = useCallback(() => {
-    setQueryID(USER_LOGIN);
-    sendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, USER_LOGIN);
-  }, [apiEndpointsContext.currentUserURL, sendRequest]);
+    loginSendRequest(`${apiEndpointsContext.currentUserURL}`, 'GET', null, USER_LOGIN);
+  }, [apiEndpointsContext.currentUserURL, loginSendRequest]);
 
   const updateUserLanguage = useCallback(
     (langugage) => {
-      setQueryID(SET_USER_LANGUAGE_ID);
-      sendRequest(
+      userSendRequest(
         `${apiEndpointsContext.currentUserURL}`,
         'PUT',
         JSON.stringify({ lang: langugage }),
         SET_USER_LANGUAGE_ID
       );
     },
-    [apiEndpointsContext.currentUserURL, sendRequest]
+    [apiEndpointsContext.currentUserURL, userSendRequest]
   );
 
   const updateUserUiDefinition = useCallback(
     (userUi) => {
-      setQueryID(UPDATE_USER_PREF_ID);
-      sendRequest(
+      userSendRequest(
         `${apiEndpointsContext.currentUserURL}`,
         'PUT',
         JSON.stringify({ uiConfig: userUi }),
@@ -114,7 +127,7 @@ const UserContextProvider = (props) => {
       );
     },
 
-    [apiEndpointsContext.currentUserURL, sendRequest]
+    [apiEndpointsContext.currentUserURL, userSendRequest]
   );
 
   const actions = useMemo(() => {
@@ -131,18 +144,56 @@ const UserContextProvider = (props) => {
     actions,
   });
 
-  // Effect when user changed language, user logged in or user saved preferences
+  // Effect login
   useEffect(() => {
-    if (!isLoading && !error && data) {
-      if (data.status !== 'OK') {
+    if (!loginIsLoading) {
+      if (loginError || loginData?.status !== 'OK') {
         userDispatcher({ type: 'SET_GUEST' });
-      } else {
-        let userData = data.content;
-        userDispatcher({
-          type: 'SET_AUTHENTICATED_USER',
-          user: userData,
-        });
+      } else if (loginData?.content) {
+        const userData = loginData.content;
 
+        // If already authenticated, dispatch only if user is different
+        if (userState.state.user === null || userState.state.user.name !== userData.name) {
+          userDispatcher({
+            type: 'SET_AUTHENTICATED_USER',
+            user: userData,
+          });
+
+          // Set language according to user language
+          const { lang } = userData;
+          try {
+            if (lang) {
+              new Intl.Locale(lang); // If no error thrown, it's a valid language
+
+              i18n.changeLanguage(lang);
+            }
+          } catch (error) {
+            console.error('Error change language', error, lang);
+          }
+
+          // Dispatch UI configuration from user preference, only direction, left, right and sources
+          const { uiConfig = {} } = userData; // uiConfig is the key from backend
+          uiConfigDispatch({
+            type: SET_UI_DEFINITION,
+            uiDefinition: uiConfig,
+          });
+        }
+      }
+    }
+  }, [
+    loginIsLoading,
+    loginError,
+    loginData,
+    i18n,
+    userDispatcher,
+    uiConfigDispatch,
+    userState.state.user,
+  ]);
+
+  // Effect when user changed language or user saved preferences
+  useEffect(() => {
+    if (!userIsLoading) {
+      if (!userError && userData?.status === 'OK') {
         // Set language according to user language
         const { lang } = userData;
         try {
@@ -161,26 +212,9 @@ const UserContextProvider = (props) => {
           type: SET_UI_DEFINITION,
           uiDefinition: uiConfig,
         });
-
-        // add a timeout for autoconnect
-        const timer = setTimeout(autoConnect, 60000);
-
-        return () => clearTimeout(timer);
       }
-    } else if (!isLoading && error) {
-      userDispatcher({ type: 'SET_GUEST' });
     }
-  }, [
-    autoConnect,
-    data,
-    error,
-    isLoading,
-    queryID,
-    reqIdentifier,
-    i18n,
-    userDispatcher,
-    uiConfigDispatch,
-  ]);
+  }, [userIsLoading, userData, userError, i18n, userDispatcher, uiConfigDispatch]);
 
   const getLocale = useCallback(() => {
     if (i18n.language && DatafariUILocales[i18n.language]) {

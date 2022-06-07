@@ -33,6 +33,9 @@ import Banner from './Components/Banner';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
+// AUTO connect interval 60 sec
+const AUTOCONNECT_INTERVAL_MS = 60000;
+
 function Main() {
   const { actions: userActions } = useContext(UserContext);
   const { t } = useTranslation();
@@ -45,6 +48,11 @@ function Main() {
 
   useEffect(() => {
     userActions.autoConnect();
+
+    // add a timeout for autoconnect
+    const timer = setInterval(userActions.autoConnect, AUTOCONNECT_INTERVAL_MS);
+
+    return () => clearTimeout(timer);
   }, [userActions]);
 
   document.title = t('Datafari Enterprise Search');
