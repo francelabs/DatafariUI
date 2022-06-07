@@ -1,21 +1,22 @@
-import {
-  Checkbox,
-  FormControlLabel,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import { Checkbox, makeStyles, Tooltip } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-  facetTextContainer: {
+  container: {
     display: 'flex',
+    alignItems: 'center',
+    margin: '0 16px',
+
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
   facetTextLabel: {
     flexGrow: 1,
     paddingRight: theme.spacing(1),
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
 
   facetControlInputRoot: {
@@ -27,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
 }));
+
+const LABEL_MAX_SIZE = 24;
 
 const FacetEntry = ({ value, selected, onClick, id, count, mappingValues = {} }) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -54,48 +57,23 @@ const FacetEntry = ({ value, selected, onClick, id, count, mappingValues = {} })
     }
 
     // Map the value with the given mappingValues if it does exit
-    prepareValue = mappingValues[prepareValue] || prepareValue;
-
-    if (prepareValue.length > 50) {
-      prepareValue = (
-        <Tooltip title={value} aria-label={value}>
-          <span>{value.substring(0, 15) + '...' + value.substring(value.length - 15)}</span>
-        </Tooltip>
-      );
-    }
-
-    return prepareValue;
+    return mappingValues[prepareValue] || prepareValue;
   };
 
+  const label = prepareValue();
+
   return (
-    <ListItem>
-      <FormControlLabel
-        control={
-          <ListItemIcon>
-            <Checkbox checked={isChecked} onChange={onClick} edge="start" />
-          </ListItemIcon>
-        }
-        label={
-          <ListItemText
-            id={id}
-            primary={
-              <>
-                <span className={classes.facetTextLabel}>{prepareValue()}</span>
-                <span>{count}</span>
-              </>
-            }
-            primaryTypographyProps={{
-              className: classes.facetTextContainer,
-            }}
-          />
-        }
-        classes={{
-          root: classes.facetControlInputRoot,
-          label: classes.facetControlInputLabel,
-        }}
-        margin="none"
-      />
-    </ListItem>
+    <div className={classes.container} onClick={onClick}>
+      <Checkbox checked={isChecked} onChange={onClick} edge="start" />
+      {label.length > LABEL_MAX_SIZE ? (
+        <Tooltip title={label} placement="bottom-start" aria-label={label}>
+          <span className={classes.facetTextLabel}>{label}</span>
+        </Tooltip>
+      ) : (
+        <span className={classes.facetTextLabel}>{label}</span>
+      )}
+      <span>{count}</span>
+    </div>
   );
 };
 
