@@ -192,22 +192,23 @@ const UserContextProvider = (props) => {
 
   // Effect when user changed language or user saved preferences
   useEffect(() => {
-    if (!userIsLoading) {
-      if (!userError && userData?.status === 'OK') {
-        // Set language according to user language
-        const { lang } = userData;
-        try {
-          if (lang) {
-            new Intl.Locale(lang); // If no error thrown, it's a valid language
+    if (!userIsLoading && !userError && userData?.status === 'OK' && userData.content) {
+      const useContent = userData.content;
+      // Set language according to user language
+      const { lang } = useContent;
+      try {
+        if (lang) {
+          new Intl.Locale(lang); // If no error thrown, it's a valid language
 
-            i18n.changeLanguage(lang);
-          }
-        } catch (error) {
-          console.error('Error change language', error, lang);
+          i18n.changeLanguage(lang);
         }
+      } catch (error) {
+        console.error('Error change language', error, lang);
+      }
 
-        // Dispatch UI configuration from user preference, only direction, left, right and sources
-        const { uiConfig = {} } = userData; // uiConfig is the key from backend
+      // Dispatch UI configuration from user preference, only direction, left, right and sources
+      const { uiConfig = null } = useContent; // uiConfig is the key from backend
+      if (uiConfig != null) {
         uiConfigDispatch({
           type: SET_UI_DEFINITION,
           uiDefinition: uiConfig,
