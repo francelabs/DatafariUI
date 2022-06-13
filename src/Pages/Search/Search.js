@@ -56,6 +56,7 @@ const Search = () => {
   const { dispatch: queryDispatch } = useContext(QueryContext);
   const { results } = useContext(ResultsContext);
   const { uiDefinition } = useContext(UIConfigContext);
+  const { mappingValues = {} } = uiDefinition;
 
   const [selectTab, setSelectTab] = useState(MAIN_TAB);
   const [panelTabs] = useState(DEFAULT_PANEL_TABS);
@@ -70,7 +71,7 @@ const Search = () => {
       uiDefinition.center.tabs.forEach((tab) => {
         switch (tab.type) {
           case FACET_TAB_TYPE:
-            const { type, field, max = -1, mappingValues = {} } = tab;
+            const { type, field, max = -1 } = tab;
 
             if (results.fieldFacets[field]) {
               const arrayLength =

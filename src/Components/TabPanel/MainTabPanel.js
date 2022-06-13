@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MainTabPanel() {
   const { uiDefinition, maskFieldFacet, isLoading } = useContext(UIConfigContext);
+  const { mappingValues = {} } = uiDefinition;
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -92,13 +93,13 @@ function MainTabPanel() {
             dividerClassName={classes.facetDivider}
             minShow={minShow}
             maxShow={maxShow}
-            mappingValues={element.mappingValues}
+            mappingValues={mappingValues}
           />
         );
       }
       return result;
     },
-    [classes.facetDivider, maskFieldFacet, t]
+    [classes.facetDivider, maskFieldFacet, mappingValues, t]
   );
 
   const buildQueryFacet = useCallback(
