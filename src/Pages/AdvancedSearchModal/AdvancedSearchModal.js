@@ -934,7 +934,7 @@ const AdvancedSearchModal = (props) => {
             }
           }
           if (filter) {
-            if (currentField.operator) {
+            if (finalQuery!="") {
               filter = currentField.operator + ' ' + filter;
             }
           }
