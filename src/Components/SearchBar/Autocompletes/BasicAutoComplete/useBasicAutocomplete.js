@@ -1,7 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
-import { ResultsContext } from "../../../../Contexts/results-context";
-import useHttp from "../../../../Hooks/useHttp.js";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
+import { ResultsContext } from '../../../../Contexts/results-context';
+import useHttp from '../../../../Hooks/useHttp.js';
 
 const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
@@ -27,7 +27,7 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.searchURL}/suggest?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
-        "GET",
+        'GET',
         null,
         newQueryID
       );
@@ -43,9 +43,7 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
         if (!data.error && data.spellcheck && data.spellcheck.collations) {
           newSuggestions = data.spellcheck.collations
             .filter((element) => {
-              return (
-                element && element !== "collation" && element.collationQuery
-              );
+              return element && element !== 'collation' && element.collationQuery;
             })
             .map((element) => {
               return element.collationQuery;
@@ -55,16 +53,7 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
         setSuggestions(newSuggestions);
       }
     }
-  }, [
-    data,
-    error,
-    isLoading,
-    setSuggestions,
-    reqIdentifier,
-    queryID,
-    queryText,
-    maxSuggestion,
-  ]);
+  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID, queryText, maxSuggestion]);
 
   const onSelect = useCallback((value, onSelect) => {
     if (onSelect) {

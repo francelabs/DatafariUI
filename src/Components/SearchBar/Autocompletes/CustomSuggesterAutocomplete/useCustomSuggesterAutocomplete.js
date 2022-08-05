@@ -1,14 +1,8 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { APIEndpointsContext } from "../../../../Contexts/api-endpoints-context";
-import useHttp from "../../../../Hooks/useHttp";
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
+import useHttp from '../../../../Hooks/useHttp';
 
-const useCustomSuggesterAutocomplete = ({
-  op,
-  suggester,
-  maxSuggestion,
-  title,
-  subtitle,
-}) => {
+const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, subtitle }) => {
   const apiEndpointsContext = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
@@ -25,7 +19,7 @@ const useCustomSuggesterAutocomplete = ({
       setQueryID(newQueryID);
       sendRequest(
         `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
-        "GET",
+        'GET',
         null,
         newQueryID
       );
@@ -36,13 +30,7 @@ const useCustomSuggesterAutocomplete = ({
   // Handle response from querySuggestions
   useEffect(() => {
     if (!isLoading) {
-      if (
-        !error &&
-        data &&
-        reqIdentifier === queryID &&
-        !data.error &&
-        data.suggest
-      ) {
+      if (!error && data && reqIdentifier === queryID && !data.error && data.suggest) {
         const suggestObject = data.suggest;
         const suggestions = [];
         Object.entries(suggestObject).forEach(([, suggestionsObject]) => {
@@ -50,11 +38,9 @@ const useCustomSuggesterAutocomplete = ({
             suggestionsObject[queryText] &&
             Array.isArray(suggestionsObject[queryText].suggestions)
           ) {
-            const extractedSuggestions = suggestionsObject[
-              queryText
-            ].suggestions
+            const extractedSuggestions = suggestionsObject[queryText].suggestions
               .filter((element) => {
-                return element.term && typeof element.term === "string";
+                return element.term && typeof element.term === 'string';
               })
               .map((element) => {
                 return element.term;
@@ -62,23 +48,11 @@ const useCustomSuggesterAutocomplete = ({
             suggestions.push(...extractedSuggestions);
           }
         });
-        const newSuggestions = suggestions.slice(
-          0,
-          maxSuggestion ? maxSuggestion : -1
-        );
+        const newSuggestions = suggestions.slice(0, maxSuggestion ? maxSuggestion : -1);
         setSuggestions(newSuggestions);
       }
     }
-  }, [
-    data,
-    error,
-    isLoading,
-    setSuggestions,
-    reqIdentifier,
-    queryID,
-    queryText,
-    maxSuggestion,
-  ]);
+  }, [data, error, isLoading, setSuggestions, reqIdentifier, queryID, queryText, maxSuggestion]);
 
   const onSelect = useCallback((value, onSelect) => {
     if (onSelect) {
