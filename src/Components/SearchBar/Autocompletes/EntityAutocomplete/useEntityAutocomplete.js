@@ -105,8 +105,20 @@ const useEntityAutocomplete = ({
             : `${queryWithLastTermRemoved} `;
         onSelect(`${queryWithLastTermRemoved}${field}:"${value}"`);
       }
+
+      // Synchronize with the facet if it does exist
+      const selection = query.selectedFieldFacets[field] || [];
+      const newSelection = selection.includes(value)
+        ? selection.filter((v) => v !== value)
+        : [...selection, value];
+
+      queryDispatch({
+        type: SET_FIELD_FACET_SELECTED,
+        facetId: field,
+        selected: newSelection,
+      });
     },
-    [field, queryText]
+    [field, query.selectedFieldFacets, queryText, queryDispatch]
   );
 
   // Handler when entities must be added as facet selection

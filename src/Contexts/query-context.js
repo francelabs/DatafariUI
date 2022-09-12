@@ -246,6 +246,13 @@ const newQueryReducer = produce((queryDraft, action) => {
         fieldFacets: queryDraft.fieldFacets,
         rangeFacets: queryDraft.rangeFacets,
       };
+      const currentSelectionFacets = Object.keys(urlParams).length
+        ? {
+            selectedFieldFacets: queryDraft.selectedFieldFacets,
+            selectedQueryFacets: queryDraft.selectedQueryFacets,
+            selectedRangeFacets: queryDraft.selectedRangeFacets,
+          }
+        : {};
       // We base on the default query
       // We Keep field facets and query facets registration from current query as they should not change
       // and override data with anything that is present in urlParams (urlParams has precedence over everything)
@@ -254,6 +261,7 @@ const newQueryReducer = produce((queryDraft, action) => {
       return {
         ...defaultQuery,
         ...currentRegisteredFacets,
+        ...currentSelectionFacets,
         ...urlParams,
       };
 
