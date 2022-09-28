@@ -44,8 +44,7 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(undefined);
   const { state: userState } = useContext(UserContext);
-  const { isLoading, data, error, reqIdentifier, getFavoritesStatus } =
-    useFavorites();
+  const { isLoading, data, error, reqIdentifier, getFavoritesStatus } = useFavorites();
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
 
   const classes = useStyles();
@@ -93,8 +92,7 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
           textColor="secondary"
           variant="scrollable"
           value={selectedTab}
-          onChange={(event, newValue) => onSelectTab(newValue)}
-        >
+          onChange={(event, newValue) => onSelectTab(newValue)}>
           {tabs}
         </Tabs>
 
@@ -102,8 +100,7 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
           aria-controls="search-tools-menu"
           aria-haspopup="true"
           onClick={handleClick}
-          className={classes.searchTools}
-        >
+          className={classes.searchTools}>
           {t('Search Tools')}
         </Button>
         <Menu
@@ -120,11 +117,8 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
           transformOrigin={{
             vertical: 'top',
             horizontal: 'center',
-          }}
-        >
-          <MenuItem onClick={handleOpen('advanceSearch')}>
-            {t('Advanced Search')}
-          </MenuItem>
+          }}>
+          <MenuItem onClick={handleOpen('advanceSearch')}>{t('Advanced Search')}</MenuItem>
           <Hidden smDown>
             <Divider />
             {userState.user && (
@@ -132,22 +126,14 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
                 <MenuItem onClick={handleOpen('manageSavedQeuries')}>
                   {t('Manage Saved Queries')}
                 </MenuItem>
-                <MenuItem onClick={handleOpen('saveQuery')}>
-                  {t('Save Current Query')}
-                </MenuItem>
+                <MenuItem onClick={handleOpen('saveQuery')}>{t('Save Current Query')}</MenuItem>
                 <Divider />
-                <MenuItem onClick={handleOpen('manageAlerts')}>
-                  {t('Manage Alerts')}
-                </MenuItem>
-                <MenuItem onClick={handleOpen('createAlert')}>
-                  {t('Save Query As Alert')}
-                </MenuItem>
+                <MenuItem onClick={handleOpen('manageAlerts')}>{t('Manage Alerts')}</MenuItem>
+                <MenuItem onClick={handleOpen('createAlert')}>{t('Save Query As Alert')}</MenuItem>
                 <Divider />
                 {favoritesEnabled && (
                   <>
-                    <MenuItem onClick={handleOpen('favorites')}>
-                      {t('Manage Favorites')}
-                    </MenuItem>
+                    <MenuItem onClick={handleOpen('favorites')}>{t('Manage Favorites')}</MenuItem>
                     <Divider />
                   </>
                 )}
@@ -159,48 +145,62 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
           </Hidden>
         </Menu>
       </Toolbar>
-      <AdvancedSearchModal
-        open={open === 'advanceSearch'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <FavortiesModal
-        open={open === 'favorites'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <ManageAlertsModal
-        open={open === 'manageAlerts'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <ManageSavedQueriesModal
-        open={open === 'manageSavedQeuries'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <ModifyAlertModal
-        open={open === 'createAlert'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <ExportResultsModal
-        open={open === 'exportResults'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
-      <ModifySavedQueryModal
-        open={open === 'saveQuery'}
-        onClose={() => {
-          setOpen(undefined);
-        }}
-      />
+      {open === 'advanceSearch' && (
+        <AdvancedSearchModal
+          open={open === 'advanceSearch'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'favorites' && (
+        <FavortiesModal
+          open={open === 'favorites'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'manageAlerts' && (
+        <ManageAlertsModal
+          open={open === 'manageAlerts'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'manageSavedQeuries' && (
+        <ManageSavedQueriesModal
+          open={open === 'manageSavedQeuries'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'createAlert' && (
+        <ModifyAlertModal
+          open={open === 'createAlert'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'exportResults' && (
+        <ExportResultsModal
+          open={open === 'exportResults'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
+      {open === 'saveQuery' && (
+        <ModifySavedQueryModal
+          open={open === 'saveQuery'}
+          onClose={() => {
+            setOpen(undefined);
+          }}
+        />
+      )}
     </AppBar>
   );
 };

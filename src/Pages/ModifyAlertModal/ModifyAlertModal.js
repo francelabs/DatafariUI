@@ -42,15 +42,7 @@ const CREATE_ALERT_QUERY_ID = 'createAlert';
 const ModifyAlertModal = (props) => {
   const { t } = useTranslation();
   const { query, prepareFiltersForAlerts } = useContext(QueryContext);
-  const {
-    addAlert,
-    modifyAlert,
-    getEmptyAlertObject,
-    isLoading,
-    data,
-    error,
-    clear,
-  } = useAlerts();
+  const { addAlert, modifyAlert, getEmptyAlertObject, isLoading, data, error, clear } = useAlerts();
   const classes = useStyles();
   const [keepFacets, setKeepFacets] = useState(false);
   const [alert, setAlert] = useState(
@@ -60,9 +52,7 @@ const ModifyAlertModal = (props) => {
   useEffect(() => {
     if (!props.open) {
       const subject =
-        query.elements.split(' ').length > 0
-          ? query.elements.split(' ')[0]
-          : query.elements;
+        query.elements?.split(' ').length > 0 ? query.elements.split(' ')[0] : query.elements;
       setAlert((currentAlert) => {
         return {
           ...currentAlert,
@@ -138,15 +128,7 @@ const ModifyAlertModal = (props) => {
         addAlert(CREATE_ALERT_QUERY_ID, alertToSave);
       }
     }
-  }, [
-    addAlert,
-    alert,
-    buildFiltersFromFacets,
-    keepFacets,
-    validateForm,
-    props.alert,
-    modifyAlert,
-  ]);
+  }, [addAlert, alert, buildFiltersFromFacets, keepFacets, validateForm, props.alert, modifyAlert]);
 
   useEffect(() => {
     // Handling response from the server, close if OK, show error else
@@ -204,11 +186,7 @@ const ModifyAlertModal = (props) => {
                 <Grid item xs={1} />
                 <Grid item xs={10}>
                   <FormControl component="fieldset">
-                    <FormLabel
-                      variant="filled"
-                      color="secondary"
-                      component="legend"
-                    >
+                    <FormLabel variant="filled" color="secondary" component="legend">
                       {t('Keep facets')}
                     </FormLabel>
                     <FormGroup>
@@ -224,9 +202,7 @@ const ModifyAlertModal = (props) => {
                       />
                     </FormGroup>
                     <FormHelperText>
-                      {t(
-                        'Check this box if you want to save the current facets'
-                      )}
+                      {t('Check this box if you want to save the current facets')}
                     </FormHelperText>
                   </FormControl>
                 </Grid>
@@ -239,9 +215,7 @@ const ModifyAlertModal = (props) => {
                 id="datafari-alert-email"
                 label={t('Email address')}
                 placeholder="youremail@yourcompany"
-                helperText={t(
-                  'Type here the email that will receive the alert'
-                )}
+                helperText={t('Type here the email that will receive the alert')}
                 value={alert.mail}
                 onChange={handleEmailChange}
                 variant="filled"
@@ -254,10 +228,7 @@ const ModifyAlertModal = (props) => {
             <Grid item xs={1} />
             <Grid item xs={10}>
               <FormControl>
-                <InputLabel
-                  id="datafari-alert-periodicity-label"
-                  color="secondary"
-                >
+                <InputLabel id="datafari-alert-periodicity-label" color="secondary">
                   {t('Update Frequency')}
                 </InputLabel>
                 <Select
@@ -265,16 +236,13 @@ const ModifyAlertModal = (props) => {
                   color="secondary"
                   fullWidth={true}
                   value={alert.frequency}
-                  onChange={handlePeriodicityChange}
-                >
+                  onChange={handlePeriodicityChange}>
                   <MenuItem value="hourly">{t('Hourly')}</MenuItem>
                   <MenuItem value="daily">{t('Daily')}</MenuItem>
                   <MenuItem value="weekly">{t('Weekly')}</MenuItem>
                 </Select>
                 <FormHelperText>
-                  {t(
-                    'Pick how frequently you wish to receive email notifications'
-                  )}
+                  {t('Pick how frequently you wish to receive email notifications')}
                 </FormHelperText>
               </FormControl>
             </Grid>
@@ -284,12 +252,7 @@ const ModifyAlertModal = (props) => {
       )}
       {!isLoading && !error && (
         <DialogActions>
-          <Button
-            onClick={saveAlert}
-            color="secondary"
-            variant="contained"
-            size="small"
-          >
+          <Button onClick={saveAlert} color="secondary" variant="contained" size="small">
             {t('Activate this alert')}
           </Button>
         </DialogActions>

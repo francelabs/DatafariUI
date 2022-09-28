@@ -644,8 +644,8 @@ const QueryContextProvider = (props) => {
 
   const runQueryFromSavedSearch = useCallback(
     (savedSearchQuery) => {
-      let params = new URLSearchParams(savedSearchQuery);
-      const newQuery = produce(defaultQuery, (draft) => {
+      const params = new URLSearchParams(savedSearchQuery);
+      const newQuery = produce(query, (draft) => {
         draft.queryFacets = query.queryFacets;
         draft.fieldFacets = query.fieldFacets;
         // regexfq matches fqs from datafariUI and fqs for query facets from
@@ -661,6 +661,7 @@ const QueryContextProvider = (props) => {
         const fqs = params.getAll('fq');
         if (fqs && fqs.length > 0) {
           fqs.forEach((element, index) => {
+            regexfq.lastIndex = 0; // Rest exec regex after each element otherwise, it starts at the end of the last element
             const regexResults = regexfq.exec(element);
             // If we match the fq regex, datafariUI fq or legacyUI query facet fq
             if (regexResults !== null) {
@@ -676,11 +677,12 @@ const QueryContextProvider = (props) => {
                   draft.selectedFieldFacets[tag] = [];
                 }
                 while (fieldFacetResult) {
-                  let value = fieldFacetResult[2];
-                  if (value.startsWith('"') && value.endsWith('"')) {
-                    value = value.substring(1, value.length - 1);
+                  const value = fieldFacetResult[2].replaceAll(/(\"|\')/g, '');
+
+                  if (!draft.selectedFieldFacets[tag].includes(value)) {
+                    draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[tag].concat(value);
                   }
-                  draft.selectedFieldFacets[tag] = draft.selectedFieldFacets[tag].concat(value);
+
                   fieldFacetResult = regexFieldFacet.exec(filterInfo);
                 }
               } else {
