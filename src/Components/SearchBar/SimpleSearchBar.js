@@ -148,10 +148,39 @@ const SimpleSearchBar = () => {
     callback: handeEscapeHotkey,
   });
 
+  // USE EFFECTS
   useEffect(() => {
     setTextState({ queryText: query.elements });
   }, [query]);
 
+  useEffect(() => {
+    console.log('selected field facets', query.fieldFacets, query.selectedFieldFacets);
+    const { queryText } = textState;
+    let sanitizeText = queryText;
+
+    // Remove suggestion like author:"name"from search bar if not selected in field facets anymore
+    // From the begining of the search text
+    queryText
+      .split(' ')
+      .filter((q) => q.includes(':'))
+      .map((fieldValueSuggestion) => {
+        const [field, value] = fieldValueSuggestion.split(':');
+        if (
+          (!query.selectedFieldFacets[field] ||
+            !query.selectedFieldFacets[field].includes(value.replaceAll('"', ''))) &&
+          query.fieldFacets[field]
+        ) {
+          sanitizeText = queryText.slice(fieldValueSuggestion.length + 1);
+        }
+      });
+
+    if (queryText !== sanitizeText) {
+      setTextState({ queryText: sanitizeText });
+      search(sanitizeText);
+    }
+  }, [query.fieldFacets, query.selectedFieldFacets]);
+
+  // CALLBACKS
   let timeoutId = useRef();
 
   const handleChange = useCallback(
