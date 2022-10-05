@@ -197,3 +197,14 @@ const UIConfigContextProvider = ({ children }) => {
 };
 
 export default UIConfigContextProvider;
+
+export const checkUIConfigHelper =
+  (uiConfig) =>
+  (fnCheck, key, usage = 'Refer to docs') => {
+    const isValid = fnCheck();
+    if (!isValid) {
+      console.error(`Missing or not conform ${key} parameter. Usage: ${usage}`, uiConfig);
+    }
+
+    return isValid;
+  };

@@ -1,8 +1,8 @@
+import React, { useCallback, useContext } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback, useContext } from 'react';
 
-import { UIConfigContext } from '../../Contexts/ui-config-context';
+import { checkUIConfigHelper, UIConfigContext } from '../../Contexts/ui-config-context';
 import AggregatorFacet from '../Facet/AggregatorFacet';
 import DateFacetCustom from '../DateFacetCustom/DateFacetCustom';
 import DateRangeFacet from '../Facet/RangeFacet/DateRangeFacet';
@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
 function MainTabPanel() {
   const { uiDefinition, maskFieldFacet, isLoading } = useContext(UIConfigContext);
   const { mappingValues = {} } = uiDefinition;
+  checkUIConfig(uiDefinition);
 
   const classes = useStyles();
   const { t } = useTranslation();
@@ -214,18 +215,48 @@ function MainTabPanel() {
     <Spinner />
   ) : (
     <div className={classes.container}>
-      <div className={classes.facetsSection}>{buildContentFor(uiDefinition.left)}</div>
+      <div className={classes.facetsSection}>
+        {!!uiDefinition.left && buildContentFor(uiDefinition.left)}
+      </div>
 
       <div className={classes.centerContainer}>
-        {buildContentFor(uiDefinition.center.main)}
+        {!!uiDefinition.center?.main && buildContentFor(uiDefinition.center.main)}
         <div className={classes.pagerContainer}>
           <Pager />
         </div>
       </div>
 
-      <div className={classes.facetsSection}>{buildContentFor(uiDefinition.right)}</div>
+      <div className={classes.facetsSection}>
+        {!!uiDefinition.right && buildContentFor(uiDefinition.right)}
+      </div>
     </div>
   );
 }
 
 export default MainTabPanel;
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+
+  ['left', 'right'].forEach((key) => {
+    helper(
+      () => Array.isArray(uiConfig[key]),
+      key,
+      `${key} array of object used to define ${key} side facets`
+    );
+  });
+
+  if (helper(() => typeof uiConfig.center === 'object', 'center', 'Used to define center view')) {
+    helper(
+      () => Array.isArray(uiConfig.center.main),
+      'center.main',
+      'Used to define center main component'
+    );
+  }
+
+  helper(
+    () => typeof uiConfig.mappingValues === 'object',
+    'mappingValues',
+    'Used to display custom label for some facets values'
+  );
+}

@@ -15,7 +15,7 @@ import {
   SET_FIELD_FACET_SELECTED,
 } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
-import { UIConfigContext } from '../../Contexts/ui-config-context';
+import { checkUIConfigHelper, UIConfigContext } from '../../Contexts/ui-config-context';
 import useDatafari from '../../Hooks/useDatafari';
 import './Search.css';
 
@@ -57,6 +57,7 @@ const Search = () => {
   const { results } = useContext(ResultsContext);
   const { uiDefinition } = useContext(UIConfigContext);
   const { mappingValues = {} } = uiDefinition;
+  checkUIConfig(uiDefinition);
 
   const [selectTab, setSelectTab] = useState(MAIN_TAB);
   const [panelTabs] = useState(DEFAULT_PANEL_TABS);
@@ -190,5 +191,15 @@ function formatTabValue(...props) {
   return props.reduce(
     (acc, current, index) => (index === 0 ? current : acc + TAB_VALUE_SEPARATOR + current),
     ''
+  );
+}
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+
+  helper(
+    () => typeof uiConfig.mappingValues === 'object',
+    'mappingValues',
+    'Object map used to display custom label in tab'
   );
 }

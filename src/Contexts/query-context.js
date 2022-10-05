@@ -1,6 +1,10 @@
 import React, { useCallback, useContext, useReducer } from 'react';
 import produce from 'immer';
-import { DEFAULT_FIELDS, UIConfigContext } from '../Contexts/ui-config-context';
+import {
+  checkUIConfigHelper,
+  DEFAULT_FIELDS,
+  UIConfigContext,
+} from '../Contexts/ui-config-context';
 
 export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
 export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
@@ -298,6 +302,7 @@ const QueryContextProvider = (props) => {
   const { uiDefinition } = useContext(UIConfigContext);
   const { queryParams = { fields: DEFAULT_FIELDS } } = uiDefinition;
   const { fields = DEFAULT_FIELDS } = queryParams;
+  checkUIConfig(uiDefinition);
 
   const buildQueryStringFromParams = useCallback((queryParams) => {
     let result = '';
@@ -828,3 +833,20 @@ const QueryContextProvider = (props) => {
 };
 
 export default QueryContextProvider;
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+  if (
+    helper(
+      () => typeof uiConfig.queryParams === 'object',
+      'queryParams',
+      'Used to define solr query params. Refer to the documentation'
+    )
+  ) {
+    helper(
+      () => Array.isArray(uiConfig.queryParams.fields),
+      'queryParams.fields',
+      'Array used to define default solr fields'
+    );
+  }
+}

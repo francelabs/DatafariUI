@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { QueryContext } from '../../Contexts/query-context';
 import { SearchContext, SearchContextActions } from '../../Contexts/search-context';
-import { UIConfigContext } from '../../Contexts/ui-config-context';
+import { checkUIConfigHelper, UIConfigContext } from '../../Contexts/ui-config-context';
 import useHotkey, { ACTIVE_SEARCH_BAR_ID, DEACTIVE_SEARCH_BAR_ID } from '../../Hooks/useHotkey';
 import AutocompleteContainer from './Autocompletes/AutocompleteContainer/AutocompleteContainer';
 import './SimpleSearchBar.css';
@@ -124,9 +124,10 @@ const SimpleSearchBar = () => {
   const history = useHistory();
   const { searchState, searchDispatch } = useContext(SearchContext);
 
-  const {
-    uiDefinition: { hotkeys = {}, searchBar: { backdrop = false } = { backdrop: false } },
-  } = useContext(UIConfigContext);
+  const { uiDefinition } = useContext(UIConfigContext);
+  checkUIConfig(uiDefinition);
+
+  const { hotkeys = {}, searchBar: { backdrop = false } = { backdrop: false } } = uiDefinition;
 
   // Hotkey handlers
   const handleHotkey = useCallback(() => inputSearchRef.current.focus(), [inputSearchRef]);
@@ -307,3 +308,14 @@ const SimpleSearchBar = () => {
 };
 
 export default SimpleSearchBar;
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+  if (typeof uiConfig.searchBar === 'object') {
+    helper(
+      () => typeof uiConfig.searchBar.backdrop === 'boolean',
+      'searchBar.backdrop',
+      'Type boolean.'
+    );
+  }
+}

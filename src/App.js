@@ -27,7 +27,10 @@ import { useTranslation } from 'react-i18next';
 import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
 import useTitleUpdater from './Hooks/useTitleUpdater';
 import HomePage from './Pages/HomePage/HomePage';
-import UIConfigContextProvider, { UIConfigContext } from './Contexts/ui-config-context';
+import UIConfigContextProvider, {
+  checkUIConfigHelper,
+  UIConfigContext,
+} from './Contexts/ui-config-context';
 import SearchContextProvider from './Contexts/search-context';
 import Banner from './Components/Banner';
 
@@ -40,9 +43,10 @@ function Main() {
   const { actions: userActions } = useContext(UserContext);
   const { t } = useTranslation();
 
-  const {
-    uiDefinition: { devMode = { enable: false } },
-  } = useContext(UIConfigContext);
+  const { uiDefinition } = useContext(UIConfigContext);
+  const { devMode = { enable: false } } = uiDefinition;
+
+  checkUIConfig(uiDefinition);
 
   useTitleUpdater();
 
@@ -119,3 +123,14 @@ function App() {
 }
 
 export default App;
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+  if (helper(() => typeof uiConfig.devMode === 'object', 'devMode')) {
+    helper(
+      () => typeof uiConfig.devMode.enable === 'boolean',
+      'devMode.enable',
+      'Type: boolean. Used to display dev mode banner'
+    );
+  }
+}
