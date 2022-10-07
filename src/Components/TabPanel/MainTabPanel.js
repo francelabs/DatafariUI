@@ -254,9 +254,11 @@ function checkUIConfig(uiConfig) {
     );
   }
 
-  helper(
-    () => typeof uiConfig.mappingValues === 'object',
-    'mappingValues',
-    'Used to display custom label for some facets values'
-  );
+  if (uiConfig.mappingValues) {
+    helper(
+      () => typeof uiConfig.mappingValues === 'object',
+      'mappingValues',
+      'Used to display custom label for some facets values'
+    );
+  }
 }

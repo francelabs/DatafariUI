@@ -311,7 +311,7 @@ export default SimpleSearchBar;
 
 function checkUIConfig(uiConfig) {
   const helper = checkUIConfigHelper(uiConfig);
-  if (typeof uiConfig.searchBar === 'object') {
+  if (typeof uiConfig.searchBar === 'object' && uiConfig.searchBar.backdrop) {
     helper(
       () => typeof uiConfig.searchBar.backdrop === 'boolean',
       'searchBar.backdrop',

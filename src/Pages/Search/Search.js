@@ -197,9 +197,11 @@ function formatTabValue(...props) {
 function checkUIConfig(uiConfig) {
   const helper = checkUIConfigHelper(uiConfig);
 
-  helper(
-    () => typeof uiConfig.mappingValues === 'object',
-    'mappingValues',
-    'Object map used to display custom label in tab'
-  );
+  if (uiConfig.mappingValues) {
+    helper(
+      () => typeof uiConfig.mappingValues === 'object',
+      'mappingValues',
+      'Object map used to display custom label in tab'
+    );
+  }
 }
