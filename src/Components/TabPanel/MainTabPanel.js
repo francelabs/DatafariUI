@@ -15,6 +15,7 @@ import RangeFacet from '../Facet/RangeFacet/RangeFacet';
 import ResultsList from '../ResultsList/ResultsList';
 import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
+import useNextId from '../../Hooks/useNextId';
 
 const allowedElementTypes = [
   'FieldFacet',
@@ -77,6 +78,8 @@ function MainTabPanel() {
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const { nextId } = useNextId();
+
   const buildFieldFacet = useCallback(
     (element) => {
       let result = null;
@@ -85,6 +88,7 @@ function MainTabPanel() {
         const maxShow = element.maxShow ? element.maxShow : 5;
         return (
           <FieldFacet
+            key={nextId()}
             title={t(element.title)}
             field={element.field}
             op={element.op}
@@ -112,6 +116,7 @@ function MainTabPanel() {
         const multipleSelect = element.multipleSelect ? element.multipleSelect : false;
         return (
           <QueryFacet
+            key={element.id}
             title={t(element.title)}
             queries={element.queries}
             labels={element.labels.map((label) => t(label))}
@@ -141,6 +146,7 @@ function MainTabPanel() {
       if (element.separator && element.title && element.field) {
         return (
           <HierarchicalFacet
+            key={nextId()}
             field={element.field}
             title={t(element.title)}
             separator={element.separator}
@@ -174,7 +180,7 @@ function MainTabPanel() {
         case 'QueryFacet':
           return buildQueryFacet(element, createElementFromParameters);
         case 'DateFacetCustom':
-          return <DateFacetCustom />;
+          return <DateFacetCustom key={nextId()} />;
         case 'RangeFacet':
           const RangeFacetProps = { dividerClassName: classes.facetDivider, ...element };
           let RangeFacetComponent = RangeFacet; // Default range facet

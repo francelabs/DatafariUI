@@ -46,8 +46,7 @@ const ResultsList = ({
 
   const [folderLinkSources] = useFolderLinkSources(folderSources);
 
-  const displayData =
-    facetData && Array.isArray(facetData) ? facetData : defaultData;
+  const displayData = facetData && Array.isArray(facetData) ? facetData : defaultData;
 
   // Retrieve favorite status on mount (getFavortiesStatus should be constant)
   useEffect(() => {
@@ -138,9 +137,7 @@ const ResultsList = ({
             if (modifQueries[reqIdentifier] === 'add') {
               return currentFavorites.concat(reqIdentifier);
             } else {
-              return currentFavorites.filter(
-                (docID) => docID !== reqIdentifier
-              );
+              return currentFavorites.filter((docID) => docID !== reqIdentifier);
             }
           });
           setModifQueries((currentQueries) => {
@@ -152,15 +149,7 @@ const ResultsList = ({
         }
       }
     }
-  }, [
-    data,
-    error,
-    isLoading,
-    reqIdentifier,
-    setFavorites,
-    modifQueries,
-    setModifQueries,
-  ]);
+  }, [data, error, isLoading, reqIdentifier, setFavorites, modifQueries, setModifQueries]);
 
   return (
     <>
@@ -181,7 +170,7 @@ const ResultsList = ({
         /* Display the results list, each result is rendered by a ResultEntry component */
         <List className={classes.resultsContainer}>
           {results.results.map((result, index) => (
-            <React.Fragment>
+            <React.Fragment key={index}>
               <ResultEntry
                 {...result}
                 position={results.start + index}
@@ -192,9 +181,7 @@ const ResultsList = ({
                     ? removeFavoriteCallback(result.id)
                     : addFavoriteCallback(
                         result.id,
-                        Array.isArray(result.title)
-                          ? result.title[0]
-                          : result.title
+                        Array.isArray(result.title) ? result.title[0] : result.title
                       )
                 }
                 data={displayData}

@@ -1,35 +1,29 @@
-import React, { useContext } from "react";
-import "./Pager.css";
-import { QueryContext, SET_PAGE } from "../../Contexts/query-context";
-import { ResultsContext } from "../../Contexts/results-context";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import {
-  IconButton,
-  Button,
-  makeStyles,
-  Divider,
-  Grid,
-} from "@material-ui/core";
-import { useTranslation } from "react-i18next";
+import React, { useContext } from 'react';
+import './Pager.css';
+import { QueryContext, SET_PAGE } from '../../Contexts/query-context';
+import { ResultsContext } from '../../Contexts/results-context';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { IconButton, Button, makeStyles, Divider, Grid } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
   pagerContainer: {
     border: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.background.paper,
-    width: "fit-content",
+    width: 'fit-content',
 
-    "& button": {
-      [theme.breakpoints.down("sm")]: {
+    '& button': {
+      [theme.breakpoints.down('sm')]: {
         minWidth: 36,
         minHeight: 24,
-        fontSize: "0.875em",
+        fontSize: '0.875em',
       },
     },
   },
 
   currentPage: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 }));
 
@@ -40,8 +34,7 @@ const Pager = (props) => {
   const { results } = useContext(ResultsContext);
 
   const lastPageRows = results.numFound % query.rows;
-  const maxPage =
-    (results.numFound - lastPageRows) / query.rows + (lastPageRows > 0 ? 1 : 0);
+  const maxPage = (results.numFound - lastPageRows) / query.rows + (lastPageRows > 0 ? 1 : 0);
 
   const onClickHandler = (i) => {
     return () => {
@@ -53,10 +46,7 @@ const Pager = (props) => {
 
   if (query.page > 1) {
     pages.push(
-      <IconButton
-        onClick={onClickHandler(query.page - 1)}
-        aria-label={t("Previous page")}
-      >
+      <IconButton onClick={onClickHandler(query.page - 1)} aria-label={t('Previous page')}>
         <ChevronLeftIcon />
       </IconButton>
     );
@@ -64,10 +54,7 @@ const Pager = (props) => {
   if (maxPage <= 5) {
     for (let i = 1; i <= maxPage; i++) {
       pages.push(
-        <Button
-          className={query.page === i && classes.currentPage}
-          onClick={onClickHandler(i)}
-        >
+        <Button className={query.page === i && classes.currentPage} onClick={onClickHandler(i)}>
           {i}
         </Button>
       );
@@ -77,9 +64,8 @@ const Pager = (props) => {
       for (let i = 1; (query.page === 3 && i <= 4) || i <= 3; i++) {
         pages.push(
           <Button
-            className={query.page === i ? classes.currentPage : ""}
-            onClick={onClickHandler(i)}
-          >
+            className={query.page === i ? classes.currentPage : ''}
+            onClick={onClickHandler(i)}>
             {i}
           </Button>
         );
@@ -90,16 +76,11 @@ const Pager = (props) => {
       pages.push(<Button onClick={onClickHandler(1)}>1</Button>);
       pages.push(<Button disabled>...</Button>);
       if (query.page === maxPage - 2) {
-        pages.push(
-          <Button onClick={onClickHandler(maxPage - 3)}>{maxPage - 3}</Button>
-        );
+        pages.push(<Button onClick={onClickHandler(maxPage - 3)}>{maxPage - 3}</Button>);
       }
       for (let i = maxPage - 2; i <= maxPage; i++) {
         pages.push(
-          <Button
-            className={query.page === i && classes.currentPage}
-            onClick={onClickHandler(i)}
-          >
+          <Button className={query.page === i && classes.currentPage} onClick={onClickHandler(i)}>
             {i}
           </Button>
         );
@@ -110,10 +91,7 @@ const Pager = (props) => {
       let pageNum = parseInt(query.page, 10);
       for (let i = pageNum - 1; i <= pageNum + 1; i++) {
         pages.push(
-          <Button
-            className={pageNum === i && classes.currentPage}
-            onClick={onClickHandler(i)}
-          >
+          <Button className={pageNum === i && classes.currentPage} onClick={onClickHandler(i)}>
             {i}
           </Button>
         );
@@ -124,10 +102,7 @@ const Pager = (props) => {
   }
   if (query.page < maxPage) {
     pages.push(
-      <IconButton
-        onClick={onClickHandler(query.page + 1)}
-        aria-label={t("Next page")}
-      >
+      <IconButton onClick={onClickHandler(query.page + 1)} aria-label={t('Next page')}>
         <ChevronRightIcon />
       </IconButton>
     );
@@ -139,12 +114,10 @@ const Pager = (props) => {
       <Grid container alignItems="center" className={classes.pagerContainer}>
         {pages.map((element, index) => {
           return (
-            <>
+            <React.Fragment key={index}>
               {element}
-              {index < pages.length - 1 && (
-                <Divider orientation="vertical" flexItem />
-              )}
-            </>
+              {index < pages.length - 1 && <Divider orientation="vertical" flexItem />}
+            </React.Fragment>
           );
         })}
       </Grid>
