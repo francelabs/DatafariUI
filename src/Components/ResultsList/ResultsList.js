@@ -6,6 +6,7 @@ import Spinner from '../Spinner/Spinner';
 import { makeStyles, Divider, List } from '@material-ui/core';
 import useFavorites from '../../Hooks/useFavorites';
 import useFolderLinkSources from '../../Hooks/useFolderLinkSources';
+import useNextId from '../../Hooks/useNextId';
 
 const useStyles = makeStyles((theme) => ({
   resultsContainer: {
@@ -45,6 +46,7 @@ const ResultsList = ({
   const [favoritesEnabled, setFavoritesEnabled] = useState(false);
 
   const [folderLinkSources] = useFolderLinkSources(folderSources);
+  const { nextId } = useNextId();
 
   const displayData = facetData && Array.isArray(facetData) ? facetData : defaultData;
 
@@ -170,7 +172,7 @@ const ResultsList = ({
         /* Display the results list, each result is rendered by a ResultEntry component */
         <List className={classes.resultsContainer}>
           {results.results.map((result, index) => (
-            <React.Fragment key={index}>
+            <React.Fragment key={nextId()}>
               <ResultEntry
                 {...result}
                 position={results.start + index}

@@ -161,15 +161,15 @@ function MainTabPanel() {
 
   const buildSearchInformation = useCallback((element) => {
     return (
-      <>
+      <React.Fragment key={nextId()}>
         <SearchInformation data={element.data} />
         <Promolink />
-      </>
+      </React.Fragment>
     );
   }, []);
 
   const buildResultList = useCallback((element) => {
-    return <ResultsList {...element} />;
+    return <ResultsList key={nextId()} {...element} />;
   }, []);
 
   const createElementFromParameters = (element) => {
@@ -189,7 +189,7 @@ function MainTabPanel() {
             RangeFacetComponent = DateRangeFacet;
           }
 
-          return <RangeFacetComponent {...RangeFacetProps} />;
+          return <RangeFacetComponent key={nextId} {...RangeFacetProps} />;
         case 'HierarchicalFacet':
           return buildHierarchicalFacet(element);
         case 'SearchInformation':
@@ -197,7 +197,7 @@ function MainTabPanel() {
         case 'ResultsList':
           return buildResultList(element);
         case 'AggregatorFacet':
-          return <AggregatorFacet {...element} />;
+          return <AggregatorFacet key={nextId()} {...element} />;
         default:
           return null;
       }
