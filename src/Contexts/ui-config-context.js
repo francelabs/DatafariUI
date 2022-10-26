@@ -45,13 +45,13 @@ const DEFAULT_UI = {
     },
     {
       type: 'QueryFacet',
-      title: 'Creation Date',
+      title: 'Modification Date',
       queries: [
-        'creation_date:[NOW/DAY TO NOW]',
-        'creation_date:[NOW/DAY-7DAY TO NOW/DAY]',
-        'creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]',
-        'creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
-        'creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
+        'last_modified:[NOW/DAY TO NOW]',
+        'last_modified:[NOW/DAY-7DAY TO NOW/DAY]',
+        'last_modified:[NOW/DAY-30DAY TO NOW/DAY-8DAY]',
+        'last_modified:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
+        'last_modified:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
       ],
       labels: [
         'Today',
@@ -64,7 +64,7 @@ const DEFAULT_UI = {
       minShow: 5,
       children: [
         {
-          type: 'DateFacetCustom',
+          type: 'DateFacetModificationDateCustom',
         },
       ],
     },

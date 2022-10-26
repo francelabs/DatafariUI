@@ -24,7 +24,7 @@
       "variant": "children_only",
       "children": [
         {
-          "type": "DateFacetCustom"
+          "type": "DateFacetModificationDateCustom"
         }
       ]
     },
