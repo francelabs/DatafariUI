@@ -156,8 +156,8 @@
       {
         "type": "ENTITY",
         "props": {
-          "field": "authorTokens",
-          "suggester": "suggestAuthors",
+          "field": "entity_person",
+          "suggester": "suggestEntityAuthors",
           "dictionary": "suggesterEntityAuthors",
           "asFacet": false,
           "maxSuggestion": 5,
