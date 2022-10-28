@@ -1,28 +1,19 @@
-import { makeStyles, MenuList } from "@material-ui/core";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import {
-  SearchContext,
-  SearchContextActions,
-} from "../../../../Contexts/search-context";
-import AutocompleteSuggester from "../Suggester/AutocompleteSuggester";
-import useSuggesters from "../Suggester/useSuggesters";
+import { makeStyles, MenuList } from '@material-ui/core';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { SearchContext, SearchContextActions } from '../../../../Contexts/search-context';
+import AutocompleteSuggester from '../Suggester/AutocompleteSuggester';
+import useSuggesters from '../Suggester/useSuggesters';
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
     backgroundColor: theme.palette.grey[200],
-    position: "absolute",
-    width: "100%",
+    position: 'absolute',
+    width: '100%',
     borderBottomLeftRadius: theme.shape.borderRadius,
     borderBottomRightRadius: theme.shape.borderRadius,
     zIndex: theme.zIndex.drawer,
-    boxShadow: "0px 15px 15px -15px " + theme.palette.grey[500],
-    padding: "unset", // Padding is from MUI
+    boxShadow: '0px 15px 15px -15px ' + theme.palette.grey[500],
+    padding: 'unset', // Padding is from MUI
   },
 }));
 
@@ -54,9 +45,7 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
   useEffect(() => {
     searchDispatch(
       SearchContextActions.setSuggesters(
-        autocompletePool.map((suggester, index) =>
-          getSuggesterKeyId(suggester.type, index)
-        )
+        autocompletePool.map((suggester, index) => getSuggesterKeyId(suggester.type, index))
       )
     );
   }, [autocompletePool, searchDispatch, getSuggesterKeyId]);
@@ -69,14 +58,24 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
     }
   }, [searchState]);
 
+  const handleClick = (type, suggestion) => {
+    const suggesterRef = autocompleteRefs.current[type];
+    if (suggesterRef) {
+      suggesterRef.onSelect(suggestion, (formattedValue) => onClick(formattedValue));
+
+      // Reset selection
+      setCurrentIndex(-1);
+      setSelection();
+    }
+  };
+
   // Effect on keydown events
   useEffect(() => {
     if (inputRef) {
       const handleKeyDown = (e) => {
-        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           e.preventDefault();
           e.stopPropagation();
-
           // Build root suggestions based on each suggester and key/ID, with their suggestions and their corresponding index
           // Result is like following :
           // {id: 'BASIC-0', suggestion: 'enron', index: 0}
@@ -92,10 +91,7 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
 
           const rootSuggestions = autocompletePool
             .map((suggester, indexSuggester) => {
-              const suggesterRef = getSuggesterById(
-                suggester.type,
-                indexSuggester
-              );
+              const suggesterRef = getSuggesterById(suggester.type, indexSuggester);
               return suggesterRef.getSuggestions().map((suggestion, index) => ({
                 id: getSuggesterKeyId(suggester.type, indexSuggester),
                 suggestion,
@@ -105,28 +101,33 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
             .flat();
 
           const index =
-            e.key === "ArrowDown"
+            e.key === 'ArrowDown'
               ? Math.min(currentIndex + 1, rootSuggestions.length - 1)
               : Math.max(currentIndex - 1, 0);
 
           if (index > -1) {
             setCurrentIndex(index);
             const selectSuggestion = rootSuggestions[index];
-            const suggesterRef = autocompleteRefs.current[selectSuggestion.id];
-            suggesterRef.onSelect(
-              selectSuggestion.suggestion,
-              (formattedValue) => onSelect(formattedValue, false)
-            );
+            onSelect(selectSuggestion.suggestion, false);
+
             setSelection(selectSuggestion);
+          }
+        } else if (e.key === 'Enter') {
+          if (selection) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            handleClick(selection.id, selection.suggestion);
           }
         }
       };
 
-      inputRef.addEventListener("keydown", handleKeyDown);
+      inputRef.addEventListener('keydown', handleKeyDown);
 
-      return () => inputRef.removeEventListener("keydown", handleKeyDown);
+      return () => inputRef.removeEventListener('keydown', handleKeyDown);
     }
   }, [
+    selection,
     currentIndex,
     autocompletePool,
     getSuggesterById,
@@ -134,19 +135,6 @@ const AutocompleteContainer = ({ inputRef, onSelect, onClick }) => {
     inputRef,
     onSelect,
   ]);
-
-  const handleClick = (type, suggestion) => {
-    const suggesterRef = autocompleteRefs.current[type];
-    if (suggesterRef) {
-      suggesterRef.onSelect(suggestion, (formattedValue) =>
-        onClick(formattedValue)
-      );
-
-      // Reset selection
-      setCurrentIndex(-1);
-      setSelection();
-    }
-  };
 
   return (
     <div>
