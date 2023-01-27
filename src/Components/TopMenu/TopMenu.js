@@ -29,9 +29,7 @@ import UserMenu from '../UserMenu/UserMenu';
 const useStyles = makeStyles((theme) => ({
   topbar: {
     backgroundImage:
-      'url(' +
-      process.env.PUBLIC_URL +
-      '/images/background_datafari_banner_big.png)',
+      'url(' + process.env.PUBLIC_URL + '/images/background_datafari_banner_big.png)',
   },
 
   toolbar: {
@@ -139,7 +137,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TopMenu = () => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const classes = useStyles();
   const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
   const [langMenuAnchorEl, setLangMenuAnchorEl] = useState(null);
@@ -215,8 +213,7 @@ const TopMenu = () => {
   }, [clear, data, error, history, isLoading]);
 
   const loginURL = new URL(apiEndpointsContext.authURL);
-  loginURL.search =
-    '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
+  loginURL.search = '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
   const adminURL = new URL(apiEndpointsContext.adminURL);
   adminURL.search = `?lang=${i18n.language}`;
 
@@ -231,8 +228,7 @@ const TopMenu = () => {
       keepMounted
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
+      onClose={handleMobileMenuClose}>
       <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
       {userState.user &&
         userState.user.roles &&
@@ -242,8 +238,7 @@ const TopMenu = () => {
             onClick={handleMobileMenuClose}
             component={Link}
             href={adminURL}
-            target="_blank"
-          >
+            target="_blank">
             {t('Admin')}
           </MenuItem>
         )}
@@ -271,23 +266,17 @@ const TopMenu = () => {
               <IconButton
                 aria-label={t('Language selection')}
                 color="inherit"
-                onClick={handleOpenLangMenu}
-              >
+                onClick={handleOpenLangMenu}>
                 <LanguageIcon fontSize="large" />
               </IconButton>
 
               <IconButton
                 aria-label={t('Feedbacks')}
                 color="inherit"
-                onClick={handleOpenFeedbacksMenu}
-              >
+                onClick={handleOpenFeedbacksMenu}>
                 <FeedbackOutlinedIcon fontSize="large" />
               </IconButton>
-              <IconButton
-                aria-label={t('Help')}
-                color="inherit"
-                onClick={handleOpenHelpMenu}
-              >
+              <IconButton aria-label={t('Help')} color="inherit" onClick={handleOpenHelpMenu}>
                 <HelpOutlineIcon fontSize="large" />
               </IconButton>
               {userState.user === null ? (
@@ -296,8 +285,7 @@ const TopMenu = () => {
                   aria-label="Login"
                   aria-haspopup="true"
                   href={`${loginURL}`}
-                  color="inherit"
-                >
+                  color="inherit">
                   <SvgIcon component={LoginIcon} alt="Login" />
                 </IconButton>
               ) : (
@@ -307,11 +295,8 @@ const TopMenu = () => {
                   aria-controls={menuId}
                   aria-haspopup="true"
                   onClick={handleOpenUserMenu}
-                  color="inherit"
-                >
-                  <Avatar fontSize="small">
-                    {userState.user.name.substring(0, 2)}
-                  </Avatar>
+                  color="inherit">
+                  <Avatar fontSize="small">{userState.user.name.substring(0, 2)}</Avatar>
                 </IconButton>
               )}
             </div>
@@ -322,8 +307,7 @@ const TopMenu = () => {
                   aria-label="Login"
                   aria-haspopup="true"
                   href={`${loginURL}`}
-                  color="inherit"
-                >
+                  color="inherit">
                   <SvgIcon component={LoginIcon} alt="Login" />
                 </IconButton>
               ) : (
@@ -332,8 +316,7 @@ const TopMenu = () => {
                   aria-controls={mobileMenuId}
                   aria-haspopup="true"
                   onClick={handleMobileMenuOpen}
-                  color="inherit"
-                >
+                  color="inherit">
                   <MoreIcon />
                 </IconButton>
               )}

@@ -202,5 +202,10 @@
   "Aggregator facet": "Aggregator",
   "url": "url",
   "Date Range": "Date range",
-  "promolink": "Annonce"
+  "promolink": "Annonce",
+  "Connection with the server is lost": "The connection with the server is lost",
+  "Do not continue your work until connection is restored": "DO NOT continue your work until connection is restored !",
+  "Retry now": "Retry now",
+  "New try in {{time}}": "New try in {{time}}...",
+  "Connection is lost": "Connection is lost !"
 }

@@ -52,7 +52,7 @@ const UserPreferencesModal = (props) => {
   const classes = useStyles();
 
   const { isLoading, data, error, sendRequest } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { uiDefinition, defaultUiDefinition } = useContext(UIConfigContext);
   const { actions } = useContext(UserContext);
 

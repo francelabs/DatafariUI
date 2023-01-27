@@ -4,7 +4,7 @@ import useHttp from './useHttp';
 
 const useFavorites = () => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getFavorites = useCallback(
     (queryID, docIDs) => {
@@ -53,12 +53,7 @@ const useFavorites = () => {
 
   const getFavoritesStatus = useCallback(
     (queryID) => {
-      sendRequest(
-        `${apiEndpointsContext.favoritesStatusURL}`,
-        'GET',
-        null,
-        queryID
-      );
+      sendRequest(`${apiEndpointsContext.favoritesStatusURL}`, 'GET', null, queryID);
     },
     [apiEndpointsContext.favoritesStatusURL, sendRequest]
   );

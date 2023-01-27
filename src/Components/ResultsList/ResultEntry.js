@@ -163,7 +163,7 @@ const dataNames = {
 };
 
 const ResultEntry = (props) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -197,9 +197,7 @@ const ResultEntry = (props) => {
         return (
           accumulator +
           props.highlighting[hlKey].reduce((innerAccu, value) => {
-            let formattedValue = value
-              .replace(/\uFFFD/g, ' ')
-              .replace(/(\s*\n){2,}/gm, '\n\n');
+            let formattedValue = value.replace(/\uFFFD/g, ' ').replace(/(\s*\n){2,}/gm, '\n\n');
             return innerAccu + formattedValue;
           }, '')
         );
@@ -219,9 +217,7 @@ const ResultEntry = (props) => {
           if (match.index !== lastIndex) {
             results.push(decode(snippet.substring(lastIndex, match.index)));
           }
-          results.push(
-            <em className={classes.highlight}>{decode(match[1])}</em>
-          );
+          results.push(<em className={classes.highlight}>{decode(match[1])}</em>);
           lastIndex = highlightExtract.lastIndex;
         }
         results.push(decode(snippet.substring(lastIndex, snippet.length)));
@@ -253,11 +249,7 @@ const ResultEntry = (props) => {
     if (title.length > 50) {
       title = (
         <Tooltip title={title} placement="right" aria-label={title}>
-          <span>
-            {title.substring(0, 15) +
-              '...' +
-              title.substring(title.length - 15)}
-          </span>
+          <span>{title.substring(0, 15) + '...' + title.substring(title.length - 15)}</span>
         </Tooltip>
       );
     }
@@ -287,10 +279,7 @@ const ResultEntry = (props) => {
         result = (
           <Tooltip title={props.url} placement="right" aria-label={props.url}>
             <span>
-              {props.url.substring(
-                0,
-                props.url.lastIndexOf('/') - props.url.length + maxSize
-              ) +
+              {props.url.substring(0, props.url.lastIndexOf('/') - props.url.length + maxSize) +
                 '...' +
                 props.url.substring(props.url.lastIndexOf('/'))}
             </span>
@@ -344,8 +333,7 @@ const ResultEntry = (props) => {
 
   return (
     <ListItem key={props.url} className={classes.resultContainer}>
-      {(data.includes(dataNames.logo) ||
-        data.includes(dataNames.previewButton)) && (
+      {(data.includes(dataNames.logo) || data.includes(dataNames.previewButton)) && (
         <ListItemIcon className={classes.iconsContainer}>
           {data.includes(dataNames.logo) && (
             <Avatar
@@ -360,11 +348,7 @@ const ResultEntry = (props) => {
       <ListItemText
         primary={
           data.includes(dataNames.title) ? (
-            <Link
-              color="secondary"
-              href={prepareDocURL()}
-              target={docLinkTarget}
-            >
+            <Link color="secondary" href={prepareDocURL()} target={docLinkTarget}>
               {prepareTitle()}
             </Link>
           ) : null
@@ -384,14 +368,9 @@ const ResultEntry = (props) => {
 
             {/* FOLDER LINK */}
             {props['folderLinkSources'] &&
-              props['folderLinkSources'].indexOf(props['repo_source']) !==
-                -1 && (
+              props['folderLinkSources'].indexOf(props['repo_source']) !== -1 && (
                 <div>
-                  <Link
-                    color="secondary"
-                    href={prepareFolderURL()}
-                    target={props.folderTarget}
-                  >
+                  <Link color="secondary" href={prepareFolderURL()} target={props.folderTarget}>
                     {t('Open Folder')}
                   </Link>
                 </div>
@@ -403,8 +382,7 @@ const ResultEntry = (props) => {
                 color="secondary"
                 component={RouterLink}
                 to={preparePreviewURL()}
-                target={props.previewTarget}
-              >
+                target={props.previewTarget}>
                 {t('Open preview')}
               </Link>
             )}
@@ -430,11 +408,7 @@ const ResultEntry = (props) => {
       {/* Favorite badge, shown only if the user is authenticated and favorites are active */}
       {props.bookmarkEnabled && userState.user && (
         <div className={classes.bookmarkAction}>
-          <IconButton
-            edge="end"
-            aria-label="bookmark"
-            onClick={props.bookmarkClickCallback}
-          >
+          <IconButton edge="end" aria-label="bookmark" onClick={props.bookmarkClickCallback}>
             {props.bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
           </IconButton>
         </div>

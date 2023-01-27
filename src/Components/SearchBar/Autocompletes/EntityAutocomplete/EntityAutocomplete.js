@@ -1,11 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  MenuItem,
-  ListSubheader,
-  Typography,
-  Divider,
-  makeStyles,
-} from '@material-ui/core';
+import { MenuItem, ListSubheader, Typography, Divider, makeStyles } from '@material-ui/core';
 import useHttp from '../../../../Hooks/useHttp';
 import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 const EntityAutocomplete = (props) => {
   const { t } = useTranslation();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,9 +82,7 @@ const EntityAutocomplete = (props) => {
         data.suggest[dictionary][suggesterQueryText] &&
         data.suggest[dictionary][suggesterQueryText].suggestions
       ) {
-        const newSuggestions = data.suggest[dictionary][
-          suggesterQueryText
-        ].suggestions
+        const newSuggestions = data.suggest[dictionary][suggesterQueryText].suggestions
           .filter((element) => {
             return element && element.term;
           })
@@ -120,10 +112,7 @@ const EntityAutocomplete = (props) => {
     (value) => {
       return () => {
         if (onSelect) {
-          let queryWithLastTermRemoved = queryText.substring(
-            0,
-            queryText.lastIndexOf(' ')
-          );
+          let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
           queryWithLastTermRemoved =
             queryWithLastTermRemoved.length === 0
               ? queryWithLastTermRemoved
@@ -144,10 +133,7 @@ const EntityAutocomplete = (props) => {
           // will be only the one selected in the autocomplete list
           let selected = [value];
 
-          let queryWithLastTermRemoved = queryText.substring(
-            0,
-            queryText.lastIndexOf(' ')
-          );
+          let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
           // Treat the selection as a new search launching.
           // Keep the text entered before the entity as the search text
           // and add the entity as a facet selection.
@@ -182,10 +168,7 @@ const EntityAutocomplete = (props) => {
     suggestions &&
     suggestions.length !== 0 && (
       <>
-        <ListSubheader
-          className={classes.autocompleteTitleContainer}
-          disableSticky={true}
-        >
+        <ListSubheader className={classes.autocompleteTitleContainer} disableSticky={true}>
           <Typography className={classes.autocompleteTitle}>
             {t('Suggested {{entityType}}', {
               entityType: entityType,
@@ -201,11 +184,7 @@ const EntityAutocomplete = (props) => {
         {suggestions &&
           suggestions.length > 0 &&
           suggestions.map((element) => (
-            <MenuItem
-              onClick={
-                asFacet ? onClickForFacet(element) : onClickClassic(element)
-              }
-            >
+            <MenuItem onClick={asFacet ? onClickForFacet(element) : onClickClassic(element)}>
               {element}
             </MenuItem>
           ))}

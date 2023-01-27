@@ -4,7 +4,7 @@ import useHttp from './useHttp';
 
 const useEmailsAdmin = () => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getEmailsAdmin = useCallback(
     (queryID, docIDs) => {

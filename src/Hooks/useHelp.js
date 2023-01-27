@@ -4,16 +4,9 @@ import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
 const useHelp = () => {
-  const {
-    isLoading,
-    data,
-    error,
-    sendRequest,
-    reqIdentifier,
-    clear,
-  } = useHttp();
+  const { isLoading, data, error, sendRequest, reqIdentifier, clear } = useHttp();
   const { i18n } = useTranslation();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getHelp = useCallback(
     (queryID) => {

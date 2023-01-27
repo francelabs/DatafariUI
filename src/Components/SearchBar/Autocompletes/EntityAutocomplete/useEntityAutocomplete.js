@@ -18,7 +18,7 @@ const useEntityAutocomplete = ({
   title,
   subtitle,
 }) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
 

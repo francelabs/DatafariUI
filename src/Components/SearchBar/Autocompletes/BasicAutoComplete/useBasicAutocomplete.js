@@ -4,7 +4,7 @@ import { ResultsContext } from '../../../../Contexts/results-context';
 import useHttp from '../../../../Hooks/useHttp.js';
 
 const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
 

@@ -3,7 +3,7 @@ import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context'
 import useHttp from '../../../../Hooks/useHttp';
 
 const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, subtitle }) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
 

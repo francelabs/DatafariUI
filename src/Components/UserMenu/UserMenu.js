@@ -23,7 +23,7 @@ const UserMenu = (props) => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(undefined);
   const { isLoading, data, error, sendRequest, clear } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const history = useHistory();
   const { state: userState } = useContext(UserContext);
 

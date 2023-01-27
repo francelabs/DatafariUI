@@ -4,15 +4,8 @@ import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
 const usePrivacyPolicy = () => {
-  const {
-    isLoading,
-    data,
-    error,
-    sendRequest,
-    reqIdentifier,
-    clear,
-  } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { isLoading, data, error, sendRequest, reqIdentifier, clear } = useHttp();
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { i18n } = useTranslation();
 
   const getPrivacyPolicy = useCallback(

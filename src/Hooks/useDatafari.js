@@ -8,7 +8,7 @@ import { DEFAULT_RESULT, ResultsContext, SET_RESULTS } from '../Contexts/results
 import useHttp from './useHttp';
 
 const useDatafari = () => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const baseURL = apiEndpointsContext.searchURL;
   const {
     dispatch: queryDispatch,

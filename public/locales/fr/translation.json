@@ -203,5 +203,10 @@
   "End": "Fin",
   "Month": "Mois",
   "All": "Tout",
-  "This name already exists. Please choose another name": "Ce nom existe déjà. Veuillez choisir un autre nom."
+  "This name already exists. Please choose another name": "Ce nom existe déjà. Veuillez choisir un autre nom.",
+  "Connection with the server is lost": "La connexion avec le serveur a été interrompue !",
+  "Do not continue your work until connection is restored": "NE poursuivez PAS votre travail tant que la connexion n'est pas rétabli !",
+  "Retry now": "Réessayer maintenant",
+  "New try in {{time}}": "Nouvelle tentative dans {{time}}...",
+  "Connection is lost": "Connexion interrompue !"
 }

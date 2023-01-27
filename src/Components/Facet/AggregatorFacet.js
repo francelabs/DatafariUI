@@ -36,7 +36,7 @@ function AggregatorFacet({ title, show = true }) {
   const { t } = useTranslation();
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
 
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
 
   // Request list aggregator

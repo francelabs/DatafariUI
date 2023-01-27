@@ -3,15 +3,8 @@ import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
 const useSavedSearches = () => {
-  const {
-    isLoading,
-    data,
-    error,
-    sendRequest,
-    reqIdentifier,
-    clear,
-  } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { isLoading, data, error, sendRequest, reqIdentifier, clear } = useHttp();
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getEmptySavedSearchObject = useCallback(() => {
     return {

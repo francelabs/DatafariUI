@@ -168,7 +168,9 @@ const uiConfigReducer = (state, action) => {
 };
 
 const UIConfigContextProvider = ({ children }) => {
-  const { getUIDefinitionURL } = useContext(APIEndpointsContext);
+  const {
+    apiEndpointsContext: { getUIDefinitionURL },
+  } = useContext(APIEndpointsContext);
   const { isLoading, error, data, sendRequest } = useHttp();
   const [uiState, dispatch] = useReducer(uiConfigReducer, initialState);
 

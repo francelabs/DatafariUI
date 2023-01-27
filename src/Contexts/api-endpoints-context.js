@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 // Used for context creation, defines all the properties that will
 // be filled below in the provider.
@@ -92,9 +93,37 @@ const APIEndpointsContextProvider = (props) => {
     getUIDefinitionURL: new URL(`${process.env.PUBLIC_URL}/ui-config.json`, window.location.href),
     getThemeURL: new URL(`${process.env.PUBLIC_URL}/theme.json`, window.location.href),
     getAggregatorURL: new URL(`${restAPIBaseURL.pathname}/aggregator`, restAPIBaseURL),
+
+    // Session
+    refreshSessionURL: new URL(`${datafariBaseURL.pathname}/RefreshSession`, datafariBaseURL),
   });
+
+  // HTTP clients
+  const restApiClient = axios.create({
+    baseURL: restAPIBaseURL,
+    headers: {
+      'Content-type': 'application/json',
+    },
+  });
+
+  const baseApiClient = axios.create({
+    baseURL: datafariBaseURL,
+    headers: {
+      'Content-type': 'application/json',
+    },
+  });
+
   return (
-    <APIEndpointsContext.Provider value={value}>{props.children}</APIEndpointsContext.Provider>
+    <APIEndpointsContext.Provider
+      value={{
+        apiEndpointsContext: value,
+        httpClients: {
+          restApiClient,
+          baseApiClient,
+        },
+      }}>
+      {props.children}
+    </APIEndpointsContext.Provider>
   );
 };
 

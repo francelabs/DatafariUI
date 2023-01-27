@@ -83,17 +83,14 @@ const highlightingReducer = (currentHighlighting, action) => {
 };
 
 const Preview = (props) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const baseURL = apiEndpointsContext.searchURL;
   const classes = useStyles();
   const { isLoading, error, data, sendRequest } = useHttp();
   const location = useLocation();
   const [documents, setDocuments] = useState([]);
   const urlParams = new URLSearchParams(location.search);
-  const [highlighting, dispatchHighlighting] = useReducer(
-    highlightingReducer,
-    {}
-  );
+  const [highlighting, dispatchHighlighting] = useReducer(highlightingReducer, {});
   const [textSplit, setTextSplit] = useState([]);
 
   useEffect(() => {
@@ -163,10 +160,7 @@ const Preview = (props) => {
         //   return null;
         // }, null);
         const termCollection = extractTermsFromHighlighting(currentDoc);
-        const [initHighlighting, initTextSplit] = prepareTextSplit(
-          currentDoc,
-          termCollection
-        );
+        const [initHighlighting, initTextSplit] = prepareTextSplit(currentDoc, termCollection);
         termCollection.forEach((term) => {
           initHighlighting[term] = {
             ...initHighlighting[term],
@@ -191,10 +185,7 @@ const Preview = (props) => {
     const termsCollection = [];
     // Fill the termsCollection with the terms found in the query highlighting
     for (const highlightField in fileHighlighting) {
-      if (
-        highlightField.indexOf('content') !== -1 ||
-        highlightField === 'exactContent'
-      ) {
+      if (highlightField.indexOf('content') !== -1 || highlightField === 'exactContent') {
         if (fileHighlighting[highlightField].length > 0) {
           const contentHighlight = fileHighlighting[highlightField][0];
           const termRegex = /<span class="em">(.*?)<\/span>*/gm;

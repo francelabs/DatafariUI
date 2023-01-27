@@ -21,10 +21,7 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import DialogTitle from '../../Components/DialogTitle/DialogTitle';
-import {
-  QueryContext,
-  SET_ELEMENTS_NO_RESET,
-} from '../../Contexts/query-context';
+import { QueryContext, SET_ELEMENTS_NO_RESET } from '../../Contexts/query-context';
 import useHttp from '../../Hooks/useHttp';
 import AdvancedSearchTextField from './AdvancedSearchTextField';
 import AdvancedSearchDateField from './AdvancedSearchDateField';
@@ -65,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdvancedSearchModal = (props) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
   const { t } = useTranslation();
   const classes = useStyles();
@@ -74,8 +71,7 @@ const AdvancedSearchModal = (props) => {
   const [exactFieldsList, setExactFieldsList] = useState(undefined);
   const [autocompleteFields, setAutocompleteFields] = useState(undefined);
   const [fixedValuesFields, setFixedValuesFields] = useState(undefined);
-  const [mappingFieldNameValues, setMappingFieldNameValues] =
-    useState(undefined);
+  const [mappingFieldNameValues, setMappingFieldNameValues] = useState(undefined);
   const [baseSearch, setBaseSearch] = useState({
     all_words_value: undefined,
     exact_expression_value: undefined,
@@ -92,297 +88,245 @@ const AdvancedSearchModal = (props) => {
     }
   }, []);
 
-  const extractFilterFromText = useCallback(
-    (text, negativeExpression, isBasicSearchText) => {
-      let all_words_value = '';
-      let exact_expression_value = '';
-      let at_least_one_word_value = '';
-      let none_of_these_words_value = '';
+  const extractFilterFromText = useCallback((text, negativeExpression, isBasicSearchText) => {
+    let all_words_value = '';
+    let exact_expression_value = '';
+    let at_least_one_word_value = '';
+    let none_of_these_words_value = '';
 
-      // Regex that will match every 'AND expression' (ie [word] AND [word])
-      const andExpressionRegex =
-        /[^\s\[\(\]\)\-\"(AND|OR)]+\sAND\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
-      // Regex that will match every 'OR expression' (ie [word] OR [word])
-      const orExpressionRegex =
-        /[^\s\[\(\]\)\-\"(AND|OR)]+\sOR\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
+    // Regex that will match every 'AND expression' (ie [word] AND [word])
+    const andExpressionRegex = /[^\s\[\(\]\)\-\"(AND|OR)]+\sAND\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
+    // Regex that will match every 'OR expression' (ie [word] OR [word])
+    const orExpressionRegex = /[^\s\[\(\]\)\-\"(AND|OR)]+\sOR\s[^\s\[\(\]\)\-\"(AND|OR)]+/g;
 
-      // Regex that will match any remaining 'AND [word]'
-      const cleanANDRegex =
-        /(AND\s(?:(?![^\s\[\(]+AND)[^\s\[\(]+)\s?|[^\s\[\(]+\sAND)/g;
-      // Regex that will match any remaining 'OR [word]'
-      const cleanORRegex =
-        /(OR\s(?:(?![^\s\[\(]+OR)[^\s\[\(]+)\s?|[^\s\[\(]+\sOR)/g;
+    // Regex that will match any remaining 'AND [word]'
+    const cleanANDRegex = /(AND\s(?:(?![^\s\[\(]+AND)[^\s\[\(]+)\s?|[^\s\[\(]+\sAND)/g;
+    // Regex that will match any remaining 'OR [word]'
+    const cleanORRegex = /(OR\s(?:(?![^\s\[\(]+OR)[^\s\[\(]+)\s?|[^\s\[\(]+\sOR)/g;
 
-      if (!text.startsWith('(') && !isBasicSearchText) {
-        // The filter value is a direct value, no needs to apply complex treatment
-        // to extract multiple filters
+    if (!text.startsWith('(') && !isBasicSearchText) {
+      // The filter value is a direct value, no needs to apply complex treatment
+      // to extract multiple filters
 
-        if (negativeExpression) {
-          none_of_these_words_value = text;
-        } else {
-          if (text.startsWith('"')) {
-            exact_expression_value = text.substring(1, text.length - 1);
-          } else {
-            all_words_value = text;
-          }
-        }
+      if (negativeExpression) {
+        none_of_these_words_value = text;
       } else {
-        // Remove the parentheses '()' that surround the expression
-        if (!isBasicSearchText) {
-          text = text.substring(1, text.length - 1);
+        if (text.startsWith('"')) {
+          exact_expression_value = text.substring(1, text.length - 1);
+        } else {
+          all_words_value = text;
         }
+      }
+    } else {
+      // Remove the parentheses '()' that surround the expression
+      if (!isBasicSearchText) {
+        text = text.substring(1, text.length - 1);
+      }
 
-        // Try to extract negative exact expression (ie -"france labs")
-        const exactNegativeExpressionRegex = /-"[^"]*"/g;
-        const exactNegativeExpressions = text.match(
-          exactNegativeExpressionRegex
-        );
-        if (
-          exactNegativeExpressions != null &&
-          exactNegativeExpressions !== undefined
-        ) {
-          for (
-            let cptNgtExact = 0;
-            cptNgtExact < exactNegativeExpressions.length;
-            cptNgtExact++
+      // Try to extract negative exact expression (ie -"france labs")
+      const exactNegativeExpressionRegex = /-"[^"]*"/g;
+      const exactNegativeExpressions = text.match(exactNegativeExpressionRegex);
+      if (exactNegativeExpressions != null && exactNegativeExpressions !== undefined) {
+        for (let cptNgtExact = 0; cptNgtExact < exactNegativeExpressions.length; cptNgtExact++) {
+          const exactNegativeExpression = exactNegativeExpressions[cptNgtExact];
+          none_of_these_words_value += ' ' + exactNegativeExpression.substring(1);
+          const exactNgtExprIndex = text.search(exactNegativeExpression);
+          // If there is a space in front of the exact expression then remove it
+          // + the exact expression, otherwise only remove the exact expression
+          if (
+            exactNgtExprIndex > 0 &&
+            text.substring(exactNgtExprIndex - 1, exactNgtExprIndex) === ' '
           ) {
-            const exactNegativeExpression =
-              exactNegativeExpressions[cptNgtExact];
-            none_of_these_words_value +=
-              ' ' + exactNegativeExpression.substring(1);
-            const exactNgtExprIndex = text.search(exactNegativeExpression);
-            // If there is a space in front of the exact expression then remove it
-            // + the exact expression, otherwise only remove the exact expression
-            if (
-              exactNgtExprIndex > 0 &&
-              text.substring(exactNgtExprIndex - 1, exactNgtExprIndex) === ' '
-            ) {
-              text = text.replace(' ' + exactNegativeExpression, '');
-            } else {
-              text = text.replace(exactNegativeExpression, '');
-            }
+            text = text.replace(' ' + exactNegativeExpression, '');
+          } else {
+            text = text.replace(exactNegativeExpression, '');
           }
-        }
-
-        // Try to extract negative words (ie -nuclear)
-        const globalValues = text.split(' ');
-        for (let cptGlobal = 0; cptGlobal < globalValues.length; cptGlobal++) {
-          const gbValue = globalValues[cptGlobal];
-          if (gbValue.startsWith('-')) {
-            none_of_these_words_value += ' ' + gbValue.substring(1);
-            // If there is a space in front of the negative word then remove it +
-            // the negative word, otherwise only remove the negative word
-            if (text.search(gbValue) > 0) {
-              text = text.replace(' ' + gbValue, '');
-            } else {
-              text = text.replace(gbValue, '');
-            }
-          }
-        }
-
-        // Try to extract the exact expressions (ie "renew energy")
-        const exactExpressionsRegex = /"[^\"]+"/g;
-        const exactExpressions = text.match(exactExpressionsRegex);
-        if (exactExpressions != null && exactExpressions !== undefined) {
-          for (
-            let cptExact = 0;
-            cptExact < exactExpressions.length;
-            cptExact++
-          ) {
-            const exactExpression = exactExpressions[cptExact];
-            exact_expression_value +=
-              ' ' + exactExpression.substring(1, exactExpression.length - 1);
-            const exactExprIndex = text.search(exactExpression);
-            // If there is a space in front of the exact expression then remove it
-            // + the exact expression, otherwise only remove the exact expression
-            if (
-              exactExprIndex > 0 &&
-              text.substring(exactExprIndex - 1, exactExprIndex) === ' '
-            ) {
-              text = text.replace(' ' + exactExpression, '');
-            } else {
-              text = text.replace(exactExpression, '');
-            }
-          }
-        }
-
-        // Extract OR expressions
-        let tempFieldExpression = text; // initialize a temp variable because at
-        // the end of this OR expression
-        // extraction,
-        // the original text variable must stay untouched for the AND regex to
-        // work
-        while (tempFieldExpression.match(orExpressionRegex) != null) {
-          const orExpressions = tempFieldExpression.match(orExpressionRegex);
-          if (orExpressions != null) {
-            for (let cptExpr = 0; cptExpr < orExpressions.length; cptExpr++) {
-              const exprValues = orExpressions[cptExpr].split(' ');
-              if (at_least_one_word_value.indexOf(exprValues[0]) === -1) {
-                at_least_one_word_value += ' ' + exprValues[0];
-              }
-              if (at_least_one_word_value.indexOf(exprValues[2]) === -1) {
-                at_least_one_word_value += ' ' + exprValues[2];
-              }
-              const exprIndex = tempFieldExpression.search(
-                exprValues[0] + ' OR'
-              );
-              if (exprIndex !== -1) {
-                if (
-                  tempFieldExpression.substring(exprIndex - 1).startsWith(' ')
-                ) {
-                  tempFieldExpression = tempFieldExpression.replace(
-                    ' ' + exprValues[0] + ' OR',
-                    'OR'
-                  );
-                } else {
-                  tempFieldExpression = tempFieldExpression.replace(
-                    exprValues[0] + ' OR',
-                    'OR'
-                  );
-                }
-              }
-            }
-          }
-        }
-
-        // Extract AND expressions
-        tempFieldExpression = text; // reinit the temp variable with the text
-        // variable which has not been modified by the
-        // previous OR expression extraction
-        while (tempFieldExpression.match(andExpressionRegex) != null) {
-          const andExpressions = tempFieldExpression.match(andExpressionRegex);
-          if (andExpressions != null) {
-            for (let cptExpr = 0; cptExpr < andExpressions.length; cptExpr++) {
-              const exprValues = andExpressions[cptExpr].split(' ');
-              if (all_words_value.indexOf(exprValues[0]) === -1) {
-                all_words_value += ' ' + exprValues[0];
-              }
-              if (all_words_value.indexOf(exprValues[2]) === -1) {
-                all_words_value += ' ' + exprValues[2];
-              }
-              const exprIndex = tempFieldExpression.search(
-                exprValues[0] + ' AND'
-              );
-              if (exprIndex !== -1) {
-                if (
-                  tempFieldExpression.substring(exprIndex - 1).startsWith(' ')
-                ) {
-                  tempFieldExpression = tempFieldExpression.replace(
-                    ' ' + exprValues[0] + ' AND',
-                    'AND'
-                  );
-                } else {
-                  tempFieldExpression = tempFieldExpression.replace(
-                    exprValues[0] + ' AND',
-                    'AND'
-                  );
-                }
-              }
-            }
-          }
-        }
-
-        // -----------------------------------------------------------------------------------------------------------------------------------------
-        // NB: the following cleaning process of the OR and AND expression seems
-        // weird and ugly but after bunch of tests,
-        // it appears that it needs to be done this way, in that specific order to
-        // work like a charm !
-
-        // Clean OR expressions
-        while (text.match(orExpressionRegex) != null) {
-          const orExpressions = text.match(orExpressionRegex);
-          if (orExpressions != null) {
-            for (let cptExpr = 0; cptExpr < orExpressions.length; cptExpr++) {
-              const exprValues = orExpressions[cptExpr].split(' ');
-              const exprIndex = text.search(exprValues[0] + ' OR');
-              if (exprIndex !== -1) {
-                if (text.substring(exprIndex - 1).startsWith(' ')) {
-                  text = text.replace(' ' + exprValues[0] + ' OR', 'OR');
-                } else {
-                  text = text.replace(exprValues[0] + ' OR', 'OR');
-                }
-              }
-            }
-          }
-        }
-
-        // Clean AND expressions
-        while (text.match(andExpressionRegex) != null) {
-          const andExpressions = text.match(andExpressionRegex);
-          if (andExpressions != null) {
-            for (let cptExpr = 0; cptExpr < andExpressions.length; cptExpr++) {
-              const exprValues = andExpressions[cptExpr].split(' ');
-              const exprIndex = text.search(exprValues[0] + ' AND');
-              if (exprIndex !== -1) {
-                if (text.substring(exprIndex - 1).startsWith(' ')) {
-                  text = text.replace(' ' + exprValues[0] + ' AND', 'AND');
-                } else {
-                  text = text.replace(exprValues[0] + ' AND', 'AND');
-                }
-              }
-            }
-          }
-        }
-
-        // Clean remaining alone 'OR' words
-        while (text.match(cleanORRegex) != null) {
-          const orExprToClean = text.match(cleanORRegex);
-          for (
-            let cptExprToClean = 0;
-            cptExprToClean < orExprToClean.length;
-            cptExprToClean++
-          ) {
-            text = text.replace(orExprToClean[cptExprToClean], '');
-          }
-        }
-        text = text.replace(/OR/g, '');
-
-        // Clean remaining alone 'AND' words
-        while (text.match(cleanANDRegex) != null) {
-          const andExprToClean = text.match(cleanANDRegex);
-          for (
-            let cptExprToClean = 0;
-            cptExprToClean < andExprToClean.length;
-            cptExprToClean++
-          ) {
-            text = text.replace(andExprToClean[cptExprToClean], '');
-          }
-        }
-        text = text.replace(/AND/g, '');
-        // ------------------------------------------------------------------------------------------------------------------
-        // Weird cleaning process is over
-
-        // Trim the expression
-        text = text.trim();
-
-        // Search for potential remaining words to add them to the all_words_value
-        const lastWords = text.split(' ');
-        for (
-          var cptLastWords = 0;
-          cptLastWords < lastWords.length;
-          cptLastWords++
-        ) {
-          all_words_value += ' ' + lastWords[cptLastWords];
         }
       }
 
-      // Trim the final values
-      all_words_value = all_words_value.trim();
-      exact_expression_value = exact_expression_value.trim();
-      at_least_one_word_value = at_least_one_word_value.trim();
-      none_of_these_words_value = none_of_these_words_value.trim();
+      // Try to extract negative words (ie -nuclear)
+      const globalValues = text.split(' ');
+      for (let cptGlobal = 0; cptGlobal < globalValues.length; cptGlobal++) {
+        const gbValue = globalValues[cptGlobal];
+        if (gbValue.startsWith('-')) {
+          none_of_these_words_value += ' ' + gbValue.substring(1);
+          // If there is a space in front of the negative word then remove it +
+          // the negative word, otherwise only remove the negative word
+          if (text.search(gbValue) > 0) {
+            text = text.replace(' ' + gbValue, '');
+          } else {
+            text = text.replace(gbValue, '');
+          }
+        }
+      }
 
-      // Put the values in an object and return it
-      const returnValues = {};
-      returnValues['all_words_value'] = all_words_value;
-      returnValues['exact_expression_value'] = exact_expression_value;
-      returnValues['at_least_one_word_value'] = at_least_one_word_value;
-      returnValues['none_of_these_words_value'] = none_of_these_words_value;
+      // Try to extract the exact expressions (ie "renew energy")
+      const exactExpressionsRegex = /"[^\"]+"/g;
+      const exactExpressions = text.match(exactExpressionsRegex);
+      if (exactExpressions != null && exactExpressions !== undefined) {
+        for (let cptExact = 0; cptExact < exactExpressions.length; cptExact++) {
+          const exactExpression = exactExpressions[cptExact];
+          exact_expression_value += ' ' + exactExpression.substring(1, exactExpression.length - 1);
+          const exactExprIndex = text.search(exactExpression);
+          // If there is a space in front of the exact expression then remove it
+          // + the exact expression, otherwise only remove the exact expression
+          if (exactExprIndex > 0 && text.substring(exactExprIndex - 1, exactExprIndex) === ' ') {
+            text = text.replace(' ' + exactExpression, '');
+          } else {
+            text = text.replace(exactExpression, '');
+          }
+        }
+      }
 
-      return returnValues;
-    },
-    []
-  );
+      // Extract OR expressions
+      let tempFieldExpression = text; // initialize a temp variable because at
+      // the end of this OR expression
+      // extraction,
+      // the original text variable must stay untouched for the AND regex to
+      // work
+      while (tempFieldExpression.match(orExpressionRegex) != null) {
+        const orExpressions = tempFieldExpression.match(orExpressionRegex);
+        if (orExpressions != null) {
+          for (let cptExpr = 0; cptExpr < orExpressions.length; cptExpr++) {
+            const exprValues = orExpressions[cptExpr].split(' ');
+            if (at_least_one_word_value.indexOf(exprValues[0]) === -1) {
+              at_least_one_word_value += ' ' + exprValues[0];
+            }
+            if (at_least_one_word_value.indexOf(exprValues[2]) === -1) {
+              at_least_one_word_value += ' ' + exprValues[2];
+            }
+            const exprIndex = tempFieldExpression.search(exprValues[0] + ' OR');
+            if (exprIndex !== -1) {
+              if (tempFieldExpression.substring(exprIndex - 1).startsWith(' ')) {
+                tempFieldExpression = tempFieldExpression.replace(
+                  ' ' + exprValues[0] + ' OR',
+                  'OR'
+                );
+              } else {
+                tempFieldExpression = tempFieldExpression.replace(exprValues[0] + ' OR', 'OR');
+              }
+            }
+          }
+        }
+      }
+
+      // Extract AND expressions
+      tempFieldExpression = text; // reinit the temp variable with the text
+      // variable which has not been modified by the
+      // previous OR expression extraction
+      while (tempFieldExpression.match(andExpressionRegex) != null) {
+        const andExpressions = tempFieldExpression.match(andExpressionRegex);
+        if (andExpressions != null) {
+          for (let cptExpr = 0; cptExpr < andExpressions.length; cptExpr++) {
+            const exprValues = andExpressions[cptExpr].split(' ');
+            if (all_words_value.indexOf(exprValues[0]) === -1) {
+              all_words_value += ' ' + exprValues[0];
+            }
+            if (all_words_value.indexOf(exprValues[2]) === -1) {
+              all_words_value += ' ' + exprValues[2];
+            }
+            const exprIndex = tempFieldExpression.search(exprValues[0] + ' AND');
+            if (exprIndex !== -1) {
+              if (tempFieldExpression.substring(exprIndex - 1).startsWith(' ')) {
+                tempFieldExpression = tempFieldExpression.replace(
+                  ' ' + exprValues[0] + ' AND',
+                  'AND'
+                );
+              } else {
+                tempFieldExpression = tempFieldExpression.replace(exprValues[0] + ' AND', 'AND');
+              }
+            }
+          }
+        }
+      }
+
+      // -----------------------------------------------------------------------------------------------------------------------------------------
+      // NB: the following cleaning process of the OR and AND expression seems
+      // weird and ugly but after bunch of tests,
+      // it appears that it needs to be done this way, in that specific order to
+      // work like a charm !
+
+      // Clean OR expressions
+      while (text.match(orExpressionRegex) != null) {
+        const orExpressions = text.match(orExpressionRegex);
+        if (orExpressions != null) {
+          for (let cptExpr = 0; cptExpr < orExpressions.length; cptExpr++) {
+            const exprValues = orExpressions[cptExpr].split(' ');
+            const exprIndex = text.search(exprValues[0] + ' OR');
+            if (exprIndex !== -1) {
+              if (text.substring(exprIndex - 1).startsWith(' ')) {
+                text = text.replace(' ' + exprValues[0] + ' OR', 'OR');
+              } else {
+                text = text.replace(exprValues[0] + ' OR', 'OR');
+              }
+            }
+          }
+        }
+      }
+
+      // Clean AND expressions
+      while (text.match(andExpressionRegex) != null) {
+        const andExpressions = text.match(andExpressionRegex);
+        if (andExpressions != null) {
+          for (let cptExpr = 0; cptExpr < andExpressions.length; cptExpr++) {
+            const exprValues = andExpressions[cptExpr].split(' ');
+            const exprIndex = text.search(exprValues[0] + ' AND');
+            if (exprIndex !== -1) {
+              if (text.substring(exprIndex - 1).startsWith(' ')) {
+                text = text.replace(' ' + exprValues[0] + ' AND', 'AND');
+              } else {
+                text = text.replace(exprValues[0] + ' AND', 'AND');
+              }
+            }
+          }
+        }
+      }
+
+      // Clean remaining alone 'OR' words
+      while (text.match(cleanORRegex) != null) {
+        const orExprToClean = text.match(cleanORRegex);
+        for (let cptExprToClean = 0; cptExprToClean < orExprToClean.length; cptExprToClean++) {
+          text = text.replace(orExprToClean[cptExprToClean], '');
+        }
+      }
+      text = text.replace(/OR/g, '');
+
+      // Clean remaining alone 'AND' words
+      while (text.match(cleanANDRegex) != null) {
+        const andExprToClean = text.match(cleanANDRegex);
+        for (let cptExprToClean = 0; cptExprToClean < andExprToClean.length; cptExprToClean++) {
+          text = text.replace(andExprToClean[cptExprToClean], '');
+        }
+      }
+      text = text.replace(/AND/g, '');
+      // ------------------------------------------------------------------------------------------------------------------
+      // Weird cleaning process is over
+
+      // Trim the expression
+      text = text.trim();
+
+      // Search for potential remaining words to add them to the all_words_value
+      const lastWords = text.split(' ');
+      for (var cptLastWords = 0; cptLastWords < lastWords.length; cptLastWords++) {
+        all_words_value += ' ' + lastWords[cptLastWords];
+      }
+    }
+
+    // Trim the final values
+    all_words_value = all_words_value.trim();
+    exact_expression_value = exact_expression_value.trim();
+    at_least_one_word_value = at_least_one_word_value.trim();
+    none_of_these_words_value = none_of_these_words_value.trim();
+
+    // Put the values in an object and return it
+    const returnValues = {};
+    returnValues['all_words_value'] = all_words_value;
+    returnValues['exact_expression_value'] = exact_expression_value;
+    returnValues['at_least_one_word_value'] = at_least_one_word_value;
+    returnValues['none_of_these_words_value'] = none_of_these_words_value;
+
+    return returnValues;
+  }, []);
 
   const determineFieldType = useCallback(
     (fieldName) => {
@@ -440,11 +384,7 @@ const AdvancedSearchModal = (props) => {
     const baseExactExpr = baseQuery.match(baseExactExprRegEx);
     const exactContentRegEx = /exactContent:(?:(?!( AND | OR ))[^)(])+/g;
     const exactTitleRegEx = /exactTitle:(?:(?!( AND | OR ))[^)(])+/g;
-    if (
-      baseExactExpr != null &&
-      baseExactExpr !== undefined &&
-      baseExactExpr !== ''
-    ) {
+    if (baseExactExpr != null && baseExactExpr !== undefined && baseExactExpr !== '') {
       const exactContentExpr = baseExactExpr[0].match(exactContentRegEx);
       const exactTitleExpr = baseExactExpr[0].match(exactTitleRegEx);
 
@@ -456,14 +396,8 @@ const AdvancedSearchModal = (props) => {
         exactTitleExpr !== undefined &&
         exactTitleExpr !== ''
       ) {
-        const exactContentVal = exactContentExpr[0]
-          .split(':')[1]
-          .replace(/"/g, '')
-          .trim();
-        const exactTitleVal = exactTitleExpr[0]
-          .split(':')[1]
-          .replace(/"/g, '')
-          .trim();
+        const exactContentVal = exactContentExpr[0].split(':')[1].replace(/"/g, '').trim();
+        const exactTitleVal = exactTitleExpr[0].split(':')[1].replace(/"/g, '').trim();
 
         if (exactContentVal === exactTitleVal) {
           // Remove base exact expression from baseQuery
@@ -501,20 +435,14 @@ const AdvancedSearchModal = (props) => {
 
           // Extract operator if there is one
           let operator = '';
-          if (
-            fieldExpression.startsWith('AND') ||
-            fieldExpression.startsWith('OR')
-          ) {
+          if (fieldExpression.startsWith('AND') || fieldExpression.startsWith('OR')) {
             operator = fieldExpression.split(' ')[0];
             // Remove the found operator from the fieldExpression
             fieldExpression = fieldExpression.substring(operator.length + 1);
           }
 
           // Extract fieldname
-          let fieldname = fieldExpression.substring(
-            0,
-            fieldExpression.indexOf(':')
-          );
+          let fieldname = fieldExpression.substring(0, fieldExpression.indexOf(':'));
           let negativeExpression = false;
           // If the first char of the fieldname is -, it is because it is a
           // negative filter
@@ -532,8 +460,7 @@ const AdvancedSearchModal = (props) => {
             // The previous field was the exact field of this one
             // Get the exact filter to put it in the exact_expression_value
             // filter of the current field
-            exactFilter =
-              lastExact[fieldname]['extractedValues']['exact_expression_value'];
+            exactFilter = lastExact[fieldname]['extractedValues']['exact_expression_value'];
             // Empty the lastExact object
             lastExact = {};
           } else if (!isEmptyObject(lastExact)) {
@@ -546,8 +473,7 @@ const AdvancedSearchModal = (props) => {
               lastExactOriginalFieldname = key;
             }
             const lastExactFieldName = lastExactOriginalFieldname + '_exact';
-            const lastExactOperator =
-              lastExact[lastExactOriginalFieldname]['operator'];
+            const lastExactOperator = lastExact[lastExactOriginalFieldname]['operator'];
             const lastExactExtractedValues =
               lastExact[lastExactOriginalFieldname]['extractedValues'];
             // Add an addtional field filter
@@ -564,8 +490,7 @@ const AdvancedSearchModal = (props) => {
           const moreThanExactExprRegex = /(?![^\"]*\")[^\)\s].*/g;
           if (
             fieldname.endsWith('_exact') &&
-            (fieldExpression.startsWith('"') ||
-              fieldExpression.startsWith('("')) &&
+            (fieldExpression.startsWith('"') || fieldExpression.startsWith('("')) &&
             fieldExpression.match(moreThanExactExprRegex) == null
           ) {
             isExactField = true;
@@ -578,11 +503,7 @@ const AdvancedSearchModal = (props) => {
           // Extract filters values
           let extractedValues = null;
           if (fieldType === TEXT_TYPE) {
-            extractedValues = extractFilterFromText(
-              fieldExpression,
-              negativeExpression,
-              false
-            );
+            extractedValues = extractFilterFromText(fieldExpression, negativeExpression, false);
 
             // If the exactFilter variable is not empty then it needs to be
             // added to the extracted values
@@ -657,10 +578,8 @@ const AdvancedSearchModal = (props) => {
             lastExactOriginalFieldname = key;
           }
           const lastExactFieldName = lastExactOriginalFieldname + '_exact';
-          const lastExactOperator =
-            lastExact[lastExactOriginalFieldname]['operator'];
-          const lastExactExtractedValues =
-            lastExact[lastExactOriginalFieldname]['extractedValues'];
+          const lastExactOperator = lastExact[lastExactOriginalFieldname]['operator'];
+          const lastExactExtractedValues = lastExact[lastExactOriginalFieldname]['extractedValues'];
           const type = determineFieldType(lastExactFieldName);
           newAdditionalFields.push({
             fieldname: lastExactFieldName,
@@ -672,12 +591,7 @@ const AdvancedSearchModal = (props) => {
       }
     }
     setAdditionalFields(newAdditionalFields);
-  }, [
-    extractFilterFromText,
-    isEmptyObject,
-    query.elements,
-    determineFieldType,
-  ]);
+  }, [extractFilterFromText, isEmptyObject, query.elements, determineFieldType]);
 
   const getFixedValueFilter = useCallback((field) => {
     let filter = '';
@@ -715,12 +629,9 @@ const AdvancedSearchModal = (props) => {
 
   const getTextFieldFilter = useCallback((field) => {
     const all_words_value = field.extractedValues.all_words_value;
-    const at_least_one_word_line_value =
-      field.extractedValues.at_least_one_word_value;
-    const exact_expression_line_value =
-      field.extractedValues.exact_expression_value;
-    let none_of_these_words_line_value =
-      field.extractedValues.none_of_these_words_value;
+    const at_least_one_word_line_value = field.extractedValues.at_least_one_word_value;
+    const exact_expression_line_value = field.extractedValues.exact_expression_value;
+    let none_of_these_words_line_value = field.extractedValues.none_of_these_words_value;
 
     const exactExpressionsRegex = /"[^\"]+"/g;
 
@@ -728,11 +639,7 @@ const AdvancedSearchModal = (props) => {
     let filter = '';
 
     // Add the all_words filter if available to the global filter
-    if (
-      all_words_value != null &&
-      all_words_value !== undefined &&
-      all_words_value !== ''
-    ) {
+    if (all_words_value != null && all_words_value !== undefined && all_words_value !== '') {
       filter += all_words_value.trim();
     }
 
@@ -776,42 +683,27 @@ const AdvancedSearchModal = (props) => {
       none_of_these_words_line_value !== ''
     ) {
       // Starts with the exact negative expressions like -"france labs"
-      const exactNegativeExpressions = none_of_these_words_line_value.match(
-        exactExpressionsRegex
-      );
-      if (
-        exactNegativeExpressions !== null &&
-        exactNegativeExpressions !== undefined
-      ) {
-        for (
-          let cptNgtExact = 0;
-          cptNgtExact < exactNegativeExpressions.length;
-          cptNgtExact++
-        ) {
+      const exactNegativeExpressions = none_of_these_words_line_value.match(exactExpressionsRegex);
+      if (exactNegativeExpressions !== null && exactNegativeExpressions !== undefined) {
+        for (let cptNgtExact = 0; cptNgtExact < exactNegativeExpressions.length; cptNgtExact++) {
           const exactNegativeExpression = exactNegativeExpressions[cptNgtExact];
           filter += ' -' + exactNegativeExpression;
-          const exactNgtExprIndex = none_of_these_words_line_value.search(
-            exactNegativeExpression
-          );
+          const exactNgtExprIndex = none_of_these_words_line_value.search(exactNegativeExpression);
           // If there is a space in front of the exact expression then remove it + the exact expression, otherwise only remove the exact expression
           if (
             exactNgtExprIndex > 0 &&
-            none_of_these_words_line_value.substring(
-              exactNgtExprIndex - 1,
-              exactNgtExprIndex
-            ) === ' '
+            none_of_these_words_line_value.substring(exactNgtExprIndex - 1, exactNgtExprIndex) ===
+              ' '
           ) {
-            none_of_these_words_line_value =
-              none_of_these_words_line_value.replace(
-                ' ' + exactNegativeExpression,
-                ''
-              );
+            none_of_these_words_line_value = none_of_these_words_line_value.replace(
+              ' ' + exactNegativeExpression,
+              ''
+            );
           } else {
-            none_of_these_words_line_value =
-              none_of_these_words_line_value.replace(
-                exactNegativeExpression,
-                ''
-              );
+            none_of_these_words_line_value = none_of_these_words_line_value.replace(
+              exactNegativeExpression,
+              ''
+            );
           }
         }
       }
@@ -870,20 +762,13 @@ const AdvancedSearchModal = (props) => {
               exactFilter += 'OR ';
             }
             exactFilter +=
-              field.fieldNameExactExpr[i] +
-              ':"' +
-              exact_expression_line_value.trim() +
-              '" ';
+              field.fieldNameExactExpr[i] + ':"' + exact_expression_line_value.trim() + '" ';
           }
           exactFilter += ')';
           finalFilter += ' ' + exactFilter;
         } else {
           finalFilter +=
-            ' ' +
-            field.fieldNameExactExpr +
-            ':"' +
-            exact_expression_line_value.trim() +
-            '" ';
+            ' ' + field.fieldNameExactExpr + ':"' + exact_expression_line_value.trim() + '" ';
         }
         finalFilter = finalFilter.trim();
       }
@@ -912,8 +797,7 @@ const AdvancedSearchModal = (props) => {
         additionalFields.reduce((accumulator, field) => {
           let currentField = { ...field };
           if (exactFieldsList && exactFieldsList[currentField.fieldname]) {
-            currentField.fieldNameExactExpr =
-              exactFieldsList[currentField.fieldname];
+            currentField.fieldNameExactExpr = exactFieldsList[currentField.fieldname];
           }
 
           let filter = undefined;
@@ -934,7 +818,7 @@ const AdvancedSearchModal = (props) => {
             }
           }
           if (filter) {
-            if (finalQuery!="") {
+            if (finalQuery != '') {
               filter = currentField.operator + ' ' + filter;
             }
           }
@@ -955,18 +839,8 @@ const AdvancedSearchModal = (props) => {
 
   // Should be run only when component mount as sendRequest should be constant
   useEffect(() => {
-    sendRequest(
-      apiEndpointsContext.getFieldsInfoURL,
-      'GET',
-      null,
-      'GetFieldsInfo'
-    );
-    sendRequest(
-      apiEndpointsContext.getExactFieldsURL,
-      'GET',
-      null,
-      'GetExactFields'
-    );
+    sendRequest(apiEndpointsContext.getFieldsInfoURL, 'GET', null, 'GetFieldsInfo');
+    sendRequest(apiEndpointsContext.getExactFieldsURL, 'GET', null, 'GetExactFields');
     sendRequest(
       apiEndpointsContext.getAutocompleteAdvancedFieldsURL,
       'GET',
@@ -1129,11 +1003,7 @@ const AdvancedSearchModal = (props) => {
 
   const handleBaseSearchChange = useCallback((baseSearchField) => {
     return (event) => {
-      if (
-        event.target &&
-        event.target.value !== null &&
-        event.target.value !== undefined
-      ) {
+      if (event.target && event.target.value !== null && event.target.value !== undefined) {
         const value = event.target.value;
         setBaseSearch((currentBaseSearch) => {
           const newBaseSearch = { ...currentBaseSearch };
@@ -1171,9 +1041,7 @@ const AdvancedSearchModal = (props) => {
                 <TextField
                   id="advanced-search-exact-expression"
                   label={t('Exact expression')}
-                  helperText={t(
-                    'Will search for EXACTLY the sentence you entered'
-                  )}
+                  helperText={t('Will search for EXACTLY the sentence you entered')}
                   variant="filled"
                   value={baseSearch.exact_expression_value}
                   onChange={handleBaseSearchChange('exact_expression_value')}
@@ -1184,9 +1052,7 @@ const AdvancedSearchModal = (props) => {
                 <TextField
                   id="advanced-search-at-least-one-word"
                   label={t('At least one word')}
-                  helperText={t(
-                    'Will search for documents with AT LEAST ONE of these terms'
-                  )}
+                  helperText={t('Will search for documents with AT LEAST ONE of these terms')}
                   variant="filled"
                   value={baseSearch.at_least_one_word_value}
                   onChange={handleBaseSearchChange('at_least_one_word_value')}
@@ -1197,9 +1063,7 @@ const AdvancedSearchModal = (props) => {
                 <TextField
                   id="advanced-search-not-these-words"
                   label={t('Not these words')}
-                  helperText={t(
-                    'Will NOT DISPLAY documents with AT LEAST ONE of these terms'
-                  )}
+                  helperText={t('Will NOT DISPLAY documents with AT LEAST ONE of these terms')}
                   variant="filled"
                   value={baseSearch.none_of_these_words_value}
                   onChange={handleBaseSearchChange('none_of_these_words_value')}
@@ -1237,12 +1101,7 @@ const AdvancedSearchModal = (props) => {
         </Container>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={searchClickHandler}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
+        <Button onClick={searchClickHandler} color="secondary" variant="contained" size="small">
           {t('Search')}
         </Button>
       </DialogActions>
@@ -1263,9 +1122,7 @@ const AdvancedSearchField = (props) => {
   };
 
   const handleFieldChange = (event) => {
-    const newField = props.fieldList.find(
-      (field) => field.name === event.target.value
-    );
+    const newField = props.fieldList.find((field) => field.name === event.target.value);
     props.dispatch({
       type: FIELD,
       id: props.id,
@@ -1305,9 +1162,7 @@ const AdvancedSearchField = (props) => {
             values={props.field.extractedValues}
             onChange={handleFieldValuesChange}
             suggester={
-              props.autocompleteFields
-                ? props.autocompleteFields[props.field.fieldname]
-                : undefined
+              props.autocompleteFields ? props.autocompleteFields[props.field.fieldname] : undefined
             }
           />
         );
@@ -1335,10 +1190,7 @@ const AdvancedSearchField = (props) => {
   };
 
   const getFieldLabel = (fieldname) => {
-    if (
-      props.mappingFieldNameValues &&
-      props.mappingFieldNameValues[fieldname]
-    ) {
+    if (props.mappingFieldNameValues && props.mappingFieldNameValues[fieldname]) {
       return props.mappingFieldNameValues[fieldname];
     }
     return fieldname;
@@ -1348,17 +1200,14 @@ const AdvancedSearchField = (props) => {
     <>
       <Grid container justify="space-between">
         <Grid item xs={10}>
-          <Typography variant="subtitle2">
-            {t('Search in a specific field')}
-          </Typography>
+          <Typography variant="subtitle2">{t('Search in a specific field')}</Typography>
         </Grid>
         <Grid item xs={1}>
           <IconButton
             aria-label="close"
             className={classes.closeButton}
             onClick={handleRemove}
-            size="small"
-          >
+            size="small">
             <CloseIcon />
           </IconButton>
         </Grid>
@@ -1366,11 +1215,7 @@ const AdvancedSearchField = (props) => {
           <Grid item xs={1} />
           <Grid item container direction="column" xs={10}>
             <Grid item>
-              <FormControl
-                className={classes.formControl}
-                color="secondary"
-                variant="filled"
-              >
+              <FormControl className={classes.formControl} color="secondary" variant="filled">
                 <InputLabel id={`advanced-search-field-${props.id}-op-label`}>
                   {t('Operator')}
                 </InputLabel>
@@ -1378,35 +1223,25 @@ const AdvancedSearchField = (props) => {
                   labelId={`advanced-search-field-${props.id}-op-label`}
                   id={`advanced-search-field-${props.id}-op`}
                   value={props.field.operator}
-                  onChange={handleOperatorChange}
-                >
+                  onChange={handleOperatorChange}>
                   <MenuItem value="OR">{t('OR')}</MenuItem>
                   <MenuItem value="AND">{t('AND')}</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl
-                className={classes.formControl}
-                color="secondary"
-                variant="filled"
-              >
-                <InputLabel
-                  id={`advanced-search-field-${props.id}-field-label`}
-                >
+              <FormControl className={classes.formControl} color="secondary" variant="filled">
+                <InputLabel id={`advanced-search-field-${props.id}-field-label`}>
                   {t('Field')}
                 </InputLabel>
                 <Select
                   labelId={`advanced-search-field-${props.id}-field-label`}
                   id={`advanced-search-field-${props.id}-field`}
                   value={props.field.fieldname}
-                  onChange={handleFieldChange}
-                >
+                  onChange={handleFieldChange}>
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
                   {props.fieldList.map((field) => (
-                    <MenuItem value={field.name}>
-                      {getFieldLabel(field.name)}
-                    </MenuItem>
+                    <MenuItem value={field.name}>{getFieldLabel(field.name)}</MenuItem>
                   ))}
                 </Select>
               </FormControl>

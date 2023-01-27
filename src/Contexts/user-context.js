@@ -11,6 +11,7 @@ import ruLocale from 'date-fns/locale/ru';
 import { APIEndpointsContext } from './api-endpoints-context';
 import { SET_UI_DEFINITION, UIConfigContext } from './ui-config-context';
 import useHttp from '../Hooks/useHttp';
+import useRefreshSession from '../Hooks/useRefreshSession';
 
 // Used UI locales
 const DatafariUILocales = {
@@ -80,8 +81,9 @@ const SET_USER_LANGUAGE_ID = 'SET_USER_LANGUAGE_ID';
 const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 
 const UserContextProvider = (props) => {
-  const apiEndpointsContext = useContext(APIEndpointsContext);
   const { dispatch: uiConfigDispatch } = useContext(UIConfigContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
+  const { refreshSession, infoComponent } = useRefreshSession();
 
   // Request for login
   const {
@@ -144,6 +146,13 @@ const UserContextProvider = (props) => {
     actions,
   });
 
+  const getLocale = useCallback(() => {
+    if (i18n.language && DatafariUILocales[i18n.language]) {
+      return DatafariUILocales[i18n.language];
+    }
+    return enLocale;
+  }, [i18n.language]);
+
   // Effect login
   useEffect(() => {
     if (!loginIsLoading) {
@@ -177,6 +186,9 @@ const UserContextProvider = (props) => {
             type: SET_UI_DEFINITION,
             uiDefinition: uiConfig,
           });
+
+          // Start refresh session checker
+          refreshSession();
         }
       }
     }
@@ -217,13 +229,6 @@ const UserContextProvider = (props) => {
     }
   }, [userIsLoading, userData, userError, i18n, userDispatcher, uiConfigDispatch]);
 
-  const getLocale = useCallback(() => {
-    if (i18n.language && DatafariUILocales[i18n.language]) {
-      return DatafariUILocales[i18n.language];
-    }
-    return enLocale;
-  }, [i18n.language]);
-
   // Effect on language change
   useEffect(() => {
     userDispatcher({
@@ -233,7 +238,14 @@ const UserContextProvider = (props) => {
     });
   }, [i18n.language, getLocale]);
 
-  return <UserContext.Provider value={userState}>{props.children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={userState}>
+      <>
+        {props.children}
+        {infoComponent}
+      </>
+    </UserContext.Provider>
+  );
 };
 
 export default UserContextProvider;
