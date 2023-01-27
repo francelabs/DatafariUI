@@ -6,6 +6,7 @@ const DEFAULT_CHECK_INTERVAL_MS = 15_000;
 const LOGGED = 'Logged';
 
 function useRefreshSession() {
+  const [startRefresh, setStartRefresh] = useState(false);
   const [lastData, setLastData] = useState({});
   const [ssoEnabled, setSsoEnabled] = useState(false);
   const [infoComponent, setInfoComponent] = useState();
@@ -63,15 +64,19 @@ function useRefreshSession() {
       .then(handleRefreshSessionResponse)
       .catch(handleRefreshSessionError);
 
+  const startRefreshSession = () => setStartRefresh((start) => !start);
+
   // Start checking session
   useEffect(() => {
-    const intervalID = setInterval(refreshSession, DEFAULT_CHECK_INTERVAL_MS);
+    if (startRefresh) {
+      const intervalID = setInterval(refreshSession, DEFAULT_CHECK_INTERVAL_MS);
 
-    return () => clearInterval(intervalID);
-  }, []);
+      return () => clearInterval(intervalID);
+    }
+  }, [startRefresh]);
 
   return {
-    refreshSession,
+    startRefreshSession,
     infoComponent,
   };
 }

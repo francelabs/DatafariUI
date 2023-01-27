@@ -83,7 +83,7 @@ const UPDATE_USER_PREF_ID = 'UPDATE_USER_PREF_ID';
 const UserContextProvider = (props) => {
   const { dispatch: uiConfigDispatch } = useContext(UIConfigContext);
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
-  const { refreshSession, infoComponent } = useRefreshSession();
+  const { startRefreshSession, infoComponent } = useRefreshSession();
 
   // Request for login
   const {
@@ -188,7 +188,7 @@ const UserContextProvider = (props) => {
           });
 
           // Start refresh session checker
-          refreshSession();
+          startRefreshSession();
         }
       }
     }
