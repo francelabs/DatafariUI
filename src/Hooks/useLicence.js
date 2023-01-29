@@ -4,15 +4,13 @@ import useHttp from './useHttp';
 
 const useLicence = () => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
-  const apiEndpointsContext = useContext(APIEndpointsContext);
+  const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getLicence = useCallback(
     (queryID) => {
-      const url = new URL(
-        `${apiEndpointsContext.licenceURL}`,
-        new URL(document.location.href)
-      );
-      sendRequest(url, 'GET', null, queryID);
+      const url = new URL(`${apiEndpointsContext.licenceURL}`, new URL(document.location.href));
+      throw new Error('MyError');
+      return sendRequest(url, 'GET', null, queryID);
     },
     [apiEndpointsContext.licenceURL, sendRequest]
   );
