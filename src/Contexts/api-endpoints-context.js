@@ -50,13 +50,21 @@ const APIEndpointsContextProvider = (props) => {
     new URL(`${datafariBaseURL.pathname}/rest/v1.0`, datafariBaseURL)
   );
 
+  const [restV2APIBaseURL] = useState(
+    new URL(`${datafariBaseURL.pathname}/rest/v2.0`, datafariBaseURL)
+  );
+
   const [value] = useState({
-    datafariBaseURL: datafariBaseURL,
-    restAPIBaseURL: restAPIBaseURL,
+    datafariBaseURL,
+    restAPIBaseURL,
+    restV2APIBaseURL,
+
+    /***** REST API V1 ****/
+    /*********************/
     authURL: new URL(`${restAPIBaseURL.pathname}/auth`, restAPIBaseURL),
     adminURL: new URL(`${datafariBaseURL.pathname}/admin/`, datafariBaseURL),
     currentUserURL: new URL(`${restAPIBaseURL.pathname}/users/current`, restAPIBaseURL),
-    searchURL: new URL(`${restAPIBaseURL.pathname}/search`, restAPIBaseURL),
+
     currentUserFavoritesURL: new URL(
       `${restAPIBaseURL.pathname}/users/current/favorites`,
       restAPIBaseURL
@@ -96,6 +104,14 @@ const APIEndpointsContextProvider = (props) => {
 
     // Session
     refreshSessionURL: new URL(`${datafariBaseURL.pathname}/RefreshSession`, datafariBaseURL),
+
+    /***** REST API V2 ****/
+    /*********************/
+    // Search
+    searchURL: new URL(`${restV2APIBaseURL.pathname}/search`, restV2APIBaseURL),
+
+    // Export
+    exportURL: new URL(`${restV2APIBaseURL.pathname}/results/export`, restV2APIBaseURL),
   });
 
   // HTTP clients

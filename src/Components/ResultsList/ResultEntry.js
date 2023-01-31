@@ -262,14 +262,14 @@ const ResultEntry = (props) => {
    */
   const prepareUrl = () => {
     var maxSize = 70;
-    let result = props.url;
-    if (props.url.length > maxSize) {
-      const fileName = props.url.substring(props.url.lastIndexOf('/') + 1);
+    let result = props.click_url;
+    if (props.click_url.length > maxSize) {
+      const fileName = props.click_url.substring(props.click_url.lastIndexOf('/') + 1);
       if (fileName.length > maxSize - 15) {
         result = (
-          <Tooltip title={props.url} placement="right" aria-label={props.url}>
+          <Tooltip title={props.click_url} placement="right" aria-label={props.click_url}>
             <span>
-              {props.url.substring(0, 15) +
+              {props.click_url.substring(0, 15) +
                 '...' +
                 fileName.substring(fileName.length - 1 - (maxSize - 15))}
             </span>
@@ -277,16 +277,20 @@ const ResultEntry = (props) => {
         );
       } else {
         result = (
-          <Tooltip title={props.url} placement="right" aria-label={props.url}>
+          <Tooltip title={props.click_url} placement="right" aria-label={props.click_url}>
             <span>
-              {props.url.substring(0, props.url.lastIndexOf('/') - props.url.length + maxSize) +
+              {props.click_url.substring(
+                0,
+                props.click_url.lastIndexOf('/') - props.click_url.length + maxSize
+              ) +
                 '...' +
-                props.url.substring(props.url.lastIndexOf('/'))}
+                props.click_url.substring(props.click_url.lastIndexOf('/'))}
             </span>
           </Tooltip>
         );
       }
     }
+
     return result;
   };
 
@@ -332,7 +336,7 @@ const ResultEntry = (props) => {
   const fileIcon = selectFileIcon(props.extension);
 
   return (
-    <ListItem key={props.url} className={classes.resultContainer}>
+    <ListItem key={props.click_url} className={classes.resultContainer}>
       {(data.includes(dataNames.logo) || data.includes(dataNames.previewButton)) && (
         <ListItemIcon className={classes.iconsContainer}>
           {data.includes(dataNames.logo) && (
