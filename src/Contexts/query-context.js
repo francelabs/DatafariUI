@@ -5,6 +5,7 @@ import {
   DEFAULT_FIELDS,
   UIConfigContext,
 } from '../Contexts/ui-config-context';
+import { APIEndpointsContext } from './api-endpoints-context';
 
 export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
 export const SET_FIELD_FACET_SELECTED = 'SET_FIELD_FACET_SELECTED';
@@ -298,6 +299,11 @@ export const QueryContext = React.createContext({
 
 const QueryContextProvider = (props) => {
   const [query, queryDispatcher] = useReducer(newQueryReducer, defaultQuery);
+
+  const {
+    apiEndpointsContext: { exportURL },
+    httpClients: { restApiClient },
+  } = useContext(APIEndpointsContext);
 
   const { uiDefinition } = useContext(UIConfigContext);
   const { queryParams = { fields: DEFAULT_FIELDS } } = uiDefinition;
@@ -816,6 +822,32 @@ const QueryContextProvider = (props) => {
     });
   };
 
+  const exportQueryResult = useCallback(
+    (type = 'excel', nbResult = 5000) => {
+      const fetchExport = async () =>
+        restApiClient.get(`${exportURL}?${buildSearchQueryString()}`, {
+          params: { type, nbResult },
+        });
+
+      return fetchExport().then((response) => {
+        if (response.status === 200) {
+          const blobFile = new Blob([response?.data], { type: response.headers['content-type'] });
+          const url = window.URL.createObjectURL(blobFile);
+
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.href = url;
+          a.download = 'export-results.' + response.headers['content-type'].split('/')[1];
+
+          a.click();
+          window.URL.revokeObjectURL(url);
+        }
+      });
+    },
+    [buildSearchQueryString]
+  );
+
   return (
     <QueryContext.Provider
       value={{
@@ -826,6 +858,7 @@ const QueryContextProvider = (props) => {
         buildSavedSearchQuery: buildSavedSearchQuery,
         runQueryFromSavedSearch: runQueryFromSavedSearch,
         buildParamsForURL: buildParamsForURL,
+        exportQueryResult,
       }}>
       {props.children}
     </QueryContext.Provider>

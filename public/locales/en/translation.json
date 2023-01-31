@@ -43,7 +43,7 @@
   "Expand All": "Expand All",
   "Export Results": "Export Results",
   "Export as": "Export as",
-  "Exported results starting from the first result": "Exported results starting from the first result",
+  "Exported results starting from the first result": "Exported results starting from the first result (min: {{min}}, max: {{max}}, default: {{default}})",
   "Extension": "Extension",
   "FILTERS": "FILTERS",
   "Feedbacks": "Feedbacks",
@@ -207,5 +207,6 @@
   "Do not continue your work until connection is restored": "DO NOT continue your work until connection is restored !",
   "Retry now": "Retry now",
   "New try in {{time}}": "New try in {{time}}...",
-  "Connection is lost": "Connection is lost !"
+  "Connection is lost": "Connection is lost !",
+  "Export search results list": "Export search results list"
 }

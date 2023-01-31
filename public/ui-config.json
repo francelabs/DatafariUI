@@ -193,6 +193,14 @@
       "enable": false
     }
   },
+  "exportResults": {
+    "Excel": {
+      "extension": "xls",
+      "minResults": 1,
+      "maxResults": 5000,
+      "defaultResults": 100
+    }
+  },
   "devMode": {
     "enable": false,
     "banner": {

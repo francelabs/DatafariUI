@@ -139,9 +139,9 @@ const SearchTopMenu = ({ tabs = [], selectedTab, onSelectTab }) => {
                 )}
               </>
             )}
-            {/* <MenuItem onClick={handleOpen('exportResults')}>
-            {t('Export Current Results')}
-          </MenuItem> */}
+            <MenuItem onClick={handleOpen('exportResults')}>
+              {t('Export search results list')}
+            </MenuItem>
           </Hidden>
         </Menu>
       </Toolbar>

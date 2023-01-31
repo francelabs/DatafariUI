@@ -72,7 +72,10 @@ const UserMenu = (props) => {
         vertical: 'top',
         horizontal: 'center',
       }}>
+      {/* LOGOUT */}
       <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
+
+      {/* ADMIN */}
       {userState.user &&
         userState.user.roles &&
         (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
@@ -86,6 +89,8 @@ const UserMenu = (props) => {
             {t('Admin')}
           </MenuItem>
         )}
+
+      {/* OLD UI */}
       <MenuItem
         onClick={props.onClose}
         component={Link}
@@ -94,6 +99,8 @@ const UserMenu = (props) => {
         className={classes.menuLink}>
         {t('Go to the legacy Datafari UI')}
       </MenuItem>
+
+      {/* PRIVACY SETTINGS */}
       <MenuItem onClick={privacyClick}>{t('Privacy Settings')}</MenuItem>
       <PrivacySettingsModal
         open={open === PRIVACY_MODAL}
@@ -102,6 +109,7 @@ const UserMenu = (props) => {
         }}
       />
 
+      {/* USER PREF */}
       <MenuItem onClick={onUserPrefsClick}>{t('User Preferences')}</MenuItem>
 
       {open === USER_PREF_MODAL ? (

@@ -42,7 +42,7 @@
   "Expand All": "Tout déployer",
   "Export Results": "Exporter les résultats",
   "Export as": "Exporter en tant que",
-  "Exported results starting from the first result": "Exporter les résultats à partir du premier résultat",
+  "Exported results starting from the first result": "Exporter les résultats à partir du premier résultat (min: {{min}}, max: {{max}}, défaut: {{default}})",
   "Extension": "Extension",
   "FILTERS": "FILTRES",
   "Feedbacks": "Commentaires",
@@ -208,5 +208,6 @@
   "Do not continue your work until connection is restored": "NE poursuivez PAS votre travail tant que la connexion n'est pas rétabli !",
   "Retry now": "Réessayer maintenant",
   "New try in {{time}}": "Nouvelle tentative dans {{time}}...",
-  "Connection is lost": "Connexion interrompue !"
+  "Connection is lost": "Connexion interrompue !",
+  "Export search results list": "Exporter la liste des résultats de recherche"
 }
