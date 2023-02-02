@@ -194,8 +194,7 @@
     }
   },
   "exportResults": {
-    "Excel": {
-      "extension": "xls",
+    "excel": {
       "minResults": 1,
       "maxResults": 5000,
       "defaultResults": 100

@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
   fieldsPadding: {
     paddingBottom: theme.spacing(2),
   },
+  format: {
+    textTransform: 'capitalize',
+  },
 }));
 
 const ExportResultsModal = (props) => {
@@ -33,11 +36,14 @@ const ExportResultsModal = (props) => {
   const { uiDefinition } = useContext(UIConfigContext);
   checkUIConfig(uiDefinition);
 
-  const { exportResults } = uiDefinition;
+  const { exportResults = {} } = uiDefinition;
 
   const formats = Object.keys(exportResults);
-  const [format, setFormat] = useState(formats[0]);
-  const [nbResult, setNbResult] = useState(exportResults[formats[0]].defaultResults);
+
+  const [format, setFormat] = useState((formats.length && formats[0]) || '');
+  const [nbResult, setNbResult] = useState(
+    (formats.length && exportResults[formats[0]].defaultResults) || 100
+  );
 
   const { exportQueryResult } = useContext(QueryContext);
 
@@ -78,45 +84,53 @@ const ExportResultsModal = (props) => {
       <Divider />
       <DialogContent>
         <Grid container justify="space-between">
-          <Grid item xs={1} />
-          <Grid item xs={10}>
-            <TextField
-              id="datafari-export-number"
-              label={t('Number of exported results')}
-              value={nbResult}
-              helperText={t('Exported results starting from the first result', {
-                min: exportResults[format].minResults,
-                max: exportResults[format].maxResults,
-                default: exportResults[format].defaultResults,
-              })}
-              type="number"
-              variant="filled"
-              color="secondary"
-              className={classes.fieldsPadding}
-              onChange={handleNbResult}
-            />
-          </Grid>
-          <Grid item xs={1} />
-          <Grid item xs={1} />
-          <Grid item xs={10}>
-            <FormControl>
-              <InputLabel id="datafari-export-format-label" color="secondary">
-                {t('Export as')}
-              </InputLabel>
-              <Select
-                id="datafari-export-format"
-                color="secondary"
-                fullWidth={true}
-                value={format}
-                onChange={handleFormatChange}>
-                {formats.map((format) => (
-                  <MenuItem value={format}>{format}</MenuItem>
-                ))}
-              </Select>
-              <FormHelperText>{t('Select a format that suits your needs')}</FormHelperText>
-            </FormControl>
-          </Grid>
-          <Grid item xs={1} />
+          {formats.length ? (
+            <>
+              <Grid item xs={1} />
+              <Grid item xs={10}>
+                <TextField
+                  id="datafari-export-number"
+                  label={t('Number of exported results')}
+                  value={nbResult}
+                  helperText={t('Exported results starting from the first result', {
+                    min: exportResults[format].minResults,
+                    max: exportResults[format].maxResults,
+                    default: exportResults[format].defaultResults,
+                  })}
+                  type="number"
+                  variant="filled"
+                  color="secondary"
+                  className={classes.fieldsPadding}
+                  onChange={handleNbResult}
+                />
+              </Grid>
+              <Grid item xs={1} />
+              <Grid item xs={1} />
+              <Grid item xs={10}>
+                <FormControl>
+                  <InputLabel id="datafari-export-format-label" color="secondary">
+                    {t('Export as')}
+                  </InputLabel>
+                  <Select
+                    id="datafari-export-format"
+                    color="secondary"
+                    fullWidth={true}
+                    value={format}
+                    onChange={handleFormatChange}>
+                    {formats.map((format) => (
+                      <MenuItem value={format} className={classes.format}>
+                        {format}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>{t('Select a format that suits your needs')}</FormHelperText>
+                </FormControl>
+              </Grid>
+              <Grid item xs={1} />
+            </>
+          ) : (
+            t('No available exoprt formats')
+          )}
         </Grid>
       </DialogContent>
       <DialogActions>

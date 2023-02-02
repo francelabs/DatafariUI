@@ -209,5 +209,6 @@
   "Retry now": "Réessayer maintenant",
   "New try in {{time}}": "Nouvelle tentative dans {{time}}...",
   "Connection is lost": "Connexion interrompue !",
-  "Export search results list": "Exporter la liste des résultats de recherche"
+  "Export search results list": "Exporter la liste des résultats de recherche",
+  "No available exoprt formats": "Aucun format d'export disponible. Contactez votre administrateur"
 }

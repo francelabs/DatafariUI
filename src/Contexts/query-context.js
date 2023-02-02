@@ -824,26 +824,14 @@ const QueryContextProvider = (props) => {
 
   const exportQueryResult = useCallback(
     (type = 'excel', nbResult = 5000) => {
-      const fetchExport = async () =>
-        restApiClient.get(`${exportURL}?${buildSearchQueryString()}`, {
-          params: { type, nbResult },
-        });
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = `${exportURL}?${buildSearchQueryString()}&type=${type}&nbResult=${nbResult}`;
+      link.target = '_blank';
 
-      return fetchExport().then((response) => {
-        if (response.status === 200) {
-          const blobFile = new Blob([response?.data], { type: response.headers['content-type'] });
-          const url = window.URL.createObjectURL(blobFile);
-
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          document.body.appendChild(a);
-          a.href = url;
-          a.download = 'export-results.' + response.headers['content-type'].split('/')[1];
-
-          a.click();
-          window.URL.revokeObjectURL(url);
-        }
-      });
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
     [buildSearchQueryString]
   );

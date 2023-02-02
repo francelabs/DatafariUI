@@ -208,5 +208,6 @@
   "Retry now": "Retry now",
   "New try in {{time}}": "New try in {{time}}...",
   "Connection is lost": "Connection is lost !",
-  "Export search results list": "Export search results list"
+  "Export search results list": "Export search results list",
+  "No available exoprt formats": "No available exoprt formats. Please contact your administrator."
 }
