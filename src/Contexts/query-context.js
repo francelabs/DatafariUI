@@ -252,6 +252,7 @@ const newQueryReducer = produce((queryDraft, action) => {
             selectedRangeFacets: queryDraft.selectedRangeFacets,
           }
         : {};
+
       // We base on the default query
       // We Keep field facets and query facets registration from current query as they should not change
       // and override data with anything that is present in urlParams (urlParams has precedence over everything)
@@ -296,7 +297,6 @@ const QueryContextProvider = (props) => {
 
   const {
     apiEndpointsContext: { exportURL },
-    httpClients: { restApiClient },
   } = useContext(APIEndpointsContext);
 
   const { uiDefinition } = useContext(UIConfigContext);
@@ -326,16 +326,7 @@ const QueryContextProvider = (props) => {
           break;
         case 'aggregator': {
           if (Array.isArray(queryParams[key]) && queryParams[key].length) {
-            const aggregatorParam =
-              'aggregator=' +
-              queryParams[key].reduce((acc, agg, index) => {
-                if (index > 0) {
-                  acc += encodeURIComponent(',');
-                }
-                return acc + agg;
-              }, '');
-
-            result += aggregatorParam;
+            result += 'aggregator=' + encodeURIComponent(queryParams[key].join(','));
           }
           break;
         }

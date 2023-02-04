@@ -27,34 +27,38 @@ const useStyles = makeStyles((theme) => ({
 function AggregatorFacet({ title, show = true }) {
   const [expanded, setExpanded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [queryID, setQueryID] = useState(null);
   const [aggregators, setAggregators] = useState([]);
 
   const menuAnchorRef = useRef(null);
 
   const classes = useStyles();
   const { t } = useTranslation();
-  const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
+  const { isLoading, data, error, sendRequest } = useHttp();
 
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
 
   // Request list aggregator
   useEffect(() => {
-    let newQueryID = Math.random().toString(36).substring(2, 15);
-    setQueryID(newQueryID);
-
-    sendRequest(`${apiEndpointsContext.getAggregatorURL}`, 'GET', null, newQueryID);
-  }, [apiEndpointsContext.getAggregatorURL, sendRequest]);
+    sendRequest(`${apiEndpointsContext.getAggregatorURL}`, 'GET', null);
+  }, []);
 
   // Set list aggregator
   useEffect(() => {
-    if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (data?.aggregatorList && Array.isArray(data.aggregatorList)) {
-        setAggregators([...data.aggregatorList]);
+    if (!isLoading && !error && data) {
+      if (data?.content?.aggregatorList && Array.isArray(data.content.aggregatorList)) {
+        const aggregatorList = data.content.aggregatorList;
+
+        setAggregators(aggregatorList);
+
+        // Dispatch to query
+        queryDispatch({
+          type: 'SET_AGGREGATORS_FACET',
+          aggregators: aggregatorList.filter((agg) => agg.selected).map((agg) => agg.label),
+        });
       }
     }
-  }, [data, error, isLoading, reqIdentifier, queryID, query]);
+  }, [data, error, isLoading]);
 
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
@@ -88,12 +92,14 @@ function AggregatorFacet({ title, show = true }) {
     setMenuOpen(false);
   };
 
-  const handleAggregatorClick = (checked, agg) => {
+  const handleAggregatorClick = (agg) => {
     let newAggregators = [];
-    if (checked) {
-      newAggregators = [...query.aggregator, agg.label];
-    } else {
+    if (!!query.aggregator.find((a) => a === agg.label)) {
+      // Unselect
       newAggregators = query.aggregator.filter((a) => a !== agg.label);
+    } else {
+      // Select
+      newAggregators = [...query.aggregator, agg.label];
     }
 
     // Dispatch to query
@@ -115,11 +121,7 @@ function AggregatorFacet({ title, show = true }) {
           })}>
           <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
-        <Menu
-          id={'aggregator-facet-menu'}
-          anchorEl={menuAnchorRef.current}
-          open={menuOpen}
-          onClose={handleCloseMenu}>
+        <Menu id={'aggregator-facet-menu'} anchorEl={menuAnchorRef.current} open={menuOpen} onClose={handleCloseMenu}>
           <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>
@@ -141,7 +143,7 @@ function AggregatorFacet({ title, show = true }) {
               id={agg.label}
               value={agg.label}
               selected={!!query.aggregator.find((a) => a === agg.label)}
-              onClick={(e) => handleAggregatorClick(e.target.checked, agg)}
+              onClick={(e) => handleAggregatorClick(agg)}
             />
           ))}
         </List>

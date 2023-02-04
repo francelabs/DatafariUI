@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
@@ -221,24 +221,27 @@ function MainTabPanel() {
     return result;
   };
 
+  const leftContent = useMemo(() => !!uiDefinition.left && buildContentFor(uiDefinition.left), [uiDefinition.left]);
+  const mainContent = useMemo(
+    () => !!uiDefinition.center?.main && buildContentFor(uiDefinition.center.main),
+    [uiDefinition.center.main]
+  );
+  const rightContent = useMemo(() => !!uiDefinition.right && buildContentFor(uiDefinition.right), [uiDefinition.right]);
+
   return isLoading && !uiDefinition ? (
     <Spinner />
   ) : (
     <div className={classes.container}>
-      <div className={classes.facetsSection}>
-        {!!uiDefinition.left && buildContentFor(uiDefinition.left)}
-      </div>
+      <div className={classes.facetsSection}>{leftContent}</div>
 
       <div className={classes.centerContainer}>
-        {!!uiDefinition.center?.main && buildContentFor(uiDefinition.center.main)}
+        {mainContent}
         <div className={classes.pagerContainer}>
           <Pager />
         </div>
       </div>
 
-      <div className={classes.facetsSection}>
-        {!!uiDefinition.right && buildContentFor(uiDefinition.right)}
-      </div>
+      <div className={classes.facetsSection}>{rightContent}</div>
     </div>
   );
 }
@@ -249,19 +252,11 @@ function checkUIConfig(uiConfig) {
   const helper = checkUIConfigHelper(uiConfig);
 
   ['left', 'right'].forEach((key) => {
-    helper(
-      () => Array.isArray(uiConfig[key]),
-      key,
-      `${key} array of object used to define ${key} side facets`
-    );
+    helper(() => Array.isArray(uiConfig[key]), key, `${key} array of object used to define ${key} side facets`);
   });
 
   if (helper(() => typeof uiConfig.center === 'object', 'center', 'Used to define center view')) {
-    helper(
-      () => Array.isArray(uiConfig.center.main),
-      'center.main',
-      'Used to define center main component'
-    );
+    helper(() => Array.isArray(uiConfig.center.main), 'center.main', 'Used to define center main component');
   }
 
   if (uiConfig.mappingValues) {
