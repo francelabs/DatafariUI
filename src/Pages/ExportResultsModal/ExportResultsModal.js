@@ -116,6 +116,7 @@ const ExportResultsModal = (props) => {
                     color="secondary"
                     fullWidth={true}
                     value={format}
+                    className={classes.format}
                     onChange={handleFormatChange}>
                     {formats.map((format) => (
                       <MenuItem value={format} className={classes.format}>

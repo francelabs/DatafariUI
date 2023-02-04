@@ -1,10 +1,6 @@
 import React, { useCallback, useContext, useReducer } from 'react';
 import produce from 'immer';
-import {
-  checkUIConfigHelper,
-  DEFAULT_FIELDS,
-  UIConfigContext,
-} from '../Contexts/ui-config-context';
+import { checkUIConfigHelper, DEFAULT_FIELDS, UIConfigContext } from '../Contexts/ui-config-context';
 import { APIEndpointsContext } from './api-endpoints-context';
 
 export const REGISTER_FIELD_FACET = 'REGISTER_FIELD_FACET';
@@ -51,9 +47,7 @@ const newQueryReducer = produce((queryDraft, action) => {
       queryDraft.selectedQueryFacets = {};
       queryDraft.selectedFieldFacets = {};
       queryDraft.filters = {};
-      queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery
-        ? action.spellcheckOriginalQuery
-        : undefined;
+      queryDraft.spellcheckOriginalQuery = action.spellcheckOriginalQuery ? action.spellcheckOriginalQuery : undefined;
       break;
     case SET_ELEMENTS_NO_RESET:
       queryDraft.page = 1;
@@ -593,33 +587,36 @@ const QueryContextProvider = (props) => {
 
   // Builds a parameter object that will be passed down to buildQueryStringFromParams
   // to build the query string used when querying the backend search endpoint.
-  const buildSearchQueryString = useCallback(() => {
-    const facetsParams = prepareFacetsParams();
-    const queryParameters = {
-      q: query.elements,
-      fl: fields.join(','),
-      sort: query.sort.value,
-      'q.op': 'AND',
-      rows: query.rows,
-      start: (query.page - 1) * query.rows,
-      aggregator: query.aggregator,
-      ...facetsParams,
-    };
-    if (queryParameters.q === '') {
-      queryParameters.q = '*:*';
-    }
+  const buildSearchQueryString = useCallback(
+    (queryParamName = 'q') => {
+      const facetsParams = prepareFacetsParams();
+      const queryParameters = {
+        [queryParamName]: query.elements,
+        fl: fields.join(','),
+        sort: query.sort.value,
+        'q.op': 'AND',
+        rows: query.rows,
+        start: (query.page - 1) * query.rows,
+        aggregator: query.aggregator,
+        ...facetsParams,
+      };
+      if (queryParameters.q === '') {
+        queryParameters.q = '*:*';
+      }
 
-    return buildQueryStringFromParams(queryParameters);
-  }, [
-    buildQueryStringFromParams,
-    prepareFacetsParams,
-    query.elements,
-    query.page,
-    query.rows,
-    query.sort.value,
-    query.aggregator,
-    fields,
-  ]);
+      return buildQueryStringFromParams(queryParameters);
+    },
+    [
+      buildQueryStringFromParams,
+      prepareFacetsParams,
+      query.elements,
+      query.page,
+      query.rows,
+      query.sort.value,
+      query.aggregator,
+      fields,
+    ]
+  );
 
   const prepareFiltersForAlerts = useCallback(() => {
     const facetsParams = prepareFacetsParams();
@@ -681,10 +678,7 @@ const QueryContextProvider = (props) => {
               if (draft.fieldFacets[tag]) {
                 // It is a field facet from datafariui as the tag matches
                 let fieldFacetResult = regexFieldFacet.exec(filterInfo);
-                if (
-                  draft.selectedFieldFacets[tag] === null ||
-                  draft.selectedFieldFacets[tag] === undefined
-                ) {
+                if (draft.selectedFieldFacets[tag] === null || draft.selectedFieldFacets[tag] === undefined) {
                   draft.selectedFieldFacets[tag] = [];
                 }
                 while (fieldFacetResult) {
@@ -699,10 +693,7 @@ const QueryContextProvider = (props) => {
               } else {
                 // Check if it is a query facet from datafariUI
                 const regexQueryFacetResults = regexQueryFacet.exec(tag);
-                if (
-                  regexQueryFacetResults !== null &&
-                  draft.queryFacets[regexQueryFacetResults[1]]
-                ) {
+                if (regexQueryFacetResults !== null && draft.queryFacets[regexQueryFacetResults[1]]) {
                   // It is a query facet
                   const facetName = regexQueryFacetResults[1];
                   const selectedIndex = regexQueryFacetResults[2];
@@ -714,9 +705,9 @@ const QueryContextProvider = (props) => {
                       draft.selectedQueryFacets[facetName] = [];
                     }
                     // It is correctly defined and references an existing query lets use it
-                    draft.selectedQueryFacets[facetName] = draft.selectedQueryFacets[
-                      facetName
-                    ].concat(draft.queryFacets[facetName].labels[selectedIndex]);
+                    draft.selectedQueryFacets[facetName] = draft.selectedQueryFacets[facetName].concat(
+                      draft.queryFacets[facetName].labels[selectedIndex]
+                    );
                   } else {
                     // index out of range, put it in other filters
                     draft.filters[`${facetName}_${index}`] = {
@@ -741,10 +732,7 @@ const QueryContextProvider = (props) => {
               if (regexFieldFacetResult) {
                 const field = regexFieldFacetResult[1];
                 if (draft.fieldFacets[field]) {
-                  if (
-                    draft.selectedFieldFacets[field] === null ||
-                    draft.selectedFieldFacets[field] === undefined
-                  ) {
+                  if (draft.selectedFieldFacets[field] === null || draft.selectedFieldFacets[field] === undefined) {
                     draft.selectedFieldFacets[field] = [];
                   }
                   while (regexFieldFacetResult) {
@@ -752,8 +740,7 @@ const QueryContextProvider = (props) => {
                     if (value[0] === '"' && value[value.length - 1] === '"') {
                       value = value.substring(1, value.length - 1);
                     }
-                    draft.selectedFieldFacets[field] =
-                      draft.selectedFieldFacets[field].concat(value);
+                    draft.selectedFieldFacets[field] = draft.selectedFieldFacets[field].concat(value);
                     regexFieldFacetResult = regexFieldFacet.exec(element);
                   }
                 }
@@ -826,7 +813,7 @@ const QueryContextProvider = (props) => {
     (type = 'excel', nbResult = 5000) => {
       const link = document.createElement('a');
       link.style.display = 'none';
-      link.href = `${exportURL}?${buildSearchQueryString()}&type=${type}&nbResult=${nbResult}`;
+      link.href = `${exportURL}?${buildSearchQueryString('query')}&type=${type}&nbResult=${nbResult}`;
       link.target = '_blank';
 
       document.body.appendChild(link);
