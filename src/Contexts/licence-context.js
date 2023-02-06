@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import useLicence from "../Hooks/useLicence";
-import produce from "immer";
-import Spinner from "../Components/Spinner/Spinner";
+import React, { useEffect, useState } from 'react';
+import useLicence from '../Hooks/useLicence';
+import produce from 'immer';
+import Spinner from '../Components/Spinner/Spinner';
 
 const defaultLicence = {
   type: undefined,
@@ -16,17 +16,22 @@ const defaultLicence = {
 export const LicenceContext = React.createContext(defaultLicence);
 
 const LicenceContextProvider = (props) => {
-  const queryID = "GETLICENCEQUERY";
+  const queryID = 'GETLICENCEQUERY';
   const { getLicence, isLoading, data, error, reqIdentifier } = useLicence();
   const [licence, setLicence] = useState(defaultLicence);
 
   useEffect(() => {
-    getLicence(queryID);
+    try {
+      getLicence(queryID);
+    } catch (error) {
+      setLicence({ error: 'A problem has been detected concerning the licence' });
+      console.error('Error with licence', error);
+    }
   }, [getLicence]);
 
   useEffect(() => {
     if (!isLoading && !error && data && reqIdentifier === queryID) {
-      if (data.status !== "OK") {
+      if (data.status !== 'OK') {
         // We got an error returned by the API
         setLicence((currentLicence) => {
           return produce(currentLicence, (licenceDraft) => {
@@ -71,11 +76,7 @@ const LicenceContextProvider = (props) => {
     }
   }, [data, error, isLoading, queryID, reqIdentifier]);
 
-  return (
-    <LicenceContext.Provider value={licence}>
-      {isLoading ? <Spinner /> : props.children}
-    </LicenceContext.Provider>
-  );
+  return <LicenceContext.Provider value={licence}>{isLoading ? <Spinner /> : props.children}</LicenceContext.Provider>;
 };
 
 export default LicenceContextProvider;
