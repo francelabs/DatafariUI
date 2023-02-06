@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useLicence from '../Hooks/useLicence';
 import produce from 'immer';
 import Spinner from '../Components/Spinner/Spinner';
+import { useTranslation } from 'react-i18next';
 
 const defaultLicence = {
   type: undefined,
@@ -20,11 +21,13 @@ const LicenceContextProvider = (props) => {
   const { getLicence, isLoading, data, error, reqIdentifier } = useLicence();
   const [licence, setLicence] = useState(defaultLicence);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     try {
       getLicence(queryID);
     } catch (error) {
-      setLicence({ error: 'A problem has been detected concerning the licence' });
+      setLicence({ error: t('A problem has been detected concerning the licence') });
       console.error('Error with licence', error);
     }
   }, [getLicence]);
