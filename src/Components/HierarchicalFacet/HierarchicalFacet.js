@@ -247,29 +247,15 @@ const HierarchicalFacet = ({ show = true, ...props }) => {
                   return currentItem.checked;
                 }
               );
-              if (childrenCheckedStates.includes(CHECKED_STATE)) {
-                if (
-                  childrenCheckedStates.includes(UNCHECKED_STATE) ||
-                  childrenCheckedStates.includes(UNDETERMINATE_STATE)
-                ) {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
-                    parentName
-                  ].checked = UNDETERMINATE_STATE;
-                } else {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
-                    parentName
-                  ].checked = CHECKED_STATE;
-                }
+              if (childrenCheckedStates.includes(CHECKED_STATE) ||
+                  childrenCheckedStates.includes(UNDETERMINATE_STATE)) {
+                hierarchyStateDraft['level' + (itemDepth - 1)][
+                  parentName
+                ].checked = UNDETERMINATE_STATE;
               } else {
-                if (childrenCheckedStates.includes(UNDETERMINATE_STATE)) {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
-                    parentName
-                  ].checked = UNDETERMINATE_STATE;
-                } else {
-                  hierarchyStateDraft['level' + (itemDepth - 1)][
-                    parentName
-                  ].checked = UNCHECKED_STATE;
-                }
+                hierarchyStateDraft['level' + (itemDepth - 1)][
+                  parentName
+                ].checked = UNCHECKED_STATE;
               }
               updateParents(parentItem);
             }
