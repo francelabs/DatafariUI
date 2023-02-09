@@ -364,6 +364,11 @@ const HierarchicalFacet = ({ show = true, ...props }) => {
     // Checks if a descendent of a particular item is selected
     const descendentInList = (item, list) => {
       const itemName = getItemDepthAndName(item.original)[1];
+      // Add the separator at the end of the itemName, if not already present, to avoid false positive during includes method on the selectedItemName
+      // Otherwise an itemName like /home/amazon would return true on an includes method on a selectedItemName like /home/amazon-ec2
+      if(itemName.lastIndexOf(separator) != (itemName.length - 1)) {
+        itemName += separator;
+      }
       const resultsList = list.map((selectedItemID) => {
         const selectedItemName = getItemDepthAndName(selectedItemID)[1];
         return selectedItemName.includes(itemName);
