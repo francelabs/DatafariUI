@@ -12,28 +12,20 @@ const defaultLicence = {
   contact: undefined,
   isLoading: false,
   error: null,
+  isError: false,
 };
 
 export const LicenceContext = React.createContext(defaultLicence);
 
 const LicenceContextProvider = (props) => {
   const queryID = 'GETLICENCEQUERY';
-  const { getLicence, isLoading, data, error, reqIdentifier } = useLicence();
+  const { isLoading, data, isError, error } = useLicence();
   const [licence, setLicence] = useState(defaultLicence);
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    try {
-      getLicence(queryID);
-    } catch (error) {
-      setLicence({ error: t('A problem has been detected concerning the licence') });
-      console.error('Error with licence', error);
-    }
-  }, [getLicence]);
-
-  useEffect(() => {
-    if (!isLoading && !error && data && reqIdentifier === queryID) {
+    if (!isLoading && !isError && data) {
       if (data.status !== 'OK') {
         // We got an error returned by the API
         setLicence((currentLicence) => {
@@ -58,18 +50,20 @@ const LicenceContextProvider = (props) => {
           });
         });
       }
-    } else if (!isLoading && error && reqIdentifier === queryID) {
+    } else if (!isLoading && isError) {
       // We got an error from the HTTP request
       setLicence((currentLicence) => {
         return produce(currentLicence, (licenceDraft) => {
           licenceDraft.error = {
-            reason: error.message,
+            technicalReason: error.response?.data?.content?.reason || error.message,
+            reason: t('A problem has been detected concerning the licence'),
             code: error.code,
           };
+          licenceDraft.isError = isError;
           licenceDraft.isLoading = isLoading;
         });
       });
-    } else if (isLoading && reqIdentifier === queryID) {
+    } else if (isLoading) {
       // We are loading
       setLicence((currentLicence) => {
         return produce(currentLicence, (licenceDraft) => {
@@ -77,7 +71,7 @@ const LicenceContextProvider = (props) => {
         });
       });
     }
-  }, [data, error, isLoading, queryID, reqIdentifier]);
+  }, [data, error, isError, isLoading, queryID]);
 
   return <LicenceContext.Provider value={licence}>{isLoading ? <Spinner /> : props.children}</LicenceContext.Provider>;
 };

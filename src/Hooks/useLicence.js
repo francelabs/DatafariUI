@@ -1,25 +1,26 @@
 import { useCallback, useContext } from 'react';
+import { useQuery } from 'react-query';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
-import useHttp from './useHttp';
 
 const useLicence = () => {
-  const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
-  const { apiEndpointsContext } = useContext(APIEndpointsContext);
+  const {
+    apiEndpointsContext,
+    httpClients: { restApiClient },
+  } = useContext(APIEndpointsContext);
 
   const getLicence = useCallback(
-    (queryID) => {
-      const url = new URL(`${apiEndpointsContext.licenceURL}`, new URL(document.location.href));
-      return sendRequest(url, 'GET', null, queryID);
-    },
-    [apiEndpointsContext.licenceURL, sendRequest]
+    () => restApiClient.get(apiEndpointsContext.licenceURL),
+    [apiEndpointsContext.licenceURL, restApiClient]
   );
 
+  const { status, data, error } = useQuery('getLicence', getLicence);
+
   return {
-    getLicence: getLicence,
-    isLoading: isLoading,
-    data: data,
-    error: error,
-    reqIdentifier: reqIdentifier,
+    getLicence,
+    isLoading: status === 'loading',
+    data,
+    isError: status === 'error',
+    error,
   };
 };
 

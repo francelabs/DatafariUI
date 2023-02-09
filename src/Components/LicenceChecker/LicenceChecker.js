@@ -18,7 +18,7 @@ const LicenceChecker = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [alertDisplayed, setAlertDisplayed] = useState(false);
-  const { type, files, users, time, contact, isLoading, error } = useContext(LicenceContext);
+  const { type, files, users, time, contact, isLoading, error, isError } = useContext(LicenceContext);
   const [emailAddress, setEmailAddress] = useState('');
   const {
     isLoading: emailAddressLoading,
@@ -68,6 +68,9 @@ const LicenceChecker = () => {
         setOpen(true);
         setAlertDisplayed(true);
       }
+    } else if (error) {
+      setOpen(true);
+      setAlertDisplayed(true);
     }
   }, [alertDisplayed, error, files, isLoading, setAlertDisplayed, setOpen, time, type, userState.user, users]);
 
@@ -156,7 +159,9 @@ const LicenceChecker = () => {
       <DialogTitle>{t('Licence issue')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {error || (
+          {isError ? (
+            error.reason
+          ) : (
             <>
               {time === 'ending' && timeEndingContent}
               {time === 'overdue' && timeOverdueContent}

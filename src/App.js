@@ -1,6 +1,7 @@
 import React, { Suspense, useContext, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -91,29 +92,35 @@ function App() {
    * by the UserContextProvider to be able to perform the autoConnect action
    * properly.
    */
+
+  // Create a client
+  const queryClient = new QueryClient();
+
   return (
     <Suspense fallback="loading">
       <APIEndpointsContextProvider>
-        <UIConfigContextProvider>
-          <UserContextProvider>
-            <StylesProvider jss={jss}>
-              <CustomThemeProvider>
-                <CssBaseline />
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <LicenceContextProvider>
-                    <QueryContextProvider>
-                      <ResultsContextProvider>
-                        <SearchContextProvider>
-                          <Main />
-                        </SearchContextProvider>
-                      </ResultsContextProvider>
-                    </QueryContextProvider>
-                  </LicenceContextProvider>
-                </MuiPickersUtilsProvider>
-              </CustomThemeProvider>
-            </StylesProvider>
-          </UserContextProvider>
-        </UIConfigContextProvider>
+        <QueryClientProvider client={queryClient}>
+          <UIConfigContextProvider>
+            <UserContextProvider>
+              <StylesProvider jss={jss}>
+                <CustomThemeProvider>
+                  <CssBaseline />
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <LicenceContextProvider>
+                      <QueryContextProvider>
+                        <ResultsContextProvider>
+                          <SearchContextProvider>
+                            <Main />
+                          </SearchContextProvider>
+                        </ResultsContextProvider>
+                      </QueryContextProvider>
+                    </LicenceContextProvider>
+                  </MuiPickersUtilsProvider>
+                </CustomThemeProvider>
+              </StylesProvider>
+            </UserContextProvider>
+          </UIConfigContextProvider>
+        </QueryClientProvider>
       </APIEndpointsContextProvider>
     </Suspense>
   );
