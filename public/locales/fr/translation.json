@@ -210,6 +210,6 @@
   "New try in {{time}}": "Nouvelle tentative dans {{time}}...",
   "Connection is lost": "Connexion interrompue !",
   "Export search results list": "Exporter la liste des résultats de recherche",
-  "No available exoprt formats": "Aucun format d'export disponible. Contactez votre administrateur",
+  "No available export formats": "Aucun format d'export disponible. Contactez votre administrateur",
   "A problem has been detected concerning the licence": "Un problème a été détecté avec votre licence"
 }

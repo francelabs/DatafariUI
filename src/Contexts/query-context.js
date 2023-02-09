@@ -591,8 +591,8 @@ const QueryContextProvider = (props) => {
         aggregator: query.aggregator,
         ...facetsParams,
       };
-      if (queryParameters.q === '') {
-        queryParameters.q = '*:*';
+      if (queryParameters[queryParamName] === '') {
+        queryParameters[queryParamName] = '*:*';
       }
 
       return buildQueryStringFromParams(queryParameters);
@@ -804,7 +804,7 @@ const QueryContextProvider = (props) => {
     (type = 'excel', nbResult = 5000) => {
       const link = document.createElement('a');
       link.style.display = 'none';
-      link.href = `${exportURL}?${buildSearchQueryString('query')}&type=${type}&nbResult=${nbResult}`;
+      link.href = `${exportURL}?${buildSearchQueryString('query')}&type=${type}&nbResults=${nbResult}`;
       link.target = '_blank';
 
       document.body.appendChild(link);

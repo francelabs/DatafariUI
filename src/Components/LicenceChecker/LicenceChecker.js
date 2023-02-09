@@ -18,9 +18,7 @@ const LicenceChecker = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [alertDisplayed, setAlertDisplayed] = useState(false);
-  const { type, files, users, time, contact, isLoading, error } = useContext(
-    LicenceContext
-  );
+  const { type, files, users, time, contact, isLoading, error } = useContext(LicenceContext);
   const [emailAddress, setEmailAddress] = useState('');
   const {
     isLoading: emailAddressLoading,
@@ -63,36 +61,15 @@ const LicenceChecker = () => {
         userState.user.roles &&
         (userState.user.roles.indexOf('SearchAdministrator') !== -1 ||
           userState.user.roles.indexOf('SearchExpert') !== -1);
-      if (
-        isAdmin &&
-        (files !== 'valid' ||
-          time !== 'valid' ||
-          (users !== undefined && users !== 'valid'))
-      ) {
+      if (isAdmin && (files !== 'valid' || time !== 'valid' || (users !== undefined && users !== 'valid'))) {
         setOpen(true);
         setAlertDisplayed(true);
-      } else if (
-        files === 'overdue' ||
-        time === 'overdue' ||
-        files === 'expired' ||
-        time === 'expired'
-      ) {
+      } else if (files === 'overdue' || time === 'overdue' || files === 'expired' || time === 'expired') {
         setOpen(true);
         setAlertDisplayed(true);
       }
     }
-  }, [
-    alertDisplayed,
-    error,
-    files,
-    isLoading,
-    setAlertDisplayed,
-    setOpen,
-    time,
-    type,
-    userState.user,
-    users,
-  ]);
+  }, [alertDisplayed, error, files, isLoading, setAlertDisplayed, setOpen, time, type, userState.user, users]);
 
   const handleClose = () => {
     setOpen(false);
@@ -102,31 +79,19 @@ const LicenceChecker = () => {
     handleClose();
   };
 
-  const timeEndingContent = (
-    <Typography>{t('Your Datafari licence will expire soon.')}</Typography>
-  );
+  const timeEndingContent = <Typography>{t('Your Datafari licence will expire soon.')}</Typography>;
 
   const timeOverdueContent = (
-    <Typography>
-      {t(
-        'Your Datafari licence has expired, Datafari will soon stop functioning.'
-      )}
-    </Typography>
+    <Typography>{t('Your Datafari licence has expired, Datafari will soon stop functioning.')}</Typography>
   );
 
   const timeExpiredContent = (
-    <Typography>
-      {t(
-        'Your Datafari licence has expired, search will not be available until it is renewed.'
-      )}
-    </Typography>
+    <Typography>{t('Your Datafari licence has expired, search will not be available until it is renewed.')}</Typography>
   );
 
   const filesEndingContent = (
     <Typography>
-      {t(
-        'The number of indexed files in Datafari is approaching the limit set by your licence.'
-      )}
+      {t('The number of indexed files in Datafari is approaching the limit set by your licence.')}
     </Typography>
   );
 
@@ -147,11 +112,7 @@ const LicenceChecker = () => {
   );
 
   const usersEndingContent = (
-    <Typography>
-      {t(
-        'The number of active users in Datafari is approaching the limit set by your licence.'
-      )}
-    </Typography>
+    <Typography>{t('The number of active users in Datafari is approaching the limit set by your licence.')}</Typography>
   );
 
   const usersExpiredContent = (
@@ -167,12 +128,7 @@ const LicenceChecker = () => {
   const userActions = (
     <DialogActions>
       <Link href={`mailto:${emailAddress}?subject=${MAIL_SUBJECT}`}>
-        <Button
-          onClick={handleContactClick}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
+        <Button onClick={handleContactClick} color="secondary" variant="contained" size="small">
           {t('Contact admins')}
         </Button>
       </Link>
@@ -185,12 +141,7 @@ const LicenceChecker = () => {
   const adminActions = (
     <DialogActions>
       <Link href={`mailto:${contact}?subject=${MAIL_SUBJECT}`}>
-        <Button
-          onClick={handleContactClick}
-          color="secondary"
-          variant="contained"
-          size="small"
-        >
+        <Button onClick={handleContactClick} color="secondary" variant="contained" size="small">
           {t('Ask for a new licence')}
         </Button>
       </Link>
@@ -205,14 +156,18 @@ const LicenceChecker = () => {
       <DialogTitle>{t('Licence issue')}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {time === 'ending' && timeEndingContent}
-          {time === 'overdue' && timeOverdueContent}
-          {time === 'expired' && timeExpiredContent}
-          {files === 'ending' && filesEndingContent}
-          {files === 'overdue' && filesOverdueContent}
-          {files === 'expired' && filesExpiredContent}
-          {users === 'ending' && usersEndingContent}
-          {users === 'expired' && usersExpiredContent}
+          {error || (
+            <>
+              {time === 'ending' && timeEndingContent}
+              {time === 'overdue' && timeOverdueContent}
+              {time === 'expired' && timeExpiredContent}
+              {files === 'ending' && filesEndingContent}
+              {files === 'overdue' && filesOverdueContent}
+              {files === 'expired' && filesExpiredContent}
+              {users === 'ending' && usersEndingContent}
+              {users === 'expired' && usersExpiredContent}
+            </>
+          )}
         </DialogContentText>
       </DialogContent>
       {userState.user &&

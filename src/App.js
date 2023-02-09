@@ -27,10 +27,7 @@ import { useTranslation } from 'react-i18next';
 import CustomThemeProvider from './Components/CustomThemeProvider/CustomThemeProvider';
 import useTitleUpdater from './Hooks/useTitleUpdater';
 import HomePage from './Pages/HomePage/HomePage';
-import UIConfigContextProvider, {
-  checkUIConfigHelper,
-  UIConfigContext,
-} from './Contexts/ui-config-context';
+import UIConfigContextProvider, { checkUIConfigHelper, UIConfigContext } from './Contexts/ui-config-context';
 import SearchContextProvider from './Contexts/search-context';
 import Banner from './Components/Banner';
 

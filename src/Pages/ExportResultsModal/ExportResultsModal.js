@@ -41,31 +41,19 @@ const ExportResultsModal = (props) => {
   const formats = Object.keys(exportResults);
 
   const [format, setFormat] = useState((formats.length && formats[0]) || '');
-  const [nbResult, setNbResult] = useState(
-    (formats.length && exportResults[formats[0]].defaultResults) || 100
-  );
+  const [nbResult, setNbResult] = useState((formats.length && exportResults[formats[0]].defaultResults) || 100);
 
   const { exportQueryResult } = useContext(QueryContext);
 
   const handleNbResult = (event) => {
-    let nb = 1;
-    try {
-      nb = Number.parseInt(event.target.value);
-    } catch (error) {
-      console.error('error try parsing nb of result', event.target.value);
+    const value = event.target.value;
+    if (value) {
+      const nb = Number.parseInt(event.target.value);
+      const { minResults, maxResults } = exportResults[formats[0]];
+      setNbResult(nb < minResults ? minResults : nb > maxResults ? maxResults : nb);
+    } else {
+      setNbResult();
     }
-
-    if (isNaN(nb)) {
-      nb = 1;
-    }
-
-    setNbResult(
-      nb < exportResults.minResults
-        ? exportResults.minResults
-        : nb > exportResults.maxResults
-        ? exportResults.maxResults
-        : nb
-    );
   };
 
   const handleFormatChange = (event) => {
@@ -130,12 +118,12 @@ const ExportResultsModal = (props) => {
               <Grid item xs={1} />
             </>
           ) : (
-            t('No available exoprt formats')
+            t('No available export formats')
           )}
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={generateExport} color="secondary" variant="contained" size="small">
+        <Button onClick={generateExport} color="secondary" variant="contained" size="small" disabled={!nbResult}>
           {t('Generate Export File')}
         </Button>
       </DialogActions>
@@ -158,11 +146,7 @@ function checkUIConfig(uiConfig) {
       helper(() => typeof format.extension === 'string', `${format}.extension`, 'Type string.');
       helper(() => typeof format.minResults === 'number', `${format}.minResults`, 'Type number.');
       helper(() => typeof format.maxResults === 'number', `${format}.minResults`, 'Type number.');
-      helper(
-        () => typeof format.defaultResults === 'number',
-        `${format}.minResults`,
-        'Type number.'
-      );
+      helper(() => typeof format.defaultResults === 'number', `${format}.minResults`, 'Type number.');
     });
   }
 }
