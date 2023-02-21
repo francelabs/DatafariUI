@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  IconButton,
-  Link,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import { Avatar, IconButton, Link, ListItem, ListItemIcon, ListItemText, makeStyles, Tooltip } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import React, { useContext } from 'react';
@@ -262,29 +253,22 @@ const ResultEntry = (props) => {
    */
   const prepareUrl = () => {
     var maxSize = 70;
-    let result = props.click_url;
-    if (props.click_url.length > maxSize) {
-      const fileName = props.click_url.substring(props.click_url.lastIndexOf('/') + 1);
+    let result = props.url;
+    if (props.url.length > maxSize) {
+      const fileName = props.url.substring(props.url.lastIndexOf('/') + 1);
       if (fileName.length > maxSize - 15) {
         result = (
-          <Tooltip title={props.click_url} placement="right" aria-label={props.click_url}>
-            <span>
-              {props.click_url.substring(0, 15) +
-                '...' +
-                fileName.substring(fileName.length - 1 - (maxSize - 15))}
-            </span>
+          <Tooltip title={props.url} placement="right" aria-label={props.url}>
+            <span>{props.url.substring(0, 15) + '...' + fileName.substring(fileName.length - 1 - (maxSize - 15))}</span>
           </Tooltip>
         );
       } else {
         result = (
-          <Tooltip title={props.click_url} placement="right" aria-label={props.click_url}>
+          <Tooltip title={props.url} placement="right" aria-label={props.url}>
             <span>
-              {props.click_url.substring(
-                0,
-                props.click_url.lastIndexOf('/') - props.click_url.length + maxSize
-              ) +
+              {props.url.substring(0, props.url.lastIndexOf('/') - props.url.length + maxSize) +
                 '...' +
-                props.click_url.substring(props.click_url.lastIndexOf('/'))}
+                props.url.substring(props.url.lastIndexOf('/'))}
             </span>
           </Tooltip>
         );
@@ -340,12 +324,7 @@ const ResultEntry = (props) => {
       {(data.includes(dataNames.logo) || data.includes(dataNames.previewButton)) && (
         <ListItemIcon className={classes.iconsContainer}>
           {data.includes(dataNames.logo) && (
-            <Avatar
-              className={classes.fileIcon}
-              variant="square"
-              src={fileIcon}
-              alt={`${props.extension} icon`}
-            />
+            <Avatar className={classes.fileIcon} variant="square" src={fileIcon} alt={`${props.extension} icon`} />
           )}
         </ListItemIcon>
       )}
@@ -371,22 +350,17 @@ const ResultEntry = (props) => {
             )}
 
             {/* FOLDER LINK */}
-            {props['folderLinkSources'] &&
-              props['folderLinkSources'].indexOf(props['repo_source']) !== -1 && (
-                <div>
-                  <Link color="secondary" href={prepareFolderURL()} target={props.folderTarget}>
-                    {t('Open Folder')}
-                  </Link>
-                </div>
-              )}
+            {props['folderLinkSources'] && props['folderLinkSources'].indexOf(props['repo_source']) !== -1 && (
+              <div>
+                <Link color="secondary" href={prepareFolderURL()} target={props.folderTarget}>
+                  {t('Open Folder')}
+                </Link>
+              </div>
+            )}
 
             {/* PREVIEW LINK */}
             {data.includes(dataNames.previewButton) && (
-              <Link
-                color="secondary"
-                component={RouterLink}
-                to={preparePreviewURL()}
-                target={props.previewTarget}>
+              <Link color="secondary" component={RouterLink} to={preparePreviewURL()} target={props.previewTarget}>
                 {t('Open preview')}
               </Link>
             )}
