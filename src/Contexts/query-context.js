@@ -304,17 +304,17 @@ const QueryContextProvider = (props) => {
   const { fields = DEFAULT_FIELDS } = queryParams;
   checkUIConfig(uiDefinition);
 
-  const buildQueryStringFromParams = useCallback((queryParams) => {
+  const buildQueryStringFromParams = useCallback((queryParams, facetFieldName, facetQueryName, fqName) => {
     let result = '';
     for (const key in queryParams) {
       if (result !== '') {
         result += '&';
       }
       switch (key) {
-        case 'facet.query':
-        case 'facet.field':
+        case facetFieldName:
+        case facetQueryName:
         case 'facet.range':
-        case 'fq':
+        case fqName:
           let currentParamString = queryParams[key].reduce((accu, element, index, array) => {
             let next = accu + key + '=' + encodeURIComponent(element);
             if (index < array.length - 1) {
@@ -518,69 +518,72 @@ const QueryContextProvider = (props) => {
 
   // Prepares an object holding the parameters to be included in the query to
   // the backend to handle current facet state.
-  const prepareFacetsParams = useCallback(() => {
-    const facetParams = {};
+  const prepareFacetsParams = useCallback(
+    (facetFieldName, facetQueryName, fqName) => {
+      const facetParams = {};
 
-    // Field facets gathering
-    const [fieldFacetsParams, selectedFieldFacets] = prepareFieldFacets();
-    if (fieldFacetsParams.length > 0) {
-      facetParams.facet = true;
-      facetParams['facet.field'] = fieldFacetsParams;
-      if (selectedFieldFacets.length > 0) {
-        facetParams.fq = selectedFieldFacets;
-      }
-    }
-
-    // Query facets gathering
-    const [queryFacetsParams, selectedQueryFacets] = prepareQueryFacets();
-    if (queryFacetsParams.length > 0) {
-      facetParams.facet = true;
-      facetParams['facet.query'] = queryFacetsParams;
-      if (selectedQueryFacets.length > 0) {
-        if (facetParams.fq) {
-          facetParams.fq = facetParams.fq.concat(selectedQueryFacets);
-        } else {
-          facetParams.fq = selectedQueryFacets;
+      // Field facets gathering
+      const [fieldFacetsParams, selectedFieldFacets] = prepareFieldFacets();
+      if (fieldFacetsParams.length > 0) {
+        facetParams.facet = true;
+        facetParams[facetFieldName] = fieldFacetsParams;
+        if (selectedFieldFacets.length > 0) {
+          facetParams[fqName] = selectedFieldFacets;
         }
       }
-    }
 
-    // Range facet gathering
-    const [rangeFacetsParams, rangeCustomParams, selectedRangeFacets] = prepareRangeFacets();
-    if (rangeFacetsParams.length > 0) {
-      facetParams.facet = true;
-      facetParams['facet.range'] = rangeFacetsParams;
-      // Add custom params such as range start and end
-      for (const key in rangeCustomParams) {
-        facetParams[key] = rangeCustomParams[key];
-      }
-      if (selectedRangeFacets.length > 0) {
-        if (facetParams.fq) {
-          facetParams.fq = facetParams.fq.concat(selectedRangeFacets);
-        } else {
-          facetParams.fq = selectedRangeFacets;
+      // Query facets gathering
+      const [queryFacetsParams, selectedQueryFacets] = prepareQueryFacets();
+      if (queryFacetsParams.length > 0) {
+        facetParams.facet = true;
+        facetParams[facetQueryName] = queryFacetsParams;
+        if (selectedQueryFacets.length > 0) {
+          if (facetParams[fqName]) {
+            facetParams[fqName] = facetParams.fq.concat(selectedQueryFacets);
+          } else {
+            facetParams[fqName] = selectedQueryFacets;
+          }
         }
       }
-    }
 
-    // Other filters gathering
-    const otherFilters = prepareOtherFilters();
-    if (otherFilters.length > 0) {
-      if (facetParams.fq) {
-        facetParams.fq = facetParams.fq.concat(otherFilters);
-      } else {
-        facetParams.fq = otherFilters;
+      // Range facet gathering
+      const [rangeFacetsParams, rangeCustomParams, selectedRangeFacets] = prepareRangeFacets();
+      if (rangeFacetsParams.length > 0) {
+        facetParams.facet = true;
+        facetParams['facet.range'] = rangeFacetsParams;
+        // Add custom params such as range start and end
+        for (const key in rangeCustomParams) {
+          facetParams[key] = rangeCustomParams[key];
+        }
+        if (selectedRangeFacets.length > 0) {
+          if (facetParams[fqName]) {
+            facetParams[fqName] = facetParams[fqName].concat(selectedRangeFacets);
+          } else {
+            facetParams[fqName] = selectedRangeFacets;
+          }
+        }
       }
-    }
 
-    return facetParams;
-  }, [prepareFieldFacets, prepareQueryFacets, prepareRangeFacets, prepareOtherFilters]);
+      // Other filters gathering
+      const otherFilters = prepareOtherFilters();
+      if (otherFilters.length > 0) {
+        if (facetParams[fqName]) {
+          facetParams[fqName] = facetParams[fqName].concat(otherFilters);
+        } else {
+          facetParams[fqName] = otherFilters;
+        }
+      }
+
+      return facetParams;
+    },
+    [prepareFieldFacets, prepareQueryFacets, prepareRangeFacets, prepareOtherFilters]
+  );
 
   // Builds a parameter object that will be passed down to buildQueryStringFromParams
   // to build the query string used when querying the backend search endpoint.
   const buildSearchQueryString = useCallback(
-    (queryParamName = 'q') => {
-      const facetsParams = prepareFacetsParams();
+    (queryParamName = 'q', facetFieldName = 'facet.field', facetQueryName = 'facet.query', fqName = 'fq') => {
+      const facetsParams = prepareFacetsParams(facetFieldName, facetQueryName, fqName);
       const queryParameters = {
         [queryParamName]: query.elements,
         fl: fields.join(','),
@@ -595,7 +598,7 @@ const QueryContextProvider = (props) => {
         queryParameters[queryParamName] = '*:*';
       }
 
-      return buildQueryStringFromParams(queryParameters);
+      return buildQueryStringFromParams(queryParameters, facetFieldName, facetQueryName, fqName);
     },
     [
       buildQueryStringFromParams,
@@ -804,7 +807,12 @@ const QueryContextProvider = (props) => {
     (type = 'excel', nbResult = 5000) => {
       const link = document.createElement('a');
       link.style.display = 'none';
-      link.href = `${exportURL}?${buildSearchQueryString('query')}&type=${type}&nbResults=${nbResult}`;
+      link.href = `${exportURL}?${buildSearchQueryString(
+        'query',
+        'facetField[]',
+        'facetQuery[]',
+        'fq[]'
+      )}&type=${type}&nbResults=${nbResult}`;
       link.target = '_blank';
 
       document.body.appendChild(link);
