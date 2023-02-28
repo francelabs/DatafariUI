@@ -49,12 +49,25 @@ function AggregatorFacet({ title, show = true }) {
       if (data?.content?.aggregatorList && Array.isArray(data.content.aggregatorList)) {
         const aggregatorList = data.content.aggregatorList;
 
+        let aggregatorListComputed;
+        // 1st - check aggretors form query context is available in the aggregator list from the server
+        const filteredAggregators = aggregatorList.filter((agg) => query.aggregator.includes(agg.label));
+
+        // If some -> take them
+        if (filteredAggregators.length) {
+          aggregatorListComputed = filteredAggregators;
+        } else {
+          // Take only those at selected = true
+          aggregatorListComputed = aggregatorList.filter((agg) => agg.selected);
+        }
+
         setAggregators(aggregatorList);
 
         // Dispatch to query
         queryDispatch({
           type: 'SET_AGGREGATORS_FACET',
-          aggregators: aggregatorList.filter((agg) => agg.selected).map((agg) => agg.label),
+          // Take only names
+          aggregators: aggregatorListComputed.map((agg) => agg.label),
         });
       }
     }
