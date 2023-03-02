@@ -325,7 +325,8 @@ const QueryContextProvider = (props) => {
           result += currentParamString;
           break;
         case 'aggregator': {
-          if (Array.isArray(queryParams[key]) && queryParams[key].length) {
+          if (Array.isArray(queryParams[key])) {
+            // Allow to send empty aggregator => means search in all aggregators available
             result += 'aggregator=' + encodeURIComponent(queryParams[key].join(','));
           }
           break;
