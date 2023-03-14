@@ -263,6 +263,7 @@ const newQueryReducer = produce((queryDraft, action) => {
         ...currentRegisteredFacets,
         ...currentSelectionFacets,
         ...urlParams,
+        aggregator: queryDraft.aggregator,
       };
 
     case CLEAR_FIELDS_FACET_SELECTED: {
