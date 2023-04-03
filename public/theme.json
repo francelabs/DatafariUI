@@ -2,15 +2,15 @@
   "palette": {
     "mode": "light",
     "primary": {
-      "main": "#ff0",
+      "main": "#ffffff",
       "contrastText": "#000000"
     },
     "secondary": {
-      "main": "#f0f"
+      "main": "#679439"
     },
     "background": {
-      "default": "#00ffff",
-      "paper": "#00ffff"
+      "default": "#fafafa",
+      "paper": "#ffffff"
     }
   },
   "typography": {
