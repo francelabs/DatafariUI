@@ -1,21 +1,8 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import {
-  QueryContext,
-  REGISTER_QUERY_FACET,
-  SET_QUERY_FACET_SELECTED,
-} from '../../Contexts/query-context';
+import { QueryContext, REGISTER_QUERY_FACET, SET_QUERY_FACET_SELECTED } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import FacetEntry from './FacetEntry';
-import {
-  Divider,
-  IconButton,
-  makeStyles,
-  List,
-  Typography,
-  Menu,
-  MenuItem,
-  Link,
-} from '@material-ui/core';
+import { Divider, IconButton, makeStyles, List, Typography, Menu, MenuItem, Link } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
@@ -31,7 +18,6 @@ const VARIANTS_AVAILABLE = [QUERIES_VARIANT, CHILDREN_VARIANT, DEFAULT_VARIANT];
 
 const useStyles = makeStyles((theme) => ({
   facetTitleText: {
-    color: theme.palette.secondary.main,
     flexGrow: 1,
   },
   facetHeader: {
@@ -65,9 +51,7 @@ const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
   const numShowed = showMore ? maxShow : minShow;
 
   const multipleSelect =
-    props.multipleSelect !== undefined && props.multipleSelect !== null
-      ? props.multipleSelect
-      : false;
+    props.multipleSelect !== undefined && props.multipleSelect !== null ? props.multipleSelect : false;
 
   // Effect to add the facet to the query if it is not registered
   useEffect(() => {
@@ -122,10 +106,7 @@ const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
             onClick={onClick(labels[index])}
             value={labels[index]}
             count={results.queryFacets[id][index]}
-            selected={
-              query.selectedQueryFacets[id] &&
-              query.selectedQueryFacets[id].indexOf(labels[index]) !== -1
-            }
+            selected={query.selectedQueryFacets[id] && query.selectedQueryFacets[id].indexOf(labels[index]) !== -1}
             key={`facet-${id}-${index}`}
           />
         );
@@ -187,11 +168,7 @@ const QueryFacet = ({ show = true, sendToSolr = false, ...props }) => {
           })}>
           <MoreVertIcon />
         </IconButton>
-        <Menu
-          id={`${id}-facet-menu`}
-          anchorEl={menuAnchorRef.current}
-          open={menuOpen}
-          onClose={handleCloseMenu}>
+        <Menu id={`${id}-facet-menu`} anchorEl={menuAnchorRef.current} open={menuOpen} onClose={handleCloseMenu}>
           {multipleSelect && <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>}
           <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>

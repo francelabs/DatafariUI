@@ -9,11 +9,7 @@ import MainTabPanel from '../../Components/TabPanel/MainTabPanel';
 import Modal from '../../Components/Modal/Modal';
 import SearchTopMenu from '../../Components/SearchTopMenu/SearchTopMenu';
 
-import {
-  CLEAR_FIELDS_FACET_SELECTED,
-  QueryContext,
-  SET_FIELD_FACET_SELECTED,
-} from '../../Contexts/query-context';
+import { CLEAR_FIELDS_FACET_SELECTED, QueryContext, SET_FIELD_FACET_SELECTED } from '../../Contexts/query-context';
 import { ResultsContext } from '../../Contexts/results-context';
 import { checkUIConfigHelper, UIConfigContext } from '../../Contexts/ui-config-context';
 import useDatafari from '../../Hooks/useDatafari';
@@ -76,9 +72,7 @@ const Search = () => {
 
             if (results.fieldFacets[field]) {
               const arrayLength =
-                max > -1
-                  ? Math.min(max * 2, results.fieldFacets[field].length)
-                  : results.fieldFacets[field].length;
+                max > -1 ? Math.min(max * 2, results.fieldFacets[field].length) : results.fieldFacets[field].length;
 
               for (let i = 0; i < arrayLength; i += 2) {
                 const value = results.fieldFacets[field][i];
@@ -90,9 +84,7 @@ const Search = () => {
                   <Tab
                     key={type + field + value}
                     value={formatTabValue(type, field, value)}
-                    label={
-                      labelValue + (count ? ` (${formatNumberToLocale(count, i18n.language)})` : '')
-                    }
+                    label={labelValue + (count ? ` (${formatNumberToLocale(count, i18n.language)})` : '')}
                   />
                 );
               }
@@ -124,9 +116,7 @@ const Search = () => {
     // Set filter for other tab then main
     if (tab === MAIN_TAB) {
       // Reset all filters for each field from tabs
-      const fields = uiDefinition.center.tabs
-        .filter((tab) => tab.type === FACET_TAB_TYPE)
-        .map((tab) => tab.field);
+      const fields = uiDefinition.center.tabs.filter((tab) => tab.type === FACET_TAB_TYPE).map((tab) => tab.field);
 
       queryDispatch({
         type: CLEAR_FIELDS_FACET_SELECTED,
@@ -188,10 +178,7 @@ function formatNumberToLocale(n, language) {
 }
 
 function formatTabValue(...props) {
-  return props.reduce(
-    (acc, current, index) => (index === 0 ? current : acc + TAB_VALUE_SEPARATOR + current),
-    ''
-  );
+  return props.reduce((acc, current, index) => (index === 0 ? current : acc + TAB_VALUE_SEPARATOR + current), '');
 }
 
 function checkUIConfig(uiConfig) {

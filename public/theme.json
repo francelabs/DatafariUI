@@ -1,16 +1,16 @@
 {
   "palette": {
-    "type": "light",
+    "mode": "light",
     "primary": {
-      "main": "#ffffff",
+      "main": "#ff0",
       "contrastText": "#000000"
     },
     "secondary": {
-      "main": "#679439"
+      "main": "#f0f"
     },
     "background": {
-      "default": "#fafafa",
-      "paper": "#ffffff"
+      "default": "#00ffff",
+      "paper": "#00ffff"
     }
   },
   "typography": {

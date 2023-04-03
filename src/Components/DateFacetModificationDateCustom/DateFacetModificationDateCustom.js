@@ -3,11 +3,7 @@ import { Button, createTheme, makeStyles, ThemeProvider } from '@material-ui/cor
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  QueryContext,
-  REGISTER_FILTER,
-  UNREGISTER_FILTER,
-} from '../../Contexts/query-context';
+import { QueryContext, REGISTER_FILTER, UNREGISTER_FILTER } from '../../Contexts/query-context';
 import { UserContext } from '../../Contexts/user-context';
 import { DATE_RANGE } from '../../Hooks/useFilterFormater';
 
@@ -102,62 +98,45 @@ const DateFacetModificationDateCustom = (props) => {
 
   return (
     <>
-      <ThemeProvider
-        theme={(theme) =>
-          createTheme({
-            ...theme,
-            palette: {
-              ...theme.palette,
-              primary: {
-                light: theme.palette.secondary.light,
-                main: theme.palette.secondary.main,
-                dark: theme.palette.secondary.dark,
-              },
-            },
-          })
-        }>
-        <div className={classes.containerSpacing}>
-          <MuiPickersUtilsProvider
-            utils={DateFnsUtils}
-            locale={userState.userLocale.locale}>
-            <form onSubmit={handleGoClick} style={{ display: 'flex' }}>
-              <KeyboardDatePicker
-                format={userState.userLocale.dateFormat}
-                autoOk={true}
-                variant="inline"
-                margin="dense"
-                id="from-date-picker-dialog"
-                label={t('From')}
-                value={selectedFromDate}
-                onChange={handleFromDateChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change start date',
-                }}
-                size="small"
-                className={classes.dateSelectors}
-              />
-              <KeyboardDatePicker
-                format={userState.userLocale.dateFormat}
-                autoOk={true}
-                variant="inline"
-                margin="dense"
-                id="to-date-picker-dialog"
-                label={t('To')}
-                value={selectedToDate}
-                onChange={handleToDateChange}
-                KeyboardButtonProps={{
-                  'aria-label': 'change end date',
-                }}
-                size="small"
-                className={classes.dateSelectors}
-              />
-              <Button type="submit" size="small" color="primary" onClick={handleGoClick}>
-                {t('Go')}
-              </Button>
-            </form>
-          </MuiPickersUtilsProvider>
-        </div>
-      </ThemeProvider>
+      <div className={classes.containerSpacing}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={userState.userLocale.locale}>
+          <form onSubmit={handleGoClick} style={{ display: 'flex' }}>
+            <KeyboardDatePicker
+              format={userState.userLocale.dateFormat}
+              autoOk={true}
+              variant="inline"
+              margin="dense"
+              id="from-date-picker-dialog"
+              label={t('From')}
+              value={selectedFromDate}
+              onChange={handleFromDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change start date',
+              }}
+              size="small"
+              className={classes.dateSelectors}
+            />
+            <KeyboardDatePicker
+              format={userState.userLocale.dateFormat}
+              autoOk={true}
+              variant="inline"
+              margin="dense"
+              id="to-date-picker-dialog"
+              label={t('To')}
+              value={selectedToDate}
+              onChange={handleToDateChange}
+              KeyboardButtonProps={{
+                'aria-label': 'change end date',
+              }}
+              size="small"
+              className={classes.dateSelectors}
+            />
+            <Button type="submit" size="small" color="primary" onClick={handleGoClick}>
+              {t('Go')}
+            </Button>
+          </form>
+        </MuiPickersUtilsProvider>
+      </div>
     </>
   );
 };

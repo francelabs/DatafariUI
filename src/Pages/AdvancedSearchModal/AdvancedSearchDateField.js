@@ -1,6 +1,6 @@
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core';
-import { KeyboardDatePicker } from '@material-ui/pickers';
 import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core';
+import { KeyboardDatePicker } from '@material-ui/pickers';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,34 +31,14 @@ const AdvancedSearchDateField = (props) => {
   };
 
   useEffect(() => {
-    const fromDate =
-      props.values.fromValue && props.values.fromValue !== '*'
-        ? new Date(props.values.fromValue)
-        : null;
-    const toDate =
-      props.values.toValue && props.values.toValue !== '*'
-        ? new Date(props.values.toValue)
-        : null;
+    const fromDate = props.values.fromValue && props.values.fromValue !== '*' ? new Date(props.values.fromValue) : null;
+    const toDate = props.values.toValue && props.values.toValue !== '*' ? new Date(props.values.toValue) : null;
     setSelectedFromDate(fromDate);
     setSelectedToDate(toDate);
   }, [props.values]);
 
   return (
-    <ThemeProvider
-      theme={(theme) =>
-        createMuiTheme({
-          ...theme,
-          palette: {
-            ...theme.palette,
-            primary: {
-              light: theme.palette.secondary.light,
-              main: theme.palette.secondary.main,
-              dark: theme.palette.secondary.dark,
-            },
-          },
-        })
-      }
-    >
+    <>
       <KeyboardDatePicker
         autoOk={true}
         variant="inline"
@@ -89,7 +69,7 @@ const AdvancedSearchDateField = (props) => {
         size="small"
         className={classes.dateSelectors}
       />
-    </ThemeProvider>
+    </>
   );
 };
 

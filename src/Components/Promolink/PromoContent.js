@@ -60,21 +60,14 @@ function PromoContent({ title, content, ...props }) {
     <div className={classes.root}>
       <div className={classes.promoContainer}>
         <div className={classes.titleContainer}>
-          <Chip
-            label={t('promolink')}
-            size="small"
-            color="secondary"
-            className={classes.badge}
-          />
+          <Chip label={t('promolink')} size="small" color="secondary" className={classes.badge} />
           <Typography variant="h6" className={classes.title}>
             {props['title_' + language] ? props['title_' + language] : title}
           </Typography>
         </div>
         <div className={classes.content}>
           <Typography variant="body2">
-            {props['content_' + language]
-              ? props['content_' + language]
-              : content}
+            {props['content_' + language] ? props['content_' + language] : content}
           </Typography>
         </div>
         <div className={classes.close}>
@@ -83,8 +76,7 @@ function PromoContent({ title, content, ...props }) {
             size="small"
             onClick={() => {
               setOpen(false);
-            }}
-          >
+            }}>
             <CloseIcon fontSize="inherit" />
           </IconButton>
         </div>

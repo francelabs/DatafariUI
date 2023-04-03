@@ -1,13 +1,4 @@
-import {
-  Divider,
-  IconButton,
-  Link,
-  List,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Typography,
-} from '@material-ui/core';
+import { Divider, IconButton, Link, List, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -60,9 +51,7 @@ const CheckboxFieldFacet = (props) => {
     (value) => {
       return () => {
         // remeber query is immutable, copy anything we want to modfiy
-        let selected = query.selectedFieldFacets[field]
-          ? [...query.selectedFieldFacets[field]]
-          : [];
+        let selected = query.selectedFieldFacets[field] ? [...query.selectedFieldFacets[field]] : [];
         const selectedIndex = selected.indexOf(value);
         if (selectedIndex === -1) {
           selected.push(value);
@@ -156,11 +145,7 @@ const CheckboxFieldFacet = (props) => {
           })}>
           <MoreVertIcon ref={menuAnchorRef} />
         </IconButton>
-        <Menu
-          id={`${field}-facet-menu`}
-          anchorEl={menuAnchorRef.current}
-          open={menuOpen}
-          onClose={handleCloseMenu}>
+        <Menu id={`${field}-facet-menu`} anchorEl={menuAnchorRef.current} open={menuOpen} onClose={handleCloseMenu}>
           <MenuItem onClick={handleSelectAllClick}>{t('Select All')}</MenuItem>
           <MenuItem onClick={handleClearFilterClick}>{t('Clear Filter')}</MenuItem>
         </Menu>
