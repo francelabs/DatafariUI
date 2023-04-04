@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import { CssBaseline, ThemeProvider, useMediaQuery } from '@material-ui/core';
+import { CssBaseline, ThemeProvider } from '@material-ui/core';
 
 import { createTheme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ const CustomThemeProvider = (props) => {
 
   useEffect(() => {
     const fetchTheme = async () => {
-      const themeFromServer = await (await fetch(`/datafariui/theme.json`)).json();
+      const themeFromServer = await (await fetch(`${apiEndpointsContext.getThemeURL}`)).json();
       setTheme(createTheme(themeFromServer, i18n.language));
     };
 
