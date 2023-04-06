@@ -104,7 +104,6 @@ function App() {
             <UserContextProvider>
               <StylesProvider jss={jss}>
                 <CustomThemeProvider>
-                  <CssBaseline />
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <LicenceContextProvider>
                       <QueryContextProvider>

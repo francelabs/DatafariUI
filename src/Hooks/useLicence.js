@@ -18,7 +18,7 @@ const useLicence = () => {
   return {
     getLicence,
     isLoading: status === 'loading',
-    data,
+    data: data?.data ?? undefined,
     isError: status === 'error',
     error,
   };
