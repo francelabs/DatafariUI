@@ -45,14 +45,11 @@ const ModifyAlertModal = (props) => {
   const { addAlert, modifyAlert, getEmptyAlertObject, isLoading, data, error, clear } = useAlerts();
   const classes = useStyles();
   const [keepFacets, setKeepFacets] = useState(false);
-  const [alert, setAlert] = useState(
-    props.alert ? { ...props.alert } : { ...getEmptyAlertObject() }
-  );
+  const [alert, setAlert] = useState(props.alert ? { ...props.alert } : { ...getEmptyAlertObject() });
 
   useEffect(() => {
-    if (!props.open) {
-      const subject =
-        query.elements?.split(' ').length > 0 ? query.elements.split(' ')[0] : query.elements;
+    if (props.open) {
+      const subject = query.elements?.split(' ').length > 0 ? query.elements.split(' ')[0] : query.elements;
       setAlert((currentAlert) => {
         return {
           ...currentAlert,
@@ -157,9 +154,7 @@ const ModifyAlertModal = (props) => {
       {!isLoading && error && (
         <DialogContent>
           <Typography>
-            {t(
-              'An error occured while retrieving the data, if this error persists contact an administrator'
-            )}
+            {t('An error occured while retrieving the data, if this error persists contact an administrator')}
           </Typography>
         </DialogContent>
       )}
@@ -191,19 +186,11 @@ const ModifyAlertModal = (props) => {
                     </FormLabel>
                     <FormGroup>
                       <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={keepFacets}
-                            onChange={keepFacetsChange}
-                            name="keep-facets"
-                          />
-                        }
+                        control={<Checkbox checked={keepFacets} onChange={keepFacetsChange} name="keep-facets" />}
                         label={t('Save current facets')}
                       />
                     </FormGroup>
-                    <FormHelperText>
-                      {t('Check this box if you want to save the current facets')}
-                    </FormHelperText>
+                    <FormHelperText>{t('Check this box if you want to save the current facets')}</FormHelperText>
                   </FormControl>
                 </Grid>
                 <Grid item xs={1} />
@@ -241,9 +228,7 @@ const ModifyAlertModal = (props) => {
                   <MenuItem value="daily">{t('Daily')}</MenuItem>
                   <MenuItem value="weekly">{t('Weekly')}</MenuItem>
                 </Select>
-                <FormHelperText>
-                  {t('Pick how frequently you wish to receive email notifications')}
-                </FormHelperText>
+                <FormHelperText>{t('Pick how frequently you wish to receive email notifications')}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={1} />

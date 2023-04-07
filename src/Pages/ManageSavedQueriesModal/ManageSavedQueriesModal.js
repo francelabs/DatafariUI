@@ -37,14 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ManageSavedQueriesModal = (props) => {
   const classes = useStyles();
-  const {
-    isLoading,
-    data,
-    error,
-    reqIdentifier,
-    getSavedSearches,
-    removeSavedSearch,
-  } = useSavedSearches();
+  const { isLoading, data, error, reqIdentifier, getSavedSearches, removeSavedSearch } = useSavedSearches();
   const { runQueryFromSavedSearch } = useContext(QueryContext);
   const { t } = useTranslation();
   const [savedSearches, setSavedSearches] = useState([]);
@@ -86,18 +79,10 @@ const ManageSavedQueriesModal = (props) => {
       if (!isLoading && !error && data) {
         if (data.status === 'OK') {
           setSavedSearches((currentSavedSearches) => {
-            const savedSearchNames = currentSavedSearches.map(
-              (savedSearch) => savedSearch.name
-            );
+            const savedSearchNames = currentSavedSearches.map((savedSearch) => savedSearch.name);
             if (savedSearchNames.indexOf(reqIdentifier) !== -1) {
-              const newSavedSearches = currentSavedSearches.slice(
-                0,
-                currentSavedSearches.length
-              );
-              newSavedSearches.splice(
-                savedSearchNames.indexOf(reqIdentifier),
-                1
-              );
+              const newSavedSearches = currentSavedSearches.slice(0, currentSavedSearches.length);
+              newSavedSearches.splice(savedSearchNames.indexOf(reqIdentifier), 1);
               return newSavedSearches;
             } else {
               return currentSavedSearches;
@@ -113,9 +98,7 @@ const ManageSavedQueriesModal = (props) => {
   }, [reqIdentifier, data, isLoading, error, setSavedSearches]);
 
   const executeSelectedSearch = useCallback(() => {
-    const selectedQuery = savedSearches.filter(
-      (query) => query.name === selectedValue
-    );
+    const selectedQuery = savedSearches.filter((query) => query.name === selectedValue);
     if (selectedQuery && selectedQuery.length > 0) {
       runQueryFromSavedSearch(selectedQuery[0].search);
       handleClose();
@@ -155,21 +138,14 @@ const ManageSavedQueriesModal = (props) => {
                 {error && (
                   <TableRow>
                     <TableCell colSpan={3}>
-                      {t(
-                        'An error occured while retrieving the data, if this error persists contact an administrator'
-                      )}
+                      {t('An error occured while retrieving the data, if this error persists contact an administrator')}
                     </TableCell>
                   </TableRow>
                 )}
                 {!error &&
                   savedSearches.map((row) => {
                     return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() => setSelectedValue(row.name)}
-                      >
+                      <TableRow hover tabIndex={-1} key={row.id} onClick={() => setSelectedValue(row.name)}>
                         <TableCell padding="checkbox">
                           <Radio
                             checked={selectedValue === row.name}
@@ -191,8 +167,7 @@ const ManageSavedQueriesModal = (props) => {
                             onClick={() => {
                               handleDeleteSavedSearch(row);
                             }}
-                            size="small"
-                          >
+                            size="small">
                             <DeleteIcon />
                           </IconButton>
                         </TableCell>
@@ -206,12 +181,7 @@ const ManageSavedQueriesModal = (props) => {
       )}
       {!isLoading && (
         <DialogActions>
-          <Button
-            onClick={executeSelectedSearch}
-            color="secondary"
-            variant="contained"
-            size="small"
-          >
+          <Button onClick={executeSelectedSearch} color="secondary" variant="contained" size="small">
             {t('Run This Query')}
           </Button>
         </DialogActions>
