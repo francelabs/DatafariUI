@@ -521,7 +521,7 @@ const QueryContextProvider = (props) => {
   // Prepares an object holding the parameters to be included in the query to
   // the backend to handle current facet state.
   const prepareFacetsParams = useCallback(
-    (facetFieldName, facetQueryName, fqName) => {
+    (facetFieldName = 'facet.field', facetQueryName = 'facet.query', fqName = 'fq') => {
       const facetParams = {};
 
       // Field facets gathering
