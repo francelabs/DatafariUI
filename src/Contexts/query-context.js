@@ -662,6 +662,11 @@ const QueryContextProvider = (props) => {
         // field facets from the legacy UI.
         const regexFieldFacet = /\(?([^:\s]+):("[^"]+"|[^\s]+)\s?\)?/g;
 
+        // Reset selected fields facets, query facets and filters facets
+        draft.selectedFieldFacets = [];
+        draft.selectedQueryFacets = [];
+        draft.filters = [];
+
         const fqs = params.getAll('fq');
         if (fqs && fqs.length > 0) {
           fqs.forEach((element, index) => {
