@@ -55,6 +55,7 @@ const ModifySavedQueryModal = (props) => {
     reqIdentifier,
     clear,
   } = useSavedSearches();
+
   const [savedSearch, setSavedSearch] = useState(
     props.savedSearch ? { ...props.savedSearch } : { ...getEmptySavedSearchObject() }
   );
@@ -65,9 +66,9 @@ const ModifySavedQueryModal = (props) => {
 
   useEffect(() => {
     const newSearchElements = { search: `q=${query.elements}` };
-    if (!props.open && query.elements.split(' ').length > 0) {
-      newSearchElements.name = query.elements.split(' ')[0];
-    }
+
+    newSearchElements.name = query.elements.split(' ').length > 0 ? query.elements.split(' ')[0] : '';
+
     setSavedSearch((currentSavedSearch) => {
       return {
         ...currentSavedSearch,
@@ -143,9 +144,7 @@ const ModifySavedQueryModal = (props) => {
       {!isLoading && error && (
         <DialogContent>
           <Typography>
-            {t(
-              'An error occured while retrieving the data, if this error persists contact an administrator'
-            )}
+            {t('An error occured while retrieving the data, if this error persists contact an administrator')}
           </Typography>
         </DialogContent>
       )}
@@ -180,19 +179,11 @@ const ModifySavedQueryModal = (props) => {
                 </FormLabel>
                 <FormGroup>
                   <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={keepFacets}
-                        onChange={keepFacetsChange}
-                        name="keep-facets"
-                      />
-                    }
+                    control={<Checkbox checked={keepFacets} onChange={keepFacetsChange} name="keep-facets" />}
                     label={t('Save current facets')}
                   />
                 </FormGroup>
-                <FormHelperText>
-                  {t('Check this box if you want to save the current facets')}
-                </FormHelperText>
+                <FormHelperText>{t('Check this box if you want to save the current facets')}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={1} />
@@ -201,12 +192,7 @@ const ModifySavedQueryModal = (props) => {
       )}
       {!isLoading && !error && (
         <DialogActions>
-          <Button
-            onClick={saveQuery}
-            color="secondary"
-            variant="contained"
-            size="small"
-            disabled={formError}>
+          <Button onClick={saveQuery} color="secondary" variant="contained" size="small" disabled={formError}>
             {t('Save This Query')}
           </Button>
         </DialogActions>
