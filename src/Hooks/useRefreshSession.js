@@ -18,8 +18,16 @@ function useRefreshSession() {
 
   function setSSOEnabled(resp) {
     // Determine if a SSO protocol is enabled
-    const { samlEnabled = false, casEnabled = false, kerberosEnabled = false } = resp;
-    setSsoEnabled(samlEnabled || casEnabled || kerberosEnabled);
+    const {
+      samlEnabled = false,
+      casEnabled = false,
+      kerberosEnabled = false,
+      oidcEnabled = false,
+      keycloakEnabled = false,
+    } = resp;
+    const ssoEnabled = samlEnabled || casEnabled || kerberosEnabled || oidcEnabled || keycloakEnabled;
+    setSsoEnabled(ssoEnabled);
+    return ssoEnabled;
   }
 
   const handleRefreshSessionResponse = async (res) => {
@@ -65,6 +73,16 @@ function useRefreshSession() {
       .catch(handleRefreshSessionError);
 
   const startRefreshSession = () => setStartRefresh((start) => !start);
+
+  // Check session configuration
+  useEffect(() => {
+    baseApiClient.get(apiEndpointsContext.refreshSessionURL).then((res) => {
+      // Auto login if SSO is enabled and user is not logged
+      if (window && setSSOEnabled(res.data) && res?.data?.status !== LOGGED) {
+        window.location.href = `${apiEndpointsContext.authURL.href}?callback=${window.location.href}`;
+      }
+    });
+  }, []);
 
   // Start checking session
   useEffect(() => {
