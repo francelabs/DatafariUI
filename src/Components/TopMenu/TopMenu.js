@@ -25,6 +25,7 @@ import HelpMenu from '../HelpMenu/HelpMenu';
 import { Link } from '@material-ui/core';
 import useHttp from '../../Hooks/useHttp';
 import UserMenu from '../UserMenu/UserMenu';
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   topbar: {
@@ -263,24 +264,30 @@ const TopMenu = () => {
             </div>
 
             <div className={classes.sectionDesktop}>
+              <Tooltip title="Language">
               <IconButton
                 aria-label={t('Language selection')}
                 color="inherit"
                 onClick={handleOpenLangMenu}>
                 <LanguageIcon fontSize="large" />
               </IconButton>
-
+              </Tooltip>
+              <Tooltip title="Feedbacks">
               <IconButton
                 aria-label={t('Feedbacks')}
                 color="inherit"
                 onClick={handleOpenFeedbacksMenu}>
                 <FeedbackOutlinedIcon fontSize="large" />
               </IconButton>
+              </Tooltip>
+              <Tooltip title="Help">
               <IconButton aria-label={t('Help')} color="inherit" onClick={handleOpenHelpMenu}>
                 <HelpOutlineIcon fontSize="large" />
               </IconButton>
+              </Tooltip>
               {userState.user === null ? (
-                <IconButton
+               <Tooltip title="Login"> 
+               <IconButton
                   edge="end"
                   aria-label="Login"
                   aria-haspopup="true"
@@ -288,8 +295,10 @@ const TopMenu = () => {
                   color="inherit">
                   <SvgIcon component={LoginIcon} alt="Login" />
                 </IconButton>
+                </Tooltip>
               ) : (
-                <IconButton
+     <Tooltip title="User menu"> 
+     <IconButton
                   edge="end"
                   aria-label="account of current user"
                   aria-controls={menuId}
@@ -298,11 +307,13 @@ const TopMenu = () => {
                   color="inherit">
                   <Avatar fontSize="small">{userState.user.name.substring(0, 2)}</Avatar>
                 </IconButton>
+                </Tooltip>
               )}
             </div>
             <div className={classes.sectionMobile}>
               {userState.user === null ? (
-                <IconButton
+      <Tooltip title="Login">
+      <IconButton
                   edge="end"
                   aria-label="Login"
                   aria-haspopup="true"
@@ -310,6 +321,7 @@ const TopMenu = () => {
                   color="inherit">
                   <SvgIcon component={LoginIcon} alt="Login" />
                 </IconButton>
+                </Tooltip>
               ) : (
                 <IconButton
                   aria-label="show more"
