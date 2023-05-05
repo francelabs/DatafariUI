@@ -217,7 +217,11 @@ const TopMenu = () => {
   loginURL.search = '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
   const adminURL = new URL(apiEndpointsContext.adminURL);
   adminURL.search = `?lang=${i18n.language}`;
-
+  const languageTranslated = t('Language');
+  const feedbacksTranslated = t('Feedbacks');
+  const helpTranslated = t('Help');
+  const loginTranslated = t('Login');
+  const usermenuTranslated = t('User menu');
   const menuId = 'primary-search-account-menu';
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -264,7 +268,7 @@ const TopMenu = () => {
             </div>
 
             <div className={classes.sectionDesktop}>
-              <Tooltip title="Language">
+              <Tooltip title={languageTranslated}>
               <IconButton
                 aria-label={t('Language selection')}
                 color="inherit"
@@ -272,7 +276,7 @@ const TopMenu = () => {
                 <LanguageIcon fontSize="large" />
               </IconButton>
               </Tooltip>
-              <Tooltip title="Feedbacks">
+              <Tooltip title={feedbacksTranslated}>
               <IconButton
                 aria-label={t('Feedbacks')}
                 color="inherit"
@@ -280,13 +284,13 @@ const TopMenu = () => {
                 <FeedbackOutlinedIcon fontSize="large" />
               </IconButton>
               </Tooltip>
-              <Tooltip title="Help">
+              <Tooltip title={helpTranslated}>
               <IconButton aria-label={t('Help')} color="inherit" onClick={handleOpenHelpMenu}>
                 <HelpOutlineIcon fontSize="large" />
               </IconButton>
               </Tooltip>
               {userState.user === null ? (
-               <Tooltip title="Login"> 
+               <Tooltip title={loginTranslated}> 
                <IconButton
                   edge="end"
                   aria-label="Login"
@@ -297,7 +301,7 @@ const TopMenu = () => {
                 </IconButton>
                 </Tooltip>
               ) : (
-     <Tooltip title="User menu"> 
+     <Tooltip title={usermenuTranslated}> 
      <IconButton
                   edge="end"
                   aria-label="account of current user"
@@ -312,7 +316,7 @@ const TopMenu = () => {
             </div>
             <div className={classes.sectionMobile}>
               {userState.user === null ? (
-      <Tooltip title="Login">
+      <Tooltip title={loginTranslated}>
       <IconButton
                   edge="end"
                   aria-label="Login"
