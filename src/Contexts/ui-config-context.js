@@ -53,13 +53,7 @@ const DEFAULT_UI = {
         'last_modified:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])',
         'last_modified:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]',
       ],
-      labels: [
-        'Today',
-        'From Yesterday Up To 7 days',
-        'From 8 Days Up To 30 days',
-        'Older than 31 days',
-        'No date',
-      ],
+      labels: ['Today', 'From Yesterday Up To 7 days', 'From 8 Days Up To 30 days', 'Older than 31 days', 'No date'],
       id: 'date_facet',
       minShow: 5,
       children: [
@@ -117,6 +111,10 @@ const DEFAULT_UI = {
 
   queryParams: {
     fields: DEFAULT_FIELDS,
+  },
+
+  ssoForcedAuthentication: {
+    enable: false,
   },
 };
 

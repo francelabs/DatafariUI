@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import WarningSessionModal from '../Components/Modal/WarningSessionModal';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
+import { UIConfigContext, checkUIConfigHelper } from '../Contexts/ui-config-context';
 
 const DEFAULT_CHECK_INTERVAL_MS = 15_000;
 const LOGGED = 'Logged';
@@ -16,7 +17,10 @@ function useRefreshSession() {
     httpClients: { baseApiClient },
   } = useContext(APIEndpointsContext);
 
-  function setSSOEnabled(resp) {
+  const { uiDefinition } = useContext(UIConfigContext);
+  checkUIConfig(uiDefinition);
+
+  const isSSOEnabled = (resp) => {
     // Determine if a SSO protocol is enabled
     const {
       samlEnabled = false,
@@ -25,14 +29,15 @@ function useRefreshSession() {
       oidcEnabled = false,
       keycloakEnabled = false,
     } = resp;
-    const ssoEnabled = samlEnabled || casEnabled || kerberosEnabled || oidcEnabled || keycloakEnabled;
-    setSsoEnabled(ssoEnabled);
-    return ssoEnabled;
-  }
+    const { ssoForcedAuthentication = { enable: false } } = uiDefinition;
+
+    const isSSOEnabled = samlEnabled || casEnabled || kerberosEnabled || oidcEnabled || keycloakEnabled;
+    return isSSOEnabled && ssoForcedAuthentication.enable;
+  };
 
   const handleRefreshSessionResponse = async (res) => {
     if (res.status === 200) {
-      setSSOEnabled(res.data);
+      setSsoEnabled(isSSOEnabled(res.data));
 
       const { code, status, user } = res.data;
       if (code === 0 && status === LOGGED && (!lastData.user || lastData.user === user)) {
@@ -78,7 +83,7 @@ function useRefreshSession() {
   useEffect(() => {
     baseApiClient.get(apiEndpointsContext.refreshSessionURL).then((res) => {
       // Auto login if SSO is enabled and user is not logged
-      if (window && setSSOEnabled(res.data) && res?.data?.status !== LOGGED) {
+      if (window && isSSOEnabled(res.data) && res?.data?.status !== LOGGED) {
         window.location.href = `${apiEndpointsContext.authURL.href}?callback=${window.location.href}`;
       }
     });
@@ -100,3 +105,14 @@ function useRefreshSession() {
 }
 
 export default useRefreshSession;
+
+function checkUIConfig(uiConfig) {
+  const helper = checkUIConfigHelper(uiConfig);
+  if (helper(() => typeof uiConfig.ssoForcedAuthentication === 'object', 'ssoForcedAuthentication')) {
+    helper(
+      () => typeof uiConfig.ssoForcedAuthentication.enable === 'boolean',
+      'ssoForcedAuthentication.enable',
+      'Type: boolean. Used to allow SSO auto connexion'
+    );
+  }
+}
