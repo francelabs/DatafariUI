@@ -200,6 +200,9 @@
       "defaultResults": 100
     }
   },
+  "ssoForcedAuthentication": {
+    "enable": false
+  },
   "devMode": {
     "enable": false,
     "banner": {
