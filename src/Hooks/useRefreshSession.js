@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import WarningSessionModal from '../Components/Modal/WarningSessionModal';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import { UIConfigContext, checkUIConfigHelper } from '../Contexts/ui-config-context';
@@ -22,17 +22,9 @@ function useRefreshSession() {
 
   const isSSOEnabled = (resp) => {
     // Determine if a SSO protocol is enabled
-    const {
-      samlEnabled = false,
-      casEnabled = false,
-      kerberosEnabled = false,
-      oidcEnabled = false,
-      keycloakEnabled = false,
-    } = resp;
-    const { ssoForcedAuthentication = { enable: false } } = uiDefinition;
+    const { samlEnabled, casEnabled, kerberosEnabled, oidcEnabled, keycloakEnabled } = resp;
 
-    const isSSOEnabled = samlEnabled || casEnabled || kerberosEnabled || oidcEnabled || keycloakEnabled;
-    return isSSOEnabled && ssoForcedAuthentication.enable;
+    return samlEnabled || casEnabled || kerberosEnabled || oidcEnabled || keycloakEnabled;
   };
 
   const handleRefreshSessionResponse = async (res) => {
@@ -81,13 +73,15 @@ function useRefreshSession() {
 
   // Check session configuration
   useEffect(() => {
-    baseApiClient.get(apiEndpointsContext.refreshSessionURL).then((res) => {
-      // Auto login if SSO is enabled and user is not logged
-      if (window && isSSOEnabled(res.data) && res?.data?.status !== LOGGED) {
-        window.location.href = `${apiEndpointsContext.authURL.href}?callback=${window.location.href}`;
-      }
-    });
-  }, []);
+    if (uiDefinition?.ssoForcedAuthentication?.enable) {
+      baseApiClient.get(apiEndpointsContext.refreshSessionURL).then((res) => {
+        // Auto login if SSO is enabled and user is not logged
+        if (window && isSSOEnabled(res.data) && res?.data?.status !== LOGGED) {
+          window.location.href = `${apiEndpointsContext.authURL.href}?callback=${window.location.href}`;
+        }
+      });
+    }
+  }, [uiDefinition?.ssoForcedAuthentication?.enable, apiEndpointsContext.authURL.href]);
 
   // Start checking session
   useEffect(() => {
