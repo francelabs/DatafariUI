@@ -52,7 +52,7 @@ const EntityAutocomplete = (props) => {
           ? queryText
           : queryText.substring(queryText.lastIndexOf(' ') + 1);
       sendRequest(
-        `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
+        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
         'GET',
         null,
         newQueryID
@@ -60,7 +60,7 @@ const EntityAutocomplete = (props) => {
     }
   }, [
     active,
-    apiEndpointsContext.searchURL,
+    apiEndpointsContext.searchOldURL,
     op,
     props,
     queryText,
@@ -132,7 +132,6 @@ const EntityAutocomplete = (props) => {
           // We are building a new query, the list of selected
           // will be only the one selected in the autocomplete list
           let selected = [value];
-
           let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
           // Treat the selection as a new search launching.
           // Keep the text entered before the entity as the search text

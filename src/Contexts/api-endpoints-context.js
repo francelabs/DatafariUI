@@ -13,6 +13,7 @@ const DEFAULT_ENDPOINTS = {
   currentUserFavoritesURL: '',
   currentUserSavedSearchesURL: '',
   searchURL: '',
+  searchOldURL: '',
   getAutocompleteAdvancedFieldsURL: '',
   getFixedValuesAdvancedFieldsURL: '',
   getLabeledAdvancedFieldsURL: '',
@@ -109,7 +110,8 @@ const APIEndpointsContextProvider = (props) => {
     /*********************/
     // Search
     searchURL: new URL(`${restV2APIBaseURL.pathname}/search`, restV2APIBaseURL),
-
+    // OLD SEARCH V1
+    searchOldURL: new URL(`${restAPIBaseURL.pathname}/search`, restAPIBaseURL),
     // Export
     exportURL: new URL(`${restV2APIBaseURL.pathname}/results/export`, restV2APIBaseURL),
   });
