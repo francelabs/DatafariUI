@@ -25,7 +25,6 @@ const useEntityAutocomplete = ({
   const [queryID, setQueryID] = useState(null);
   const [queryText, setQueryText] = useState(null);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
-
   const { results } = useContext(ResultsContext);
 
   // Effect to clear suggestion when a search is performed
@@ -45,13 +44,13 @@ const useEntityAutocomplete = ({
       //   ? queryText
       //   : queryText.substring(queryText.lastIndexOf(' ') + 1);
       sendRequest(
-        `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
+        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
         'GET',
         null,
         newQueryID
       );
     },
-    [apiEndpointsContext.searchURL, op, sendRequest, suggester]
+    [apiEndpointsContext.searchOldURL, op, sendRequest, suggester]
   );
 
   // Handle response from querySuggestions
@@ -103,7 +102,6 @@ const useEntityAutocomplete = ({
           queryWithLastTermRemoved.length === 0
             ? queryWithLastTermRemoved
             : `${queryWithLastTermRemoved} `;
-
         // [datafari#823] Sync facet but do not display value in the search bar
         // Call only if no facet exist for this field
         if (!Object.values(query.fieldFacets).some((facet) => facet.field === field)) {
@@ -116,7 +114,6 @@ const useEntityAutocomplete = ({
       const newSelection = selection.includes(value)
         ? selection.filter((v) => v !== value)
         : [...selection, value];
-
       queryDispatch({
         type: SET_FIELD_FACET_SELECTED,
         facetId: field,
@@ -133,7 +130,6 @@ const useEntityAutocomplete = ({
         // We are building a new query, the list of selected
         // will be only the one selected in the autocomplete list
         let selected = [value];
-
         let queryWithLastTermRemoved = queryText.substring(0, queryText.lastIndexOf(' '));
         // Treat the selection as a new search launching.
         // Keep the text entered before the entity as the search text
