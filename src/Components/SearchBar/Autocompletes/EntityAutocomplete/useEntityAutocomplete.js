@@ -102,10 +102,15 @@ const useEntityAutocomplete = ({
           queryWithLastTermRemoved.length === 0
             ? queryWithLastTermRemoved
             : `${queryWithLastTermRemoved} `;
+const rawField = value.split('|');
+const rawLink = rawField[1];
+const link = rawLink.trim();
+console.debug('link : ' + link);
+window.open(link, "_self", "noreferrer");
         // [datafari#823] Sync facet but do not display value in the search bar
         // Call only if no facet exist for this field
         if (!Object.values(query.fieldFacets).some((facet) => facet.field === field)) {
-          onSelect(`${queryWithLastTermRemoved}${field}:"${value}"`);
+          onSelect(``);
         }
       }
 
