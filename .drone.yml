@@ -1,0 +1,23 @@
+clone:
+    git:
+        image: plugins/git
+        tags: true
+pipeline:
+    build:
+        image: plugins/docker
+        repo: datafari/datafariui
+        tags:
+            - latest
+            - "${DRONE_COMMIT_SHA}"
+        secrets: [ docker_username, docker_password ]
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        when:
+          branch: information_widget
+    notify:
+        image: drillster/drone-email
+        from : noreply@datafari.com
+        skip_verify: true
+        when:
+            status: [ success, failure ]
+        secrets: [ email_username, email_password, email_port, email_host, email_recipients ]
