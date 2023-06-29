@@ -21,3 +21,13 @@ pipeline:
         when:
             status: [ success, failure ]
         secrets: [ email_username, email_password, email_port, email_host, email_recipients ]
+    ssh:
+        image: appleboy/drone-ssh
+        secrets: [ ssh_host, ssh_username, ssh_key, ssh_port ]
+        script:
+          - cd /var/work/datafariuideploy && bash docker_datafariui.sh information_widget
+          - docker cp /home/debian/datafariui_renew.sh $(docker ps -q --filter name=customdemo):/var/ && docker exec $(docker ps -q --filter name=customdemo) bash -c "/var/datafariui_renew.sh information_widget"
+        when:
+            branch: information_widget
+
+
