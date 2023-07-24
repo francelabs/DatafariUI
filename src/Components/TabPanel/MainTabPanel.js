@@ -19,8 +19,8 @@ import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
 import useNextId from '../../Hooks/useNextId';
 
-import QuickLinksWidget from '../QuickLinksWidget/QuickLinksWidget';
-import YellowPageWidget from '../YellowPageWidget/YellowPageWidget';
+import DirectAccessWidget from '../DirectAccessWidget/DirectAccessWidget';
+import YellowPagesWidget from '../YellowPagesWidget/YellowPagesWidget';
 
 const allowedElementTypes = [
   'FieldFacet',
@@ -32,8 +32,8 @@ const allowedElementTypes = [
   'SearchInformation',
   'ResultsList',
   'AggregatorFacet',
-  'QuickLinksWidget',
-  'YellowPageWidget',
+  'DirectAccessWidget',
+  'YellowPagesWidget',
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -180,21 +180,21 @@ function MainTabPanel() {
     return <ResultsList key={nextId()} {...element} />;
   }, []);
 
-  const buildQuickLinksWidget = useCallback((element) => {
-    return <QuickLinksWidget key={nextId()} show={element.show} />;
+  const buildDirectAccessWidget = useCallback((element) => {
+    return <DirectAccessWidget key={nextId()} show={element.show} />;
   });
 
-  const buildYellowPageWidget = useCallback((element) => {
-    return <YellowPageWidget key={nextId()} show={element.show} />;
+  const buildYellowPagesWidget = useCallback((element) => {
+    return <YellowPagesWidget key={nextId()} show={element.show} />;
   });
 
   const createElementFromParameters = (element) => {
     if (element.type && allowedElementTypes.includes(element.type)) {
       switch (element.type) {
-        case 'QuickLinksWidget':
-          return buildQuickLinksWidget(element);
-        case 'YellowPageWidget':
-          return buildYellowPageWidget(element);
+        case 'DirectAccessWidget':
+          return buildDirectAccessWidget(element);
+        case 'YellowPagesWidget':
+          return buildYellowPagesWidget(element);
         case 'FieldFacet':
           return buildFieldFacet(element);
         case 'QueryFacet':

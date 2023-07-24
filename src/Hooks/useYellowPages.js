@@ -11,7 +11,7 @@ const useYellowPages = () => {
       const url = new URL(`${apiEndpointsContext.getYellowPageURL}`, new URL(document.location.href));
       sendRequest(url, 'GET', null, queryText);
     },
-    [apiEndpointsContext.getYellowPagesURL, sendRequest]
+    [apiEndpointsContext.getYellowPageURL, sendRequest]
   );
 
   return {
