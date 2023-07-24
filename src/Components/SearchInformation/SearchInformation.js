@@ -170,10 +170,7 @@ const SearchInformation = (props) => {
             Other filters:&nbsp;
           </Typography>
           {Object.keys(query.filters).map((key) => (
-            <FilterEntry
-              value={filterFormat(query.filters[key])}
-              onClick={handleClearFilter(key)}
-            />
+            <FilterEntry value={filterFormat(query.filters[key])} onClick={handleClearFilter(key)} />
           ))}
         </Typography>
       );
@@ -186,11 +183,7 @@ const SearchInformation = (props) => {
       <div className={classes.informationContainer}>
         <div>
           <Typography component="span">
-            <ResultCountInformation
-              start={results.start}
-              rows={results.rows}
-              numFound={results.numFound}
-            />
+            <ResultCountInformation start={results.start} rows={results.rows} numFound={results.numFound} />
           </Typography>
           <Typography component="span">
             {filters.length > 0 && (
@@ -203,19 +196,11 @@ const SearchInformation = (props) => {
           <CurrentSearchAndSpellcheck />
         </div>
         <div className={classes.rightMenu}>
-          <Button
-            onClick={handleOpenSortMenu}
-            aria-controls={`sort-menu`}
-            aria-haspopup="true"
-            ref={sortMenuAnchorRef}>
+          <Button onClick={handleOpenSortMenu} aria-controls={`sort-menu`} aria-haspopup="true" ref={sortMenuAnchorRef}>
             <SortIcon />
             {t(query.sort.label)}
           </Button>
-          <Menu
-            id={`sort-menu`}
-            anchorEl={sortMenuAnchorRef.current}
-            open={sortMenuOpen}
-            onClose={handleCloseSortMenu}>
+          <Menu id={`sort-menu`} anchorEl={sortMenuAnchorRef.current} open={sortMenuOpen} onClose={handleCloseSortMenu}>
             <MenuItem onClick={handleSelectRelevanceSort}>{t('Relevance')}</MenuItem>
             <MenuItem onClick={handleSelectDateSort}>{t('Creation Date')}</MenuItem>
           </Menu>

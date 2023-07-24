@@ -47,13 +47,9 @@ const APIEndpointsContextProvider = (props) => {
       : new URL(window.datafariBaseURL)
   );
 
-  const [restAPIBaseURL] = useState(
-    new URL(`${datafariBaseURL.pathname}/rest/v1.0`, datafariBaseURL)
-  );
+  const [restAPIBaseURL] = useState(new URL(`${datafariBaseURL.pathname}/rest/v1.0`, datafariBaseURL));
 
-  const [restV2APIBaseURL] = useState(
-    new URL(`${datafariBaseURL.pathname}/rest/v2.0`, datafariBaseURL)
-  );
+  const [restV2APIBaseURL] = useState(new URL(`${datafariBaseURL.pathname}/rest/v2.0`, datafariBaseURL));
 
   const [value] = useState({
     datafariBaseURL,
@@ -66,33 +62,15 @@ const APIEndpointsContextProvider = (props) => {
     adminURL: new URL(`${datafariBaseURL.pathname}/admin/`, datafariBaseURL),
     currentUserURL: new URL(`${restAPIBaseURL.pathname}/users/current`, restAPIBaseURL),
 
-    currentUserFavoritesURL: new URL(
-      `${restAPIBaseURL.pathname}/users/current/favorites`,
-      restAPIBaseURL
-    ),
-    currentUserAlertsURL: new URL(
-      `${restAPIBaseURL.pathname}/users/current/alerts`,
-      restAPIBaseURL
-    ),
-    currentUserSavedSearchesURL: new URL(
-      `${restAPIBaseURL.pathname}/users/current/savedsearches`,
-      restAPIBaseURL
-    ),
-    getAutocompleteAdvancedFieldsURL: new URL(
-      `${restAPIBaseURL.pathname}/fields/autocomplete`,
-      restAPIBaseURL
-    ),
-    getFixedValuesAdvancedFieldsURL: new URL(
-      `${restAPIBaseURL.pathname}/fields/fixedvalues`,
-      restAPIBaseURL
-    ),
+    currentUserFavoritesURL: new URL(`${restAPIBaseURL.pathname}/users/current/favorites`, restAPIBaseURL),
+    currentUserAlertsURL: new URL(`${restAPIBaseURL.pathname}/users/current/alerts`, restAPIBaseURL),
+    currentUserSavedSearchesURL: new URL(`${restAPIBaseURL.pathname}/users/current/savedsearches`, restAPIBaseURL),
+    getAutocompleteAdvancedFieldsURL: new URL(`${restAPIBaseURL.pathname}/fields/autocomplete`, restAPIBaseURL),
+    getFixedValuesAdvancedFieldsURL: new URL(`${restAPIBaseURL.pathname}/fields/fixedvalues`, restAPIBaseURL),
     getLabeledAdvancedFieldsURL: new URL(`${restAPIBaseURL.pathname}/fields/label`, restAPIBaseURL),
     getFieldsInfoURL: new URL(`${restAPIBaseURL.pathname}/fields/info`, restAPIBaseURL),
     getExactFieldsURL: new URL(`${restAPIBaseURL.pathname}/fields/exact`, restAPIBaseURL),
-    favoritesStatusURL: new URL(
-      `${restAPIBaseURL.pathname}/status/features/favorites`,
-      datafariBaseURL
-    ),
+    favoritesStatusURL: new URL(`${restAPIBaseURL.pathname}/status/features/favorites`, datafariBaseURL),
     docRedirectURL: new URL(`${datafariBaseURL.pathname}/URL`, datafariBaseURL),
     getHelpURL: new URL(`${restAPIBaseURL.pathname}/help`, restAPIBaseURL),
     getPrivacyPolicyURL: new URL(`${restAPIBaseURL.pathname}/privacy`, restAPIBaseURL),
@@ -102,6 +80,9 @@ const APIEndpointsContextProvider = (props) => {
     getUIDefinitionURL: new URL(`${process.env.PUBLIC_URL}/ui-config.json`, window.location.href),
     getThemeURL: new URL(`${process.env.PUBLIC_URL}/theme.json`, window.location.href),
     getAggregatorURL: new URL(`${restAPIBaseURL.pathname}/aggregator`, restAPIBaseURL),
+
+    getDirectAccessURL: new URL(`${restAPIBaseURL.pathname}/select_directlinks?q=${props.queryText}`, restAPIBaseURL),
+    getYellowPagesURL: new URL(`${restAPIBaseURL.pathname}/select_directory?q=${props.queryText}`, restAPIBaseURL),
 
     // Session
     refreshSessionURL: new URL(`${datafariBaseURL.pathname}/RefreshSession`, datafariBaseURL),
