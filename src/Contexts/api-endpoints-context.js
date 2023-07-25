@@ -81,14 +81,14 @@ const APIEndpointsContextProvider = (props) => {
     getThemeURL: new URL(`${process.env.PUBLIC_URL}/theme.json`, window.location.href),
     getAggregatorURL: new URL(`${restAPIBaseURL.pathname}/aggregator`, restAPIBaseURL),
 
-    getDirectAccessURL: new URL(`${restAPIBaseURL.pathname}/select_directlinks?q=${props.queryText}`, restAPIBaseURL),
-    getYellowPagesURL: new URL(`${restAPIBaseURL.pathname}/select_directory?q=${props.queryText}`, restAPIBaseURL),
-
     // Session
     refreshSessionURL: new URL(`${datafariBaseURL.pathname}/RefreshSession`, datafariBaseURL),
 
     /***** REST API V2 ****/
     /*********************/
+    // Widgets
+    getDirectAccessURL: new URL(`${restV2APIBaseURL.pathname}/search/select_directlinks?q=`, restV2APIBaseURL),
+    getYellowPagesURL: new URL(`${restV2APIBaseURL.pathname}/search/select_directory?q=`, restV2APIBaseURL),
     // Search
     searchURL: new URL(`${restV2APIBaseURL.pathname}/search`, restV2APIBaseURL),
     // OLD SEARCH V1

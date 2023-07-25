@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 //** Core */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+
+//** Context */
+import { QueryContext } from '../../Contexts/query-context';
 
 //** Material UI */
 import {
@@ -48,20 +51,42 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectAccessWidget = ({ show = true }) => {
-  const { isLoading, data, error, reqIdentifier, getQuickLinks } = useDirectAccess();
+  const [linksData, setLinksData] = useState([]);
+  const { query } = useContext(QueryContext);
+  const { isLoading, data, error, getDirectAccess } = useDirectAccess();
+
+  useEffect(() => {
+    if (show && query.elements) {
+      getDirectAccess(query.elements);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    if (show && data) {
+      setLinksData(data?.response?.docs);
+      console.log('DATA - ', linksData);
+    }
+  }, [data]);
 
   const classes = useStyles();
   const [expanded, setExpanded] = useState(true);
   const { t } = useTranslation();
 
-  const currentLocation = useLocation();
-
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
   };
 
+  if (isLoading) {
+    return null;
+  }
+
+  if (error) {
+    return null;
+  }
+
   return (
-    show && (
+    show &&
+    linksData.length !== 0 && (
       <>
         <div className={classes.facetHeader}>
           <IconButton disabled={true}>
@@ -78,33 +103,28 @@ const DirectAccessWidget = ({ show = true }) => {
         {expanded && (
           <>
             <List dense className={classes.list}>
-              <>
-                <List component="div" disablePadding>
-                  <ListItem>
-                    <ListItemIcon className={classes.iconItem}>
-                      <ShareIcon />
-                    </ListItemIcon>
-                    <ListItemText>
-                      <Link component="button" color="secondary" className={classes.showMore}>
-                        <Typography variant="subtitle1">{t('Show page')}</Typography>
-                      </Link>
-                    </ListItemText>
-                  </ListItem>
-                </List>
-
-                <List component="div" disablePadding>
-                  <ListItem>
-                    <ListItemIcon className={classes.iconItem}>
-                      <ShareIcon />
-                    </ListItemIcon>
-                    <ListItemText>
-                      <Link component="button" color="secondary" className={classes.showMore}>
-                        <Typography variant="subtitle1">{t('Show page')}</Typography>
-                      </Link>
-                    </ListItemText>
-                  </ListItem>
-                </List>
-              </>
+              {linksData.length !== 0 &&
+                linksData.map((linkItem, index) => (
+                  <List component="div" disablePadding key={index}>
+                    <ListItem>
+                      <ListItemIcon className={classes.iconItem}>
+                        <img
+                          alt={linkItem?.directlinks_description[0]}
+                          src={linkItem?.directlinks_icon}
+                          width={64}></img>
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Link
+                          component="button"
+                          color="secondary"
+                          className={classes.showMore}
+                          href={linkItem?.directlinks_link}>
+                          <Typography variant="subtitle1">{linkItem?.directlinks_title}</Typography>
+                        </Link>
+                      </ListItemText>
+                    </ListItem>
+                  </List>
+                ))}
             </List>
             <Divider />
           </>

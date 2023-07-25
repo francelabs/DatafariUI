@@ -2,13 +2,13 @@ import { useCallback, useContext } from 'react';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
-const useDirectAccess = () => {
+const useDirectAccess = ({ ...props }) => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
 
   const getDirectAccess = useCallback(
     (queryText) => {
-      const url = new URL(`${apiEndpointsContext.getDirectAccessURL}`, new URL(document.location.href));
+      const url = new URL(`${apiEndpointsContext.getDirectAccessURL + queryText}`, new URL(document.location.href));
       sendRequest(url, 'GET', null, queryText);
     },
     [apiEndpointsContext.getDirectAccessURL, sendRequest]
