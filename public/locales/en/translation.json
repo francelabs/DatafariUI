@@ -213,11 +213,15 @@
   "Export search results list": "Export search results list",
   "No available export formats": "No available export formats. Please contact your administrator.",
   "A problem has been detected concerning the licence": "A problem has been detected concerning the licence",
+
   "Direct Links": "Direct Links",
   "Yellow Pages": "Yellow Pages",
-  "Tel:": "Tel:",
+
+  "Phone:": "Phone:",
   "Expertise:": "Expertise:",
+  "Role:": "Role:",
   "Address:": "Address:",
-  "SpaceTravel:": "SpaceTravel:",
-  "Mail:": "Mail:"
+  "Department:": "Department:",
+  "Email:": "Email:",
+  "Social:": "Social:"
 }

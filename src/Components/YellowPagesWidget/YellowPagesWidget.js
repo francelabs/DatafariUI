@@ -1,5 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 //** Core */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+
+//** Context */
+import { QueryContext } from '../../Contexts/query-context';
 
 //** Material UI */
 import {
@@ -19,7 +23,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
 
 //** Hooks */
 import useYellowPages from '../../Hooks/useYellowPages';
@@ -41,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   innerList: {
     paddingLeft: theme.spacing(1),
   },
+  listContent: {
+    marginBottom: theme.spacing(2),
+  },
   listItem: {
     paddingLeft: theme.spacing(8),
     paddingBottom: '0',
@@ -57,27 +63,77 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const YellowPagesWidget = ({ show = true }) => {
-  const { isLoading, data, error, reqIdentifier, getQuickLinks } = useYellowPages();
-
-  const classes = useStyles();
+  const [pagesData, setPagesData] = useState([]);
   const [expanded, setExpanded] = useState(true);
-  const { t } = useTranslation();
+  const [expandedStates, setExpandedStates] = useState([]);
+  const [visibleItemsCount, setVisibleItemsCount] = useState(1);
+  const [isShowAll, setIsShowAll] = useState(false);
+
   const menuAnchorRef = useRef(null);
-  const [sharePreviewOpen, setSharePreviewOpen] = useState(true);
-  const currentLocation = useLocation();
+
+  const { query } = useContext(QueryContext);
+  const { isLoading, data, error, getYellowPages } = useYellowPages();
+  const classes = useStyles();
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (show && query.elements) {
+      getYellowPages(query.elements);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    if (show && data) {
+      setPagesData(data?.response?.docs);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (pagesData.length > 0) {
+      setExpandedStates(new Array(pagesData.length).fill(true));
+    }
+  }, [pagesData]);
 
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
   };
 
-  const handleSharePreviewClick = () => {
-    setSharePreviewOpen((currentState) => {
-      return !currentState;
-    });
+  const handleSharePreviewClick = (index) => {
+    const updatedStates = [...expandedStates];
+    updatedStates[index] = !updatedStates[index];
+    setExpandedStates(updatedStates);
   };
 
+  const handleShowMoreAndLess = () => {
+    if (isShowAll) {
+      setVisibleItemsCount(1);
+    } else {
+      setVisibleItemsCount(pagesData.length);
+    }
+    setIsShowAll(!isShowAll);
+  };
+
+  const capitalizeFirstLetter = (str) => {
+    if (typeof str === 'string') {
+      return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+    } else if (Array.isArray(str)) {
+      return str.map((s) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`).join(' ');
+    } else {
+      throw new Error('The passed parameter must be a string or an array of strings.');
+    }
+  };
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (error) {
+    return null;
+  }
+
   return (
-    show && (
+    show &&
+    pagesData.length !== 0 && (
       <>
         <div className={classes.facetHeader}>
           <IconButton disabled={true}>
@@ -91,61 +147,88 @@ const YellowPagesWidget = ({ show = true }) => {
           <IconButton onClick={handleExpandClick}>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>
         </div>
 
-        {expanded && (
-          <>
-            <List dense>
-              <>
-                <ListItem button onClick={handleSharePreviewClick}>
-                  <ListItemIcon className={classes.iconCollaps}>
-                    {sharePreviewOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Typography variant="subtitle1">Bobby Bilbao</Typography>
-                  </ListItemText>
-                </ListItem>
-
-                <Collapse in={sharePreviewOpen} timeout="auto" unmountOnExit className={classes.innerList}>
-                  <List component="div" disablePadding>
-                    <ListItem className={classes.listItem}>
-                      <Typography variant="caption" className={classes.textListItem}>
-                        {t('Tel:')}
-                      </Typography>
+        <div className={pagesData.length > 1 ? '' : classes.listContent}>
+          {expanded && (
+            <>
+              {pagesData.length !== 0 &&
+                pagesData.slice(0, visibleItemsCount).map((pageItem, index) => (
+                  <List dense key={`${index}-direct-links`}>
+                    <ListItem button onClick={() => handleSharePreviewClick(index)}>
+                      <ListItemIcon className={classes.iconCollaps}>
+                        {expandedStates[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography variant="subtitle1">
+                          {capitalizeFirstLetter(pageItem?.directory_firstnames)}{' '}
+                          {capitalizeFirstLetter(pageItem?.directory_name)}
+                        </Typography>
+                      </ListItemText>
                     </ListItem>
 
-                    <ListItem className={classes.listItem}>
-                      <Typography variant="caption" className={classes.textListItem}>
-                        {t('Expertise:')}
-                      </Typography>
-                    </ListItem>
+                    <Collapse in={expandedStates[index]} timeout="auto" unmountOnExit className={classes.innerList}>
+                      <List component="div" disablePadding>
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Phone:')} {pageItem?.directory_phone}
+                          </Typography>
+                        </ListItem>
 
-                    <ListItem className={classes.listItem}>
-                      <Typography variant="caption" className={classes.textListItem}>
-                        {t('Address:')}
-                      </Typography>
-                    </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Expertise:')} {pageItem?.directory_expertise}
+                          </Typography>
+                        </ListItem>
 
-                    <ListItem className={classes.listItem}>
-                      <Typography variant="caption" className={classes.textListItem}>
-                        {t('SpaceTravel:')}
-                      </Typography>
-                    </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Role:')} {pageItem?.directory_role}
+                          </Typography>
+                        </ListItem>
 
-                    <ListItem className={classes.listItem}>
-                      <Typography variant="caption" className={classes.textListItem}>
-                        {t('Mail:')}
-                      </Typography>
-                    </ListItem>
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Address:')} {pageItem?.directory_location}
+                          </Typography>
+                        </ListItem>
+
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Department:')} {pageItem?.directory_department}
+                          </Typography>
+                        </ListItem>
+
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Email:')} {pageItem?.directory_email}
+                          </Typography>
+                        </ListItem>
+
+                        <ListItem className={classes.listItem}>
+                          <Typography variant="caption" className={classes.textListItem}>
+                            {t('Social:')} {pageItem?.directory_socialnetworks.join(', ')}
+                          </Typography>
+                        </ListItem>
+                      </List>
+                    </Collapse>
                   </List>
-                </Collapse>
-              </>
-            </List>
+                ))}
 
-            <Link component="button" color="secondary" align="right" className={classes.showMore}>
-              <Typography variant="caption">{t('Show More')} &gt;&gt;</Typography>
-            </Link>
-            <Divider />
-          </>
-        )}
+              {pagesData.length > 1 && (
+                <Link
+                  component="button"
+                  color="secondary"
+                  align="right"
+                  className={classes.showMore}
+                  onClick={handleShowMoreAndLess}>
+                  <Typography variant="caption">
+                    {isShowAll ? `${t('Show Less')} <<` : `${t('Show More')} >>`}{' '}
+                  </Typography>
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+        <Divider />
       </>
     )
   );

@@ -22,7 +22,6 @@ import {
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ShareIcon from '@material-ui/icons/Share';
 
 //** Hooks */
 import useDirectAccess from '../../Hooks/useDirectAccess';
@@ -41,12 +40,11 @@ const useStyles = makeStyles((theme) => ({
   innerList: {
     paddingLeft: theme.spacing(2),
   },
-  iconItem: {
-    minWidth: '38px',
-  },
-  url: {
-    // whiteSpace: 'pre',
-    // overflowX: 'scroll',
+  imageItem: {
+    maxWidth: '32px',
+    minWidth: '32px',
+    marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -64,7 +62,6 @@ const DirectAccessWidget = ({ show = true }) => {
   useEffect(() => {
     if (show && data) {
       setLinksData(data?.response?.docs);
-      console.log('DATA - ', linksData);
     }
   }, [data]);
 
@@ -105,22 +102,26 @@ const DirectAccessWidget = ({ show = true }) => {
             <List dense className={classes.list}>
               {linksData.length !== 0 &&
                 linksData.map((linkItem, index) => (
-                  <List component="div" disablePadding key={index}>
+                  <List component="div" disablePadding key={`${index}-direct-links`}>
                     <ListItem>
-                      <ListItemIcon className={classes.iconItem}>
+                      <ListItemIcon className={classes.imageItem}>
                         <img
                           alt={linkItem?.directlinks_description[0]}
                           src={linkItem?.directlinks_icon}
-                          width={64}></img>
+                          width={32}></img>
                       </ListItemIcon>
                       <ListItemText>
-                        <Link
-                          component="button"
-                          color="secondary"
-                          className={classes.showMore}
-                          href={linkItem?.directlinks_link}>
-                          <Typography variant="subtitle1">{linkItem?.directlinks_title}</Typography>
-                        </Link>
+                        <Typography>
+                          <Link
+                            color="textPrimary"
+                            target="_blank"
+                            rel="noreferrer"
+                            variant="subtitle1"
+                            className={classes.showMore}
+                            href={linkItem?.directlinks_link}>
+                            {linkItem?.directlinks_title}
+                          </Link>
+                        </Typography>
                       </ListItemText>
                     </ListItem>
                   </List>

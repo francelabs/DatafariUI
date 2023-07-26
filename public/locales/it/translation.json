@@ -182,11 +182,15 @@
   "User Preferences": "preferenze utente",
   "Aggregator facet": "Aggregatore",
   "url": "url",
+
   "Direct Links": "Collegamenti diretti",
   "Yellow Pages": "Pagine Gialle",
-  "Tel:": "Telefono:",
+
+  "Phone:": "Telefono:",
   "Expertise:": "Competenza:",
+  "Role:": "Ruolo:",
   "Address:": "Indirizzo:",
-  "SpaceTravel:": "Viaggio spaziale:",
-  "Mail:": "E-mail:"
+  "Department:": "Reparto",
+  "Email:": "Email:",
+  "Social:": "Social:"
 }

@@ -16,11 +16,15 @@
   "less than five years": "",
   "Aggregator facet": "المجمع",
   "User Preferences": "خيارات المستخدم",
-  "Direct Links": "رابط مباشر",
-  "Yellow Pages": "صفحات صفراء",
-  "Tel:": "هاتف:",
-  "Expertise:": "خبرة:",
+
+  "Direct Links": "روابط مباشرة",
+  "Yellow Pages": "الصفحات الصفراء",
+
+  "Phone:": "الهاتف:",
+  "Expertise:": "الخبرة:",
+  "Role:": "الدور:",
   "Address:": "عنوان:",
-  "SpaceTravel:": "السفر إلى الفضاء:",
-  "Mail:": "بريد:"
+  "Department:": "القسم:",
+  "Email:": "Email:",
+  "Social:": "اجتماعي:"
 }

@@ -8,10 +8,10 @@ const useYellowPages = () => {
 
   const getYellowPages = useCallback(
     (queryText) => {
-      const url = new URL(`${apiEndpointsContext.getYellowPageURL}`, new URL(document.location.href));
+      const url = new URL(`${apiEndpointsContext.getYellowPagesURL + queryText}`, new URL(document.location.href));
       sendRequest(url, 'GET', null, queryText);
     },
-    [apiEndpointsContext.getYellowPageURL, sendRequest]
+    [apiEndpointsContext.getYellowPagesURL, sendRequest]
   );
 
   return {

@@ -27,11 +27,15 @@
   "less than a year": "Weniger als 1 Jahr",
   "less than five years": "Weniger als 5 Jahre",
   "User Preferences": "Nutzerpreferenzen",
-  "Direct Links": "Direkte Links",
-  "Yellow Pages": "Gelbe Seiten",
-  "Tel:": "Tel:",
-  "Expertise:": "Sachverstand:",
+
+  "Direct Links": "Direct Links",
+  "Yellow Pages": "Yellow Pages",
+
+  "Phone:": "Telefon:",
+  "Expertise:": "Expertise:",
+  "Role:": "Rolle:",
   "Address:": "Adresse:",
-  "SpaceTravel:": "Raumfahrt:",
-  "Mail:": "E-Mail:"
+  "Department:": "Abteilung:",
+  "Email:": "Email:",
+  "Social:": "Sozial:"
 }

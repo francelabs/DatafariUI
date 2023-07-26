@@ -23,11 +23,15 @@
   "less than five years": "Menos de 5 anos",
   "Aggregator facet": "Agregador",
   "User Preferences": "Preferências de usuário",
+
   "Direct Links": "Links Diretos",
-  "Yellow Pages": "Paginas amarelas",
-  "Tel:": "Telefone:",
-  "Expertise:": "Perícia:",
+  "Yellow Pages": "Paginas Amarelas",
+
+  "Phone:": "Telefone:",
+  "Expertise:": "Experiência:",
+  "Role:": "Função:",
   "Address:": "Endereço:",
-  "SpaceTravel:": "Viagem ao espaço:",
-  "Mail:": "E-mail:"
+  "Department:": "Departamento:",
+  "Email:": "E-mail:",
+  "Social:": "Social:"
 }

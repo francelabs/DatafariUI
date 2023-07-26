@@ -23,11 +23,15 @@
   "less than five years": "Менее 5 лет",
   "Aggregator facet": "Aгрегатор",
   "User Preferences": "Пользовательские настройки",
+
   "Direct Links": "Прямые ссылки",
   "Yellow Pages": "Желтые страницы",
-  "Tel:": "Тел:",
+
+  "Phone:": "Телефон:",
   "Expertise:": "Экспертиза:",
+  "Role:": "Роль:",
   "Address:": "Адрес:",
-  "SpaceTravel:": "Космическое путешествие:",
-  "Mail:": "Электронная почта:"
+  "Department:": "Отдел:",
+  "Email:": "E-mail:",
+  "Social:": "Социальные сети:"
 }
