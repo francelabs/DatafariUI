@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 //** Core */
 import React, { useContext, useEffect, useState, useRef } from 'react';
 
@@ -48,12 +47,17 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   listItem: {
+    alignItems: 'start',
     paddingLeft: theme.spacing(8),
     paddingBottom: '0',
     paddingTop: '0',
   },
   textListItem: {
     fontStyle: 'italic',
+    paddingRight: theme.spacing(1),
+  },
+  textListData: {
+    wordBreak: 'break-all',
   },
   showMore: {
     width: '100%',
@@ -62,11 +66,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const YellowPagesWidget = ({ show = true }) => {
+const YellowPagesWidget = ({ show = true, visible = 1 }) => {
   const [pagesData, setPagesData] = useState([]);
   const [expanded, setExpanded] = useState(true);
   const [expandedStates, setExpandedStates] = useState([]);
-  const [visibleItemsCount, setVisibleItemsCount] = useState(1);
+  const [visibleItemsCount, setVisibleItemsCount] = useState(visible);
   const [isShowAll, setIsShowAll] = useState(false);
 
   const menuAnchorRef = useRef(null);
@@ -80,10 +84,10 @@ const YellowPagesWidget = ({ show = true }) => {
     if (show && query.elements) {
       getYellowPages(query.elements);
     }
-  }, [query]);
+  }, [query.elements, show, getYellowPages]);
 
   useEffect(() => {
-    if (show && data) {
+    if (data) {
       setPagesData(data?.response?.docs);
     }
   }, [data]);
@@ -147,7 +151,7 @@ const YellowPagesWidget = ({ show = true }) => {
           <IconButton onClick={handleExpandClick}>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>
         </div>
 
-        <div className={pagesData.length > 1 ? '' : classes.listContent}>
+        <div className={pagesData.length > visible ? '' : classes.listContent}>
           {expanded && (
             <>
               {pagesData.length !== 0 &&
@@ -169,43 +173,64 @@ const YellowPagesWidget = ({ show = true }) => {
                       <List component="div" disablePadding>
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Phone:')} {pageItem?.directory_phone}
+                            {t('Phone:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_phone}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Expertise:')} {pageItem?.directory_expertise}
+                            {t('Expertise:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_expertise}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Role:')} {pageItem?.directory_role}
+                            {t('Role:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_role}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Address:')} {pageItem?.directory_location}
+                            {t('Address:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_location}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Department:')} {pageItem?.directory_department}
+                            {t('Department:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_department}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Email:')} {pageItem?.directory_email}
+                            {t('Email:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_email}
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Social:')} {pageItem?.directory_socialnetworks.join(', ')}
+                            {t('Social:')}
+                          </Typography>
+                          <Typography variant="caption" className={classes.textListData}>
+                            {pageItem?.directory_socialnetworks.join(', ')}
                           </Typography>
                         </ListItem>
                       </List>
@@ -213,7 +238,7 @@ const YellowPagesWidget = ({ show = true }) => {
                   </List>
                 ))}
 
-              {pagesData.length > 1 && (
+              {pagesData.length > visible && (
                 <Link
                   component="button"
                   color="secondary"

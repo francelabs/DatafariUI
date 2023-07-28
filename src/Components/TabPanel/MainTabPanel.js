@@ -19,7 +19,7 @@ import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
 import useNextId from '../../Hooks/useNextId';
 
-import DirectAccessWidget from '../DirectAccessWidget/DirectAccessWidget';
+import DirectLinksWidget from '../DirectLinksWidget/DirectLinksWidget';
 import YellowPagesWidget from '../YellowPagesWidget/YellowPagesWidget';
 
 const allowedElementTypes = [
@@ -32,7 +32,7 @@ const allowedElementTypes = [
   'SearchInformation',
   'ResultsList',
   'AggregatorFacet',
-  'DirectAccessWidget',
+  'DirectLinksWidget',
   'YellowPagesWidget',
 ];
 
@@ -180,19 +180,19 @@ function MainTabPanel() {
     return <ResultsList key={nextId()} {...element} />;
   }, []);
 
-  const buildDirectAccessWidget = useCallback((element) => {
-    return <DirectAccessWidget key={nextId()} show={element.show} />;
+  const buildDirectLinksWidget = useCallback((element) => {
+    return <DirectLinksWidget key={nextId()} show={element.show} />;
   });
 
   const buildYellowPagesWidget = useCallback((element) => {
-    return <YellowPagesWidget key={nextId()} show={element.show} />;
+    return <YellowPagesWidget key={nextId()} show={element.show} visible={element.visible} />;
   });
 
   const createElementFromParameters = (element) => {
     if (element.type && allowedElementTypes.includes(element.type)) {
       switch (element.type) {
-        case 'DirectAccessWidget':
-          return buildDirectAccessWidget(element);
+        case 'DirectLinksWidget':
+          return buildDirectLinksWidget(element);
         case 'YellowPagesWidget':
           return buildYellowPagesWidget(element);
         case 'FieldFacet':

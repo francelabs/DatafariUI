@@ -126,14 +126,15 @@
   },
   "right": [
     {
-      "type": "DirectAccessWidget",
-      "title": "Direct Access",
+      "type": "DirectLinksWidget",
+      "title": "Direct Links",
       "show": true
     },
     {
       "type": "YellowPagesWidget",
       "title": "Yellow Pages",
-      "show": true
+      "show": true,
+      "visible": 1
     }
   ],
   "searchBar": {

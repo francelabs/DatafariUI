@@ -2,7 +2,7 @@ import { useCallback, useContext } from 'react';
 import { APIEndpointsContext } from '../Contexts/api-endpoints-context';
 import useHttp from './useHttp';
 
-const useDirectAccess = ({ ...props }) => {
+const useDirectAccess = () => {
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
 

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 //** Core */
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +21,7 @@ import {
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import PageviewOutlinedIcon from '@material-ui/icons/PageviewOutlined';
 
 //** Hooks */
 import useDirectAccess from '../../Hooks/useDirectAccess';
@@ -37,6 +37,18 @@ const useStyles = makeStyles((theme) => ({
   list: {
     marginBottom: theme.spacing(1),
   },
+  linkItem: {
+    lineHeight: '1',
+  },
+  linkText: {
+    lineHeight: '1',
+  },
+  link: {
+    lineHeight: '1',
+  },
+  description: {
+    lineHeight: '1',
+  },
   innerList: {
     paddingLeft: theme.spacing(2),
   },
@@ -48,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DirectAccessWidget = ({ show = true }) => {
+const DirectLinksWidget = ({ show = true }) => {
   const [linksData, setLinksData] = useState([]);
   const { query } = useContext(QueryContext);
   const { isLoading, data, error, getDirectAccess } = useDirectAccess();
@@ -57,10 +69,10 @@ const DirectAccessWidget = ({ show = true }) => {
     if (show && query.elements) {
       getDirectAccess(query.elements);
     }
-  }, [query]);
+  }, [query.elements, show, getDirectAccess]);
 
   useEffect(() => {
-    if (show && data) {
+    if (data) {
       setLinksData(data?.response?.docs);
     }
   }, [data]);
@@ -101,31 +113,35 @@ const DirectAccessWidget = ({ show = true }) => {
           <>
             <List dense className={classes.list}>
               {linksData.length !== 0 &&
-                linksData.map((linkItem, index) => (
-                  <List component="div" disablePadding key={`${index}-direct-links`}>
-                    <ListItem>
-                      <ListItemIcon className={classes.imageItem}>
-                        <img
-                          alt={linkItem?.directlinks_description[0]}
-                          src={linkItem?.directlinks_icon}
-                          width={32}></img>
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography>
-                          <Link
-                            color="textPrimary"
-                            target="_blank"
-                            rel="noreferrer"
-                            variant="subtitle1"
-                            className={classes.showMore}
-                            href={linkItem?.directlinks_link}>
-                            {linkItem?.directlinks_title}
-                          </Link>
-                        </Typography>
-                      </ListItemText>
-                    </ListItem>
-                  </List>
-                ))}
+                linksData.map((linkItem, index) => {
+                  return (
+                    <List component="div" disablePadding key={`${index}-direct-links`}>
+                      <ListItem>
+                        <ListItemIcon className={classes.imageItem}>
+                          <LinkImage alt={linkItem?.directlinks_title} src={linkItem?.directlinks_icon} width={32} />
+                        </ListItemIcon>
+                        <ListItemText className={classes.linkItem}>
+                          <Typography className={classes.linkText}>
+                            <Link
+                              color="textPrimary"
+                              target="_blank"
+                              rel="noreferrer"
+                              variant="subtitle1"
+                              className={classes.link}
+                              href={linkItem?.directlinks_link}>
+                              {linkItem?.directlinks_title}
+                            </Link>
+                          </Typography>
+                          {linkItem?.directlinks_description.length !== 0 && (
+                            <Typography className={classes.description} variant="caption">
+                              {linkItem?.directlinks_description.join(' ')}
+                            </Typography>
+                          )}
+                        </ListItemText>
+                      </ListItem>
+                    </List>
+                  );
+                })}
             </List>
             <Divider />
           </>
@@ -135,4 +151,14 @@ const DirectAccessWidget = ({ show = true }) => {
   );
 };
 
-export default DirectAccessWidget;
+const LinkImage = ({ src, width, alt }) => {
+  const [imageLoaded, setImageLoaded] = useState(true);
+  const handleImageError = () => {
+    setImageLoaded(false);
+  };
+  return (
+    <>{imageLoaded ? <img src={src} alt={alt} width={width} onError={handleImageError} /> : <PageviewOutlinedIcon />}</>
+  );
+};
+
+export default DirectLinksWidget;
