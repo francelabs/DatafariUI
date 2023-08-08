@@ -54,9 +54,11 @@ const useStyles = makeStyles((theme) => ({
   },
   textListItem: {
     fontStyle: 'italic',
+    wordBreak: 'no-break-all',
     paddingRight: theme.spacing(1),
   },
   textListData: {
+    fontStyle: 'normal',
     wordBreak: 'break-all',
   },
   showMore: {
@@ -173,64 +175,48 @@ const YellowPagesWidget = ({ show = true, visible = 1 }) => {
                       <List component="div" disablePadding>
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Phone:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_phone}
+                            {t('Phone:')} <span className={classes.textListData}>{pageItem?.directory_phone}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Expertise:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_expertise}
+                            {t('Expertise:')}{' '}
+                            <span className={classes.textListData}>{pageItem?.directory_expertise}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Role:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_role}
+                            {t('Role:')} <span className={classes.textListData}>{pageItem?.directory_role}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Address:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_location}
+                            {t('Address:')} <span className={classes.textListData}>{pageItem?.directory_location}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Department:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_department}
+                            {t('Department:')}{' '}
+                            <span className={classes.textListData}>{pageItem?.directory_department}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Email:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_email}
+                            {t('Email:')} <span className={classes.textListData}>{pageItem?.directory_email}</span>
                           </Typography>
                         </ListItem>
 
                         <ListItem className={classes.listItem}>
                           <Typography variant="caption" className={classes.textListItem}>
-                            {t('Social:')}
-                          </Typography>
-                          <Typography variant="caption" className={classes.textListData}>
-                            {pageItem?.directory_socialnetworks.join(', ')}
+                            {t('Social:')}{' '}
+                            <span variant="caption" className={classes.textListData}>
+                              {pageItem?.directory_socialnetworks.join(', ')}
+                            </span>
                           </Typography>
                         </ListItem>
                       </List>
