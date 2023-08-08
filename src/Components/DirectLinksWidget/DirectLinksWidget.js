@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
   list: {
     marginBottom: theme.spacing(1),
   },
+  listItem: {
+    alignItems: 'start',
+  },
   linkItem: {
     lineHeight: '1',
   },
@@ -116,7 +119,7 @@ const DirectLinksWidget = ({ show = true }) => {
                 linksData.map((linkItem, index) => {
                   return (
                     <List component="div" disablePadding key={`${index}-direct-links`}>
-                      <ListItem>
+                      <ListItem className={classes.listItem}>
                         <ListItemIcon className={classes.imageItem}>
                           <LinkImage alt={linkItem?.directlinks_title} src={linkItem?.directlinks_icon} width={32} />
                         </ListItemIcon>
