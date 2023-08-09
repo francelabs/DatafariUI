@@ -128,7 +128,8 @@
     {
       "type": "DirectLinksWidget",
       "title": "Direct Links",
-      "show": true
+      "show": true,
+      "visible": 1
     },
     {
       "type": "YellowPagesWidget",

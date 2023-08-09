@@ -112,7 +112,7 @@ const YellowPagesWidget = ({ show = true, visible = 1 }) => {
 
   const handleShowMoreAndLess = () => {
     if (isShowAll) {
-      setVisibleItemsCount(1);
+      setVisibleItemsCount(visible);
     } else {
       setVisibleItemsCount(pagesData.length);
     }

@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   list: {
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
   listItem: {
     alignItems: 'start',
@@ -61,10 +61,18 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     marginLeft: theme.spacing(1),
   },
+  showMore: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
+    paddingInline: theme.spacing(2),
+  },
 }));
 
-const DirectLinksWidget = ({ show = true }) => {
+const DirectLinksWidget = ({ show = true, visible = 10 }) => {
   const [linksData, setLinksData] = useState([]);
+  const [visibleItemsCount, setVisibleItemsCount] = useState(visible);
+  const [isShowAll, setIsShowAll] = useState(false);
+
   const { query } = useContext(QueryContext);
   const { isLoading, data, error, getDirectAccess } = useDirectAccess();
 
@@ -86,6 +94,15 @@ const DirectLinksWidget = ({ show = true }) => {
 
   const handleExpandClick = () => {
     setExpanded((previous) => !previous);
+  };
+
+  const handleShowMoreAndLess = () => {
+    if (isShowAll) {
+      setVisibleItemsCount(visible);
+    } else {
+      setVisibleItemsCount(linksData.length);
+    }
+    setIsShowAll(!isShowAll);
   };
 
   if (isLoading) {
@@ -114,9 +131,9 @@ const DirectLinksWidget = ({ show = true }) => {
 
         {expanded && (
           <>
-            <List dense className={classes.list}>
+            <List dense className={linksData.length <= visible ? classes.list : ''}>
               {linksData.length !== 0 &&
-                linksData.map((linkItem, index) => {
+                linksData.slice(0, visibleItemsCount).map((linkItem, index) => {
                   return (
                     <List component="div" disablePadding key={`${index}-direct-links`}>
                       <ListItem className={classes.listItem}>
@@ -146,9 +163,20 @@ const DirectLinksWidget = ({ show = true }) => {
                   );
                 })}
             </List>
-            <Divider />
+
+            {linksData.length > visible && (
+              <Link
+                component="button"
+                color="secondary"
+                align="right"
+                className={classes.showMore}
+                onClick={handleShowMoreAndLess}>
+                <Typography variant="caption">{isShowAll ? `${t('Show Less')} <<` : `${t('Show More')} >>`}</Typography>
+              </Link>
+            )}
           </>
         )}
+        <Divider />
       </>
     )
   );

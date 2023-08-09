@@ -181,7 +181,7 @@ function MainTabPanel() {
   }, []);
 
   const buildDirectLinksWidget = useCallback((element) => {
-    return <DirectLinksWidget key={nextId()} show={element.show} />;
+    return <DirectLinksWidget key={nextId()} show={element.show} visible={element.visible} />;
   });
 
   const buildYellowPagesWidget = useCallback((element) => {
