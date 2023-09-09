@@ -58,7 +58,8 @@ const PreviewNavigation = (props) => {
       queryParams.set('action', 'OPEN_FROM_PREVIEW');
       queryParams.set('id', locationParams.get('id'));
       url.search = `?${queryParams.toString()}&url=${decodeURIComponent(props.document.url)}`;
-      return url;
+      const urlClick = `${props.document.click_url}&${queryParams.toString()}`;
+      return urlClick;
     }
     return null;
   };
