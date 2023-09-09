@@ -283,7 +283,7 @@ const ResultEntry = (props) => {
    */
   const prepareDocURL = () => {
     let request = buildSearchQueryString();
-    return `${apiEndpointsContext.docRedirectURL}?url=${props.url}&${request}&position=${props.position}`;
+    return `${props.click_url}&${request}&position=${props.position}`;
   };
 
   /*
@@ -292,7 +292,7 @@ const ResultEntry = (props) => {
    */
   const prepareFolderURL = () => {
     let request = buildSearchQueryString();
-    return `${apiEndpointsContext.docRedirectURL}?url=${props.url.substring(
+    return `${props.click_url.substring(
       0,
       props.url.lastIndexOf('/')
     )}&${request}&position=${props.position}`;
