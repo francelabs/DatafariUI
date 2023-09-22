@@ -1,0 +1,32 @@
+clone:
+    git:
+        image: plugins/git
+        tags: true
+pipeline:
+    build:
+        image: plugins/docker
+        repo: datafari/datafariui
+        tags:
+            - latest
+            - "${DRONE_COMMIT_SHA}"
+        secrets: [ docker_username, docker_password ]
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        when:
+          branch: information_widget
+    notify:
+        image: drillster/drone-email
+        from : noreply@datafari.com
+        skip_verify: true
+        when:
+            status: [ success, failure ]
+        secrets: [ email_username, email_password, email_port, email_host, email_recipients ]
+    ssh:
+        image: appleboy/drone-ssh
+        secrets: [ ssh_host, ssh_username, ssh_key, ssh_port ]
+        script:
+          - cd /var/work/datafariuideploy && sudo bash docker_datafariui.sh information_widget && docker cp /var/work/datafariui_renew.sh $(docker ps -q --filter name=customdemo):/var/ && docker exec $(docker ps -q --filter name=customdemo) bash -c "/var/datafariui_renew.sh information_widget"
+        when:
+            branch: information_widget
+
+

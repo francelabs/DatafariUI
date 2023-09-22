@@ -15,5 +15,16 @@
   "Will search for documents with AT LEAST ONE of these terms": "كلمة واحدة على الاقل ",
   "less than five years": "",
   "Aggregator facet": "المجمع",
-  "User Preferences": "خيارات المستخدم"
+  "User Preferences": "خيارات المستخدم",
+
+  "Direct Links": "روابط مباشرة",
+  "Yellow Pages": "الصفحات الصفراء",
+
+  "Phone:": "الهاتف:",
+  "Expertise:": "الخبرة:",
+  "Role:": "الدور:",
+  "Address:": "عنوان:",
+  "Department:": "القسم:",
+  "Email:": "Email:",
+  "Social:": "اجتماعي:"
 }

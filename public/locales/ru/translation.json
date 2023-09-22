@@ -22,5 +22,16 @@
   "less than a year": "Менее 1 года",
   "less than five years": "Менее 5 лет",
   "Aggregator facet": "Aгрегатор",
-  "User Preferences": "Пользовательские настройки"
+  "User Preferences": "Пользовательские настройки",
+
+  "Direct Links": "Прямые ссылки",
+  "Yellow Pages": "Желтые страницы",
+
+  "Phone:": "Телефон:",
+  "Expertise:": "Экспертиза:",
+  "Role:": "Роль:",
+  "Address:": "Адрес:",
+  "Department:": "Отдел:",
+  "Email:": "E-mail:",
+  "Social:": "Социальные сети:"
 }

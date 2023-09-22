@@ -10,15 +10,8 @@
         "last_modified:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])",
         "last_modified:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]"
       ],
-      "labels": [
-        "Today",
-        "From Yesterday Up To 7 days",
-        "From 8 Days Up To 30 days",
-        "Older than 31 days",
-        "No date"
-      ],
+      "labels": ["Today", "From Yesterday Up To 7 days", "From 8 Days Up To 30 days", "Older than 31 days", "No date"],
       "id": "date__lastmodified_facet",
-      "variant": "children_only",
       "minShow": 5,
       "show": true,
       "variant": "children_only",
@@ -74,15 +67,8 @@
         "creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])",
         "creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]"
       ],
-      "labels": [
-        "Today",
-        "From Yesterday Up To 7 days",
-        "From 8 Days Up To 30 days",
-        "Older than 31 days",
-        "No date"
-      ],
+      "labels": ["Today", "From Yesterday Up To 7 days", "From 8 Days Up To 30 days", "Older than 31 days", "No date"],
       "id": "date_facet",
-      "variant": "children_only",      
       "minShow": 5,
       "show": false,
       "variant": "children_only",
@@ -100,11 +86,7 @@
         "original_file_size:[102400 TO 10485760]",
         "original_file_size:[10485760 TO *]"
       ],
-      "labels": [
-        "Less than 100 KB",
-        "From 100 KB to 10 MB",
-        "More than 10 MB"
-      ],
+      "labels": ["Less than 100 KB", "From 100 KB to 10 MB", "More than 10 MB"],
       "id": "filesize_facet",
       "minShow": 5,
       "show": false,
@@ -142,7 +124,20 @@
       }
     ]
   },
-  "right": [],
+  "right": [
+    {
+      "type": "DirectLinksWidget",
+      "title": "Direct Links",
+      "show": true,
+      "visible": 1
+    },
+    {
+      "type": "YellowPagesWidget",
+      "title": "Yellow Pages",
+      "show": true,
+      "visible": 1
+    }
+  ],
   "searchBar": {
     "suggesters": [
       {
@@ -187,9 +182,9 @@
       "cmd": "shift",
       "key": "S",
       "enable": false
-    }, 
+    },
     "deactiveSearchBar": {
-      "cmd": "escape", 
+      "cmd": "escape",
       "enable": false
     }
   },

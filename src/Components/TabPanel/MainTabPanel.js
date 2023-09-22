@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,9 @@ import SearchInformation from '../SearchInformation/SearchInformation';
 import Spinner from '../Spinner/Spinner';
 import useNextId from '../../Hooks/useNextId';
 
+import DirectLinksWidget from '../DirectLinksWidget/DirectLinksWidget';
+import YellowPagesWidget from '../YellowPagesWidget/YellowPagesWidget';
+
 const allowedElementTypes = [
   'FieldFacet',
   'QueryFacet',
@@ -28,6 +32,8 @@ const allowedElementTypes = [
   'SearchInformation',
   'ResultsList',
   'AggregatorFacet',
+  'DirectLinksWidget',
+  'YellowPagesWidget',
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -174,9 +180,21 @@ function MainTabPanel() {
     return <ResultsList key={nextId()} {...element} />;
   }, []);
 
+  const buildDirectLinksWidget = useCallback((element) => {
+    return <DirectLinksWidget key={nextId()} show={element.show} visible={element.visible} />;
+  });
+
+  const buildYellowPagesWidget = useCallback((element) => {
+    return <YellowPagesWidget key={nextId()} show={element.show} visible={element.visible} />;
+  });
+
   const createElementFromParameters = (element) => {
     if (element.type && allowedElementTypes.includes(element.type)) {
       switch (element.type) {
+        case 'DirectLinksWidget':
+          return buildDirectLinksWidget(element);
+        case 'YellowPagesWidget':
+          return buildYellowPagesWidget(element);
         case 'FieldFacet':
           return buildFieldFacet(element);
         case 'QueryFacet':
@@ -240,7 +258,6 @@ function MainTabPanel() {
           <Pager />
         </div>
       </div>
-
       <div className={classes.facetsSection}>{rightContent}</div>
     </div>
   );

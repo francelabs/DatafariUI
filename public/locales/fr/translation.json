@@ -211,5 +211,16 @@
   "Connection is lost": "Connexion interrompue !",
   "Export search results list": "Exporter la liste des résultats de recherche",
   "No available export formats": "Aucun format d'export disponible. Contactez votre administrateur",
-  "A problem has been detected concerning the licence": "Un problème a été détecté avec votre licence"
+  "A problem has been detected concerning the licence": "Un problème a été détecté avec votre licence",
+
+  "Direct Links": "Liens directs",
+  "Yellow Pages": "Pages Jaunes",
+
+  "Phone:": "Téléphone:",
+  "Expertise:": "Savoir-faire:",
+  "Role:": "Rôle:",
+  "Address:": "Adresse:",
+  "Department:": "Département:",
+  "Email:": "E-mail:",
+  "Social:": "Social:"
 }

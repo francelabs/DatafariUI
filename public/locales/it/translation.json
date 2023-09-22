@@ -181,5 +181,16 @@
   "title": "titolo",
   "User Preferences": "preferenze utente",
   "Aggregator facet": "Aggregatore",
-  "url": "url"
+  "url": "url",
+
+  "Direct Links": "Collegamenti diretti",
+  "Yellow Pages": "Pagine Gialle",
+
+  "Phone:": "Telefono:",
+  "Expertise:": "Competenza:",
+  "Role:": "Ruolo:",
+  "Address:": "Indirizzo:",
+  "Department:": "Reparto",
+  "Email:": "Email:",
+  "Social:": "Social:"
 }
