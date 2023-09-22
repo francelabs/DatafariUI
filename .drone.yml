@@ -25,8 +25,8 @@ pipeline:
         image: appleboy/drone-ssh
         secrets: [ ssh_host, ssh_username, ssh_key, ssh_port ]
         script:
-          - cd /var/work/datafariuideploy && sudo bash docker_datafariui.sh information_widget && docker cp /var/work/datafariui_renew.sh $(docker ps -q --filter name=customdemo):/var/ && docker exec $(docker ps -q --filter name=customdemo) bash -c "/var/datafariui_renew.sh information_widget"
+          - cd /var/work/datafariuideploy && sudo bash docker_datafariui.sh master && docker cp /var/work/datafariui_renew.sh $(docker ps -q --filter name=customdemo):/var/ && docker exec $(docker ps -q --filter name=customdemo) bash -c "/var/datafariui_renew.sh master"
         when:
-            branch: information_widget
+            branch: master
 
 
