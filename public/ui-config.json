@@ -112,6 +112,10 @@
   "center": {
     "main": [
       {
+        "type": "NotConnectedUser",  
+        "displayNotConnectedUserWarning": true
+      },
+      {
         "type": "SearchInformation",
         "data": ["filters", "facets"]
       },

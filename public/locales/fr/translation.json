@@ -222,5 +222,7 @@
   "Address:": "Adresse:",
   "Department:": "Département:",
   "Email:": "E-mail:",
-  "Social:": "Social:"
+  "Social:": "Social:",
+  
+  "Search is in disconnected mode": "Recherche en mode anonyme"
 }

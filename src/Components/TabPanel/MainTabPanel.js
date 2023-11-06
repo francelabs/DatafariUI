@@ -22,6 +22,8 @@ import useNextId from '../../Hooks/useNextId';
 import DirectLinksWidget from '../DirectLinksWidget/DirectLinksWidget';
 import YellowPagesWidget from '../YellowPagesWidget/YellowPagesWidget';
 
+import NotConnectedUser from '../NotConnectedUser/NotConnectedUser';
+
 const allowedElementTypes = [
   'FieldFacet',
   'QueryFacet',
@@ -34,6 +36,7 @@ const allowedElementTypes = [
   'AggregatorFacet',
   'DirectLinksWidget',
   'YellowPagesWidget',
+  'NotConnectedUser',
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -188,13 +191,17 @@ function MainTabPanel() {
     return <YellowPagesWidget key={nextId()} show={element.show} visible={element.visible} />;
   });
 
+  const buildNotConnectedUser = useCallback((element) => {
+    return <NotConnectedUser key={nextId()} display={element.displayNotConnectedUserWarning} />;
+  });
+
   const createElementFromParameters = (element) => {
     if (element.type && allowedElementTypes.includes(element.type)) {
       switch (element.type) {
         case 'DirectLinksWidget':
           return buildDirectLinksWidget(element);
         case 'YellowPagesWidget':
-          return buildYellowPagesWidget(element);
+          return buildYellowPagesWidget(element);      
         case 'FieldFacet':
           return buildFieldFacet(element);
         case 'QueryFacet':
@@ -212,8 +219,10 @@ function MainTabPanel() {
           }
 
           return <RangeFacetComponent key={nextId} {...RangeFacetProps} />;
-        case 'HierarchicalFacet':
+        case 'HierarchicalFacet':          
           return buildHierarchicalFacet(element);
+        case 'NotConnectedUser':
+            return buildNotConnectedUser(element);
         case 'SearchInformation':
           return buildSearchInformation(element);
         case 'ResultsList':
