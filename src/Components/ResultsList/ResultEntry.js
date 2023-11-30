@@ -171,10 +171,22 @@ const ResultEntry = (props) => {
    * the exerpt of text.
    */
   const decode = (text) => {
-    return text
-      .replace(/&#x?([\dA-F]+);/g, function (match, dec) {
-        return String.fromCharCode(dec);
+    const htmlEntities = {
+      '&lt;': '<',
+      '&gt;': '>',
+      '&amp;': '&',
+      '&quot;': '"',
+      '&apos;': "'",
+  };
+
+  return text
+      .replace(/&#x?([\dA-Fa-f]+);/g, (match, dec) => {
+          // if we have the sequence of characters "&#x27;" in "text", "dec" will be "27". It should be 0x27 to be
+          // decoded with  String.fromCharCode()
+          dec="0x"+dec;
+          return String.fromCharCode(dec);
       })
+      .replace(/&[a-z]+;/g, match => htmlEntities[match] || match)
       .replace(/\uFFFD/g, '');
   };
 
