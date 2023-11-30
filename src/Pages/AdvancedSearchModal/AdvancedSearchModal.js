@@ -1035,6 +1035,9 @@ const AdvancedSearchModal = (props) => {
                   value={baseSearch.all_words_value}
                   onChange={handleBaseSearchChange('all_words_value')}
                   color="secondary"
+                  InputLabelProps={{
+                    shrink: Boolean(baseSearch.all_words_value),
+                  }}
                 />
               </div>
               <div>
