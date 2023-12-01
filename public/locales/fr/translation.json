@@ -224,5 +224,6 @@
   "Email:": "E-mail:",
   "Social:": "Social:",
   
-  "Search is in disconnected mode": "Recherche en mode anonyme"
+  "You are currently offline.": "Vous êtes actuellement en recherche non connecté.",
+  "Login here to find reserved content": "Connectez-vous ici pour trouver les contenus réservés"
 }

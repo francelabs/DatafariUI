@@ -225,5 +225,6 @@
   "Email:": "Email:",
   "Social:": "Social:",
 
-  "Search is in disconnected mode": "Search is in disconnected mode"
+  "You are currently offline.": "You are currently offline.",
+  "Login here to find reserved content": "Login here to find reserved content"
 }
