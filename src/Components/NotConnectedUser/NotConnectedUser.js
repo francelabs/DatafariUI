@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserContext } from '../../Contexts/user-context';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
-import { QueryContext } from '../../Contexts/query-context';
 
 //** Material UI */
 import {makeStyles, Typography, Link} from '@material-ui/core';
@@ -31,13 +30,16 @@ const NotConnectedUser = ({display = false}) => {
 const classes = useStyles();
 const { t } = useTranslation();
 const { state: userState } = useContext(UserContext);
+
 const { apiEndpointsContext } = useContext(APIEndpointsContext);
+const loginURL = new URL(apiEndpointsContext.authURL);
+loginURL.search = '?callback=' + new URL(process.env.PUBLIC_URL, window.location.href);
 
     if((userState.user === null) && display ){
         return (
             <div className={classes.facetHeader}>
                 <Typography className={classes.facetTitleText}>{t('You are currently offline.')} </Typography>
-                <Link color="secondary" href={`${apiEndpointsContext.authURL.href}?callback=${apiEndpointsContext.datafariBaseURL.href}`}> {t('Login here to find reserved content')}</Link>    
+                <Link color="secondary" href={loginURL}> {t('Login here to find reserved content')}</Link>    
             </div>
         );
     } else {
