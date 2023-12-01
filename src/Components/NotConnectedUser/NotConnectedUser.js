@@ -37,7 +37,7 @@ const { apiEndpointsContext } = useContext(APIEndpointsContext);
         return (
             <div className={classes.facetHeader}>
                 <Typography className={classes.facetTitleText}>{t('You are currently offline.')} </Typography>
-                <Link color="secondary" href={`${apiEndpointsContext.authURL.href}?callback=https://localhost/datafariui`}> {t('Login here to find reserved content')}</Link>    
+                <Link color="secondary" href={`${apiEndpointsContext.authURL.href}?callback=${apiEndpointsContext.datafariBaseURL.href}`}> {t('Login here to find reserved content')}</Link>    
             </div>
         );
     } else {
