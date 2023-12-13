@@ -3,6 +3,7 @@ import { MenuItem, ListSubheader, Typography, Divider, makeStyles } from '@mater
 import useHttp from '../../../../Hooks/useHttp';
 import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
 import { useTranslation } from 'react-i18next';
+import {  UIConfigContext } from '../../../../Contexts/ui-config-context';
 
 const useStyles = makeStyles((theme) => ({
   autocompleteTitleContainer: {
@@ -23,6 +24,9 @@ const SimpleAutocomplete = (props) => {
   const [queryID, setQueryID] = useState(null);
   const classes = useStyles();
 
+  const { uiDefinition } = useContext(UIConfigContext);
+  const aggregator = uiDefinition?.searchBar?.suggesters[0]?.aggregator;
+
   useEffect(() => {
     if (props.active) {
       setSuggestions([]);
@@ -30,7 +34,7 @@ const SimpleAutocomplete = (props) => {
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       sendRequest(
-        `${apiEndpointsContext.searchURL}/suggest?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
+        `${aggregator ? apiEndpointsContext.searchURL + '/noaggregator/suggest' : apiEndpointsContext.searchURL + '/suggest'}?action=suggest&q=${props.queryText}&autocomplete=true&spellcheck.collateParam.q.op=${props.op}`,
         'GET',
         null,
         newQueryID

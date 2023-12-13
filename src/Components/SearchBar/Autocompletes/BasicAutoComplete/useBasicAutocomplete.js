@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
 import { ResultsContext } from '../../../../Contexts/results-context';
 import useHttp from '../../../../Hooks/useHttp.js';
+import {  UIConfigContext } from '../../../../Contexts/ui-config-context';
 
 const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
@@ -13,7 +14,10 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
 
   const { results } = useContext(ResultsContext);
 
-  // Effect to clear suggestion when a search is performed
+  const { uiDefinition } = useContext(UIConfigContext);
+  const aggregator = uiDefinition?.searchBar?.suggesters[0]?.aggregator;  
+
+   // Effect to clear suggestion when a search is performed
   useEffect(() => {
     setSuggestions([]);
   }, [results]);
@@ -26,7 +30,7 @@ const useBasicAutocomplete = ({ op, maxSuggestion, title, subtitle }) => {
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       sendRequest(
-        `${apiEndpointsContext.searchURL}/suggest?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
+        `${aggregator ? apiEndpointsContext.searchURL + '/noaggregator/suggest' :apiEndpointsContext.searchURL + '/suggest'}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
         'GET',
         null,
         newQueryID
