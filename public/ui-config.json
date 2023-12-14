@@ -151,7 +151,7 @@
           "title": "SUGGESTED QUERIES",
           "subtitle": "Queries extending your current query terms"
         },
-        "aggregator": true
+        "aggregator": false
       },
       {
         "type": "ENTITY",
