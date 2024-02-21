@@ -153,18 +153,19 @@
         },
         "aggregator": false
       },
-      {
+     {
         "type": "ENTITY",
         "props": {
-          "field": "entity_person",
-          "suggester": "suggestEntityAuthors",
-          "dictionary": "suggesterEntityAuthors",
+          "field": "entity_org",
+          "suggester": "suggestCompanies",
+          "dictionary": "suggesterEntityCompanies",
           "asFacet": false,
           "maxSuggestion": 5,
-          "title": "Entities suggested",
+          "title": "Companies suggested",
           "subtitle": "Queries extending your current query terms"
         }
       }
+
     ]
   },
   "queryParams": {

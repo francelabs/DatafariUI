@@ -105,7 +105,6 @@ const useStyles = makeStyles((theme) => {
 });
 
 const DEBOUCE_TIME_MS = 500;
-const SPACE_REGEX = /\s$/;
 
 const SimpleSearchBar = () => {
   const [showQuerySuggestion, setShowQuerySuggestion] = useState(false);
@@ -150,7 +149,7 @@ const SimpleSearchBar = () => {
   });
 
   // USE EFFECTS
-  useEffect(() => {
+  useEffect(() => {   
     setTextState({ queryText: query.elements });
   }, [query]);
 
@@ -190,7 +189,8 @@ const SimpleSearchBar = () => {
         queryText: userText,
       });
 
-      setShowQuerySuggestion(true);
+      setShowQuerySuggestion(true);   
+      
 
       if (triggerSuggestion) {
         if (timeoutId.current) {
@@ -199,7 +199,7 @@ const SimpleSearchBar = () => {
 
         timeoutId.current = setTimeout(() => {
           searchDispatch(
-            SearchContextActions.setSearchingAction(SPACE_REGEX.test(userText) ? '' : userText)
+            SearchContextActions.setSearchingAction(replaceSpacesWithHTMLSpace(userText))
           );
         }, DEBOUCE_TIME_MS);
       }
@@ -207,7 +207,14 @@ const SimpleSearchBar = () => {
     [setTextState, searchDispatch]
   );
 
-  const handleSubmit = (e) => {
+  function replaceSpacesWithHTMLSpace(str) {  
+    if (str.trim().length === 0) {
+      return '';
+    }
+    return str.replace(/\s/g, '*');
+  }
+  
+  const handleSubmit = (e) => {    
     setTextState({ queryText: textState.queryText });
     setShowQuerySuggestion(false);
 
