@@ -199,7 +199,7 @@ const SimpleSearchBar = () => {
 
         timeoutId.current = setTimeout(() => {
           searchDispatch(
-            SearchContextActions.setSearchingAction(replaceSpacesWithHTMLSpace(userText))
+            SearchContextActions.setSearchingAction(replaceSpacesWithStarSymbol(userText))
           );
         }, DEBOUCE_TIME_MS);
       }
@@ -207,7 +207,7 @@ const SimpleSearchBar = () => {
     [setTextState, searchDispatch]
   );
 
-  function replaceSpacesWithHTMLSpace(str) {  
+  function replaceSpacesWithStarSymbol(str) {  
     if (str.trim().length === 0) {
       return '';
     }
