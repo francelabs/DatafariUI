@@ -37,6 +37,9 @@ const useEntityAutocomplete = ({
       setSuggestions([]);
       setQueryText(queryText);
 
+      const paramsURL = new URLSearchParams(window.location.search);
+      const aggregatorValue = paramsURL.get('aggregator[0]');
+
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       const suggesterQueryText = queryText.trim();
@@ -44,7 +47,7 @@ const useEntityAutocomplete = ({
       //   ? queryText
       //   : queryText.substring(queryText.lastIndexOf(' ') + 1);
       sendRequest(
-        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
+        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}${aggregatorValue ? '&aggregator=' + aggregatorValue : ''}`,
         'GET',
         null,
         newQueryID
