@@ -7,6 +7,7 @@ import {
   SET_FIELD_FACET_SELECTED,
 } from '../../../../Contexts/query-context';
 import { ResultsContext } from '../../../../Contexts/results-context';
+import { useLocation } from 'react-router-dom';
 
 const useEntityAutocomplete = ({
   field,
@@ -22,6 +23,9 @@ const useEntityAutocomplete = ({
   const { isLoading, data, error, sendRequest, reqIdentifier } = useHttp();
   const [suggestions, setSuggestions] = useState([]);
 
+  const location = useLocation();
+  const [aggregatorValue, setAggregatorValue] = useState('');
+
   const [queryID, setQueryID] = useState(null);
   const [queryText, setQueryText] = useState(null);
   const { query, dispatch: queryDispatch } = useContext(QueryContext);
@@ -32,13 +36,16 @@ const useEntityAutocomplete = ({
     setSuggestions([]);
   }, [results]);
 
+  useEffect(() => {
+    const paramsURL = new URLSearchParams(location.search);
+    const aggregator = paramsURL.get('aggregator[0]');
+    setAggregatorValue(aggregator);
+  }, [location]); 
+
   const querySuggestions = useCallback(
     (queryText) => {
       setSuggestions([]);
-      setQueryText(queryText);
-
-      const paramsURL = new URLSearchParams(window.location.search);
-      const aggregatorValue = paramsURL.get('aggregator[0]');
+      setQueryText(queryText);      
 
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
@@ -53,7 +60,7 @@ const useEntityAutocomplete = ({
         newQueryID
       );
     },
-    [apiEndpointsContext.searchOldURL, op, sendRequest, suggester]
+    [apiEndpointsContext.searchOldURL, op, sendRequest, suggester, aggregatorValue]
   );
 
   // Handle response from querySuggestions

@@ -65,10 +65,11 @@ function AggregatorFacet({ title, show = true }) {
 
         // Dispatch to query
         queryDispatch({
-          type: 'SET_AGGREGATORS_FACET',
+          type: 'SET_AGGREGATORS_FACET',          
           // Take only names
           aggregators: aggregatorListComputed.map((agg) => agg.label),
         });
+
       }
     }
   }, [data, error, isLoading]);
@@ -105,7 +106,8 @@ function AggregatorFacet({ title, show = true }) {
     setMenuOpen(false);
   };
 
-  const handleAggregatorClick = (agg) => {
+  const handleAggregatorClick = (agg) => {   
+
     let newAggregators = [];
     if (!!query.aggregator.find((a) => a === agg.label)) {
       // Unselect
@@ -115,6 +117,15 @@ function AggregatorFacet({ title, show = true }) {
       newAggregators = [...query.aggregator, agg.label];
     }
 
+    const firstLabel = aggregators[0]?.label;
+    const isFirstLabelSelected = newAggregators.includes(firstLabel);
+
+    if (isFirstLabelSelected) {
+      newAggregators = newAggregators.filter(a => a !== firstLabel); 
+      newAggregators = [firstLabel, ...newAggregators]; 
+    }
+
+    console.log(newAggregators)
     // Dispatch to query
     queryDispatch({
       type: 'SET_AGGREGATORS_FACET',

@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { APIEndpointsContext } from '../../../../Contexts/api-endpoints-context';
 import useHttp from '../../../../Hooks/useHttp';
+import { useLocation } from 'react-router-dom';
 
 const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, subtitle }) => {
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
@@ -10,6 +11,15 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
   const [queryID, setQueryID] = useState(null);
   const [queryText, setQueryText] = useState(null);
 
+  const location = useLocation();
+  const [aggregatorValue, setAggregatorValue] = useState('');
+
+  useEffect(() => {
+    const paramsURL = new URLSearchParams(location.search);
+    const aggregator = paramsURL.get('aggregator[0]');
+    setAggregatorValue(aggregator);
+  }, [location]); 
+
   const querySuggestions = useCallback(
     (queryText) => {
       setSuggestions([]);
@@ -18,13 +28,13 @@ const useCustomSuggesterAutocomplete = ({ op, suggester, maxSuggestion, title, s
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
       sendRequest(
-        `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}`,
+        `${apiEndpointsContext.searchURL}/${suggester}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}${aggregatorValue ? '&aggregator=' + aggregatorValue : ''}`,
         'GET',
         null,
         newQueryID
       );
     },
-    [apiEndpointsContext.searchURL, op, sendRequest, suggester]
+    [apiEndpointsContext.searchURL, op, sendRequest, suggester, aggregatorValue]
   );
 
   // Handle response from querySuggestions

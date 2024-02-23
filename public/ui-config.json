@@ -106,7 +106,7 @@
     {
       "type": "AggregatorFacet",
       "title": "Aggregator facet",
-      "show": false
+      "show": true
     }
   ],
   "center": {
