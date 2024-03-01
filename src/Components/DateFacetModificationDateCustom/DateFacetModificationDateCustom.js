@@ -131,7 +131,7 @@ const DateFacetModificationDateCustom = (props) => {
               size="small"
               className={classes.dateSelectors}
             />
-            <Button type="submit" size="small" color="primary" onClick={handleGoClick}>
+            <Button type="submit" size="small" color="secondary" onClick={handleGoClick}>
               {t('Go')}
             </Button>
           </form>
