@@ -49,16 +49,18 @@ const useEntityAutocomplete = ({
 
       let newQueryID = Math.random().toString(36).substring(2, 15);
       setQueryID(newQueryID);
-      const suggesterQueryText = queryText.trim();
+      // const suggesterQueryText = queryText.trim();
       // queryText.lastIndexOf(' ') === -1
       //   ? queryText
       //   : queryText.substring(queryText.lastIndexOf(' ') + 1);
+
       sendRequest(
-        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${suggesterQueryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}${aggregatorValue ? '&aggregator=' + aggregatorValue : ''}`,
+        `${apiEndpointsContext.searchOldURL}/${suggester}?action=suggest&q=${queryText}&autocomplete=true&spellcheck.collateParam.q.op=${op}${aggregatorValue ? '&aggregator=' + aggregatorValue : ''}`,
         'GET',
         null,
         newQueryID
       );
+
     },
     [apiEndpointsContext.searchOldURL, op, sendRequest, suggester, aggregatorValue]
   );
@@ -178,6 +180,9 @@ const useEntityAutocomplete = ({
     },
     [asFacet, onClickClassic, onClickForFacet]
   );
+
+
+
 
   // Clear suggestions
   const clearSuggestions = useCallback(() => setSuggestions([]), []);
