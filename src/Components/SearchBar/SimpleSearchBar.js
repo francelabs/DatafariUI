@@ -211,7 +211,7 @@ const SimpleSearchBar = () => {
     if (str.trim().length === 0) {
       return '';
     }
-    return str.replace(/\s/g, '*');
+    return str.trim();
   }
   
   const handleSubmit = (e) => {    
