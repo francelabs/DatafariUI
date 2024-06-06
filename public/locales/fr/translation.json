@@ -44,6 +44,7 @@
   "Export as": "Exporter en tant que",
   "Exported results starting from the first result": "Exporter les résultats à partir du premier résultat (min: {{min}}, max: {{max}}, défaut: {{default}})",
   "Extension": "Extension",
+  "Category": "Catégorie",
   "FILTERS": "FILTRES",
   "Feedbacks": "Commentaires",
   "Field": "Métadonnée",
