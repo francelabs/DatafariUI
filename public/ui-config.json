@@ -50,6 +50,15 @@
     },
     {
       "type": "FieldFacet",
+      "title": "Category",
+      "field": "type_category",
+      "op": "OR",
+      "minShow": 3,
+      "maxShow": 15,
+      "show": true
+    },
+    {
+      "type": "FieldFacet",
       "title": "Language",
       "field": "language",
       "op": "OR",
@@ -179,6 +188,7 @@
       "author",
       "original_file_size",
       "emptied",
+      "type_category",
       "repo_source"
     ]
   },
