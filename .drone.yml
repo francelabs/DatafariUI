@@ -13,7 +13,7 @@ pipeline:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         when:
-          branch: information_widget
+          branch: master
     notify:
         image: drillster/drone-email
         from : noreply@datafari.com
@@ -21,12 +21,3 @@ pipeline:
         when:
             status: [ success, failure ]
         secrets: [ email_username, email_password, email_port, email_host, email_recipients ]
-    ssh:
-        image: appleboy/drone-ssh
-        secrets: [ ssh_host, ssh_username, ssh_key, ssh_port ]
-        script:
-          - cd /var/work && sudo bash docker_build_deploy_application.sh datafariui main && docker cp /var/work/application_renew.sh $(docker ps -q --filter name=customdemo):/var/ && docker exec $(docker ps -q --filter name=customdemo) bash -c "/var/application_renew.sh datafariui main"
-        when:
-            branch: master
-
-
