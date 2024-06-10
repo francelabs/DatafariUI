@@ -13,7 +13,7 @@ pipeline:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         when:
-          branch: main
+          branch: master
     notify:
         image: drillster/drone-email
         from : noreply@datafari.com
