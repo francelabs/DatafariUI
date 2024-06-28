@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useContext } from 'react';
-import { Menu, MenuItem, Link } from '@material-ui/core';
+import { Menu, MenuItem, Link, ListSubheader, Divider } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import PrivacySettingsModal from '../../Pages/PrivacySettingsModal/PrivacySettingsModal';
 import useHttp from '../../Hooks/useHttp';
@@ -72,6 +72,15 @@ const UserMenu = (props) => {
         vertical: 'top',
         horizontal: 'center',
       }}>
+        
+      {/* Name of connected user */}
+      {userState.user != null ? (
+        <>
+          <ListSubheader className=".MuiListSubheader-root">{t('Logged as:')} {userState.user.name}</ListSubheader>
+          <Divider />
+        </>
+        ) : null}
+
       {/* LOGOUT */}
       <MenuItem onClick={handleLogout}>{t('Logout')}</MenuItem>
 
