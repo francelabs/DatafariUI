@@ -205,7 +205,7 @@
   "Aggregator facet": "Aggregator",
   "url": "url",
   "Date Range": "Date range",
-  "promolink": "Annonce",
+  "promolink": "Announcement",
   "Connection with the server is lost": "The connection with the server is lost",
   "Do not continue your work until connection is restored": "DO NOT continue your work until connection is restored !",
   "Retry now": "Retry now",
@@ -214,6 +214,7 @@
   "Export search results list": "Export search results list",
   "No available export formats": "No available export formats. Please contact your administrator.",
   "A problem has been detected concerning the licence": "A problem has been detected concerning the licence",
+  "Logged as:": "Logged as:",
 
   "Direct Links": "Direct Links",
   "Yellow Pages": "Yellow Pages",
