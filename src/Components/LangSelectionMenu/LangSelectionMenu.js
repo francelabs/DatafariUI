@@ -37,7 +37,7 @@ const LangSelectionMenu = (props) => {
       <MenuItem onClick={handleChangeLanguage('en')}>{t('English')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('fr')}>{t('French')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('it')}>{t('Italian')}</MenuItem>
-      <MenuItem onClick={handleChangeLanguage('pt_br')}>{t('Portuguese')}</MenuItem>
+      <MenuItem onClick={handleChangeLanguage('pt_pt')}>{t('Portuguese')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('de')}>{t('German')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('es')}>{t('Spanish')}</MenuItem>
       <MenuItem onClick={handleChangeLanguage('ru')}>{t('Russian')}</MenuItem>
