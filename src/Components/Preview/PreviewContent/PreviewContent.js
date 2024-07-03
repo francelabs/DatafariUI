@@ -76,7 +76,7 @@ const PreviewContent = (props) => {
   return (
     <Paper className={classes.root}>
       <Typography className={classes.content}>
-        {prepareHighlighting()}
+        <div dangerouslySetInnerHTML={{__html: prepareHighlighting()}} />        
       </Typography>
     </Paper>
   );
