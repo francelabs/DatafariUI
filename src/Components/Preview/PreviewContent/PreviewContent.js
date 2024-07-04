@@ -34,49 +34,36 @@ const PreviewContent = (props) => {
             });
           }
         }
-        let display = props.textSplit.map((textPart) => {
-          if (textPart) {
-            let result = textPart
-              .replace(/\uFFFD/g, ' ')
-              .replace(/(\s*\n){2,}/gm, '\n\n');
-            highlighting.forEach((highlightTerm) => {
-              if (textPart.match(highlightTerm.regex)) {
-                if (highlightTerm.index === highlightTerm.highlightedIndex) {
-                  result = (
-                    <span
-                      className={[classes.highlighted, classes.current].join(
-                        ' '
-                      )}
-                    >
-                      {textPart}
-                    </span>
-                  );
-                } else {
-                  result = (
-                    <span className={classes.highlighted}>{textPart}</span>
-                  );
-                }
-                highlightTerm.index = highlightTerm.index + 1;
-              }
-            });
-            return result;
-          }
-          return null;
+
+        let result = props.textSplit.join('')
+          .replace(/\uFFFD/g, ' ')
+          .replace(/(\s*\n){2,}/gm, '\n\n');
+
+        highlighting.forEach((highlightTerm) => {
+          result = result.replace(highlightTerm.regex, (match) => {
+            const className = highlightTerm.index === highlightTerm.highlightedIndex
+              ? `${classes.highlighted} ${classes.current}`
+              : classes.highlighted;
+            highlightTerm.index += 1;
+            return `<span class="${className}">${match}</span>`;
+          });
         });
-        return display;
+
+        return result;
       }
+
       return props.textSplit
         .join('')
         .replace(/\uFFFD/g, ' ')
         .replace(/(\s*\n){2,}/gm, '\n\n');
     }
-    return null;
+    return '';
   };
 
   return (
     <Paper className={classes.root}>
       <Typography className={classes.content}>
-        <div dangerouslySetInnerHTML={{__html: prepareHighlighting()}} />        
+        <div dangerouslySetInnerHTML={{ __html: prepareHighlighting() }} />
       </Typography>
     </Paper>
   );
