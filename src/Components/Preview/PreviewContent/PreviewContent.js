@@ -1,6 +1,8 @@
 import { makeStyles, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 
+import SafeComponent from '../../SafeComponent/SafeComponent';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -63,7 +65,7 @@ const PreviewContent = (props) => {
   return (
     <Paper className={classes.root}>
       <Typography className={classes.content}>
-        <div dangerouslySetInnerHTML={{ __html: prepareHighlighting() }} />
+        <SafeComponent htmlContent={prepareHighlighting()} />       
       </Typography>
     </Paper>
   );
