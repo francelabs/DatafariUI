@@ -48,6 +48,7 @@
   "FILTERS": "FILTRES",
   "Feedbacks": "Commentaires",
   "Field": "Métadonnée",
+  "File size": "Taille de fichier",
   "For any question and settings about privacy, you should contact the DPO. You can prepare an email using the form below.": "Pour toute question et paramétrage sur la vie privée, contactez votre DPO. Vous pouvez préparer un email en utilisant le formulaire suivant.",
   "French": "Français",
   "From": "De",
@@ -60,6 +61,7 @@
   "Go": "Aller",
   "Go to the legacy Datafari UI": "Basculer sur l'ancienne IHM Datafari",
   "Help": "Aide",
+  "Hierarchical facet": "Arborescence"
   "Hourly": "Chaque heure",
   "How do you want us to contact you back": "Comment devons-nous vous répondre",
   "How to search": "Comment chercher",
@@ -84,6 +86,7 @@
   "Manage Alerts": "Gérer les Alertes",
   "Manage Favorites": "Gérer les Favoris",
   "Manage Saved Queries": "Gérer les requêtes sauvegardées",
+  "Modification Date": "Date de modification",
   "More Like This": "Documents similaires",
   "My Alerts": "Mes Alertes",
   "My Favorites": "Mes Favoris",
