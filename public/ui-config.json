@@ -108,7 +108,7 @@
     {
       "type": "HierarchicalFacet",
       "field": "urlHierarchy",
-      "title": "hierarchical facet",
+      "title": "Hierarchical facet",
       "show": false,
       "separator": "/"
     },
