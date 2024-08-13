@@ -304,7 +304,10 @@ const ResultEntry = (props) => {
    */
   const prepareFolderURL = () => {
     let request = buildSearchQueryString();
-    return `${props.folder_url}&${request}&position=${props.position}`;
+    return `${props.click_url.substring(
+      0,
+      props.url.lastIndexOf('/')
+    )}&${request}&position=${props.position}`;
   };
 
   /*
