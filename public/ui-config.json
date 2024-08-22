@@ -141,13 +141,13 @@
     {
       "type": "DirectLinksWidget",
       "title": "Direct Links",
-      "show": true,
+      "show": false,
       "visible": 1
     },
     {
       "type": "YellowPagesWidget",
       "title": "Yellow Pages",
-      "show": true,
+      "show": false,
       "visible": 1
     }
   ],
