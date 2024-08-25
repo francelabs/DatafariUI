@@ -64,7 +64,7 @@ function Main() {
       <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Switch>
           <Route path="/" exact>
-            <Redirect to="/home" />
+            <Redirect to="/search" />
           </Route>
           <Route path="/home" component={HomePage} />
           <Route path={['/search', '/preview']}>

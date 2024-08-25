@@ -295,7 +295,7 @@ const ResultEntry = (props) => {
    */
   const prepareDocURL = () => {
     let request = buildSearchQueryString();
-    return `${props.click_url}&${request}&position=${props.position}`;
+    return `https://maps.google.com?q=${props.geores}`;
   };
 
   /*
@@ -344,7 +344,7 @@ const ResultEntry = (props) => {
         primary={
           data.includes(dataNames.title) ? (
             <Link color="secondary" href={prepareDocURL()} target={docLinkTarget}>
-              {prepareTitle()}
+              {props.app_libelle_etablissement}
             </Link>
           ) : null
         }
@@ -352,34 +352,21 @@ const ResultEntry = (props) => {
           <>
             {data.includes(dataNames.snippet) && (
               <div>
-                <span>{prepareSnippet()}</span>
+                <span>{props.adresse_2_ua} {props.code_postal} {props.com_name} </span>
+                <span>{props.siret}</span>
               </div>
             )}
             {data.includes(dataNames.url) && (
               <div className={classes.urlContainer}>
-                <span className={classes.url}>{prepareUrl()}</span>
+                <span className={classes.url}>Activité : {props.app_libelle_activite_etablissement}</span>
               </div>
             )}
 
-            {/* FOLDER LINK */}
-            {props['folderLinkSources'] && props['folderLinkSources'].indexOf(props['repo_source']) !== -1 && (
-              <div>
-                <Link color="secondary" href={prepareFolderURL()} target={props.folderTarget}>
-                  {t('Open Folder')}
-                </Link>
-              </div>
-            )}
-
-            {/* PREVIEW LINK */}
-            {data.includes(dataNames.previewButton) && (
-              <Link color="secondary" component={RouterLink} to={preparePreviewURL()} target={props.previewTarget}>
-                {t('Open preview')}
-              </Link>
-            )}
+           
             <div>
-              <span>
-                {t('Source')}: {props['repo_source']}
-              </span>
+             
+                <span className="evaluation">Evaluation : {props.synthese_eval_sanit}</span>
+           
               {/* More like this link, commented because not yet implemented.
               <span className={classes.moreLikeThis}>
                 <Link
@@ -408,3 +395,4 @@ const ResultEntry = (props) => {
 };
 
 export default ResultEntry;
+

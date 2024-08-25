@@ -1,26 +1,52 @@
 {
   "left": [
     {
-      "type": "QueryFacet",
-      "title": "Modification Date",
-      "queries": [
-        "last_modified:[NOW/DAY TO NOW]",
-        "last_modified:[NOW/DAY-7DAY TO NOW/DAY]",
-        "last_modified:[NOW/DAY-30DAY TO NOW/DAY-8DAY]",
-        "last_modified:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])",
-        "last_modified:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]"
-      ],
-      "labels": ["Today", "From Yesterday Up To 7 days", "From 8 Days Up To 30 days", "Older than 31 days", "No date"],
-      "id": "date__lastmodified_facet",
-      "minShow": 5,
-      "show": true,
-      "variant": "children_only",
-      "children": [
-        {
-          "type": "DateFacetModificationDateCustom"
-        }
-      ]
+      "type": "FieldFacet",
+      "title": "Région",
+      "field": "reg_name_string",
+      "op": "OR",
+      "variant": "autocomplete",
+      "minShow": 3,
+      "maxShow": 15,
+      "show": true
     },
+    {
+      "type": "FieldFacet",
+      "title": "Département",
+      "field": "dep_name_string",
+      "op": "OR",
+      "variant": "autocomplete",
+      "minShow": 3,
+      "maxShow": 15,
+      "show": true
+    },
+{
+      "type": "FieldFacet",
+      "title": "Commune",
+      "field": "com_name_string",
+      "op": "OR",
+      "variant": "autocomplete",
+      "minShow": 10,
+      "maxShow": 50,
+      "show": true
+    },
+    {
+      "type": "FieldFacet",
+      "title": "Evaluation",
+      "field": "synthese_eval_sanit",
+      "op": "OR",
+      "minShow": 10,
+      "maxShow": 15
+    },
+ {
+      "type": "FieldFacet",
+      "title": "Type activité",
+      "field": "filtre_string",
+      "op": "OR",
+      "minShow": 10,
+      "maxShow": 15
+    },
+
     {
       "type": "FieldFacet",
       "title": "Authors",
@@ -39,78 +65,6 @@
       "minShow": 2,
       "maxShow": 5,
       "show": true
-    },
-    {
-      "type": "FieldFacet",
-      "title": "Extension",
-      "field": "extension",
-      "op": "OR",
-      "minShow": 3,
-      "maxShow": 15
-    },
-    {
-      "type": "FieldFacet",
-      "title": "Category",
-      "field": "type_category",
-      "op": "OR",
-      "minShow": 3,
-      "maxShow": 15,
-      "show": true
-    },
-    {
-      "type": "FieldFacet",
-      "title": "Language",
-      "field": "language",
-      "op": "OR",
-      "minShow": 3,
-      "maxShow": 15,
-      "show": true
-    },
-    {
-      "type": "QueryFacet",
-      "title": "Creation Date",
-      "queries": [
-        "creation_date:[NOW/DAY TO NOW]",
-        "creation_date:[NOW/DAY-7DAY TO NOW/DAY]",
-        "creation_date:[NOW/DAY-30DAY TO NOW/DAY-8DAY]",
-        "creation_date:([1970-09-01T00:01:00Z TO NOW/DAY-31DAY] || [* TO 1970-08-31T23:59:59Z])",
-        "creation_date:[1970-09-01T00:00:00Z TO 1970-09-01T00:00:00Z]"
-      ],
-      "labels": ["Today", "From Yesterday Up To 7 days", "From 8 Days Up To 30 days", "Older than 31 days", "No date"],
-      "id": "date_facet",
-      "minShow": 5,
-      "show": false,
-      "variant": "children_only",
-      "children": [
-        {
-          "type": "DateFacetCustom"
-        }
-      ]
-    },
-    {
-      "type": "QueryFacet",
-      "title": "File size",
-      "queries": [
-        "original_file_size:[0 TO 102400]",
-        "original_file_size:[102400 TO 10485760]",
-        "original_file_size:[10485760 TO *]"
-      ],
-      "labels": ["Less than 100 KB", "From 100 KB to 10 MB", "More than 10 MB"],
-      "id": "filesize_facet",
-      "minShow": 5,
-      "show": false,
-      "children": [
-        {
-          "type": "FileSizeFacetCustom"
-        }
-      ]
-    },
-    {
-      "type": "HierarchicalFacet",
-      "field": "urlHierarchy",
-      "title": "Hierarchical facet",
-      "show": false,
-      "separator": "/"
     },
     {
       "type": "AggregatorFacet",
@@ -189,7 +143,14 @@
       "original_file_size",
       "emptied",
       "type_category",
-      "repo_source"
+      "repo_source",
+      "app_libelle_etablissement",
+      "adresse_2_ua",
+      "code_postal",
+      "com_name",
+      "synthese_eval_sanit",
+      "app_libelle_activite_etablissement",
+      "geores"
     ]
   },
   "hotkeys": {
