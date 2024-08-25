@@ -38,8 +38,7 @@ loginURL.search = '?callback=' + new URL(process.env.PUBLIC_URL, window.location
     if((userState.user === null) && display ){
         return (
             <div className={classes.facetHeader}>
-                <Typography className={classes.facetTitleText}>{t('You are currently offline.')} </Typography>
-                <Link color="secondary" href={loginURL}> {t('Login here to find reserved content')}</Link>    
+                <Typography className={classes.facetTitleText}>{t('Recherchez les restaurants :')} </Typography>  
             </div>
         );
     } else {
