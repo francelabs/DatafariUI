@@ -7,6 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { APIEndpointsContext } from '../../Contexts/api-endpoints-context';
 import { QueryContext } from '../../Contexts/query-context';
 import { UserContext } from '../../Contexts/user-context';
+import { UIConfigContext } from '../../Contexts/ui-config-context';
 
 const useStyles = makeStyles((theme) => ({
   resultContainer: {
@@ -155,6 +156,10 @@ const dataNames = {
 
 const ResultEntry = (props) => {
   const { apiEndpointsContext } = useContext(APIEndpointsContext);
+  const { uiDefinition } = useContext(UIConfigContext);
+  const maxTitleSize = uiDefinition.center.main[2].maxTitleSize;
+  const truncTitleSize = maxTitleSize/2;
+
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -249,10 +254,10 @@ const ResultEntry = (props) => {
         title = props.title;
       }
     }
-    if (title.length > 50) {
+    if (title.length > maxTitleSize) {
       title = (
         <Tooltip title={title} placement="right" aria-label={title}>
-          <span>{title.substring(0, 15) + '...' + title.substring(title.length - 15)}</span>
+          <span>{title.substring(0, truncTitleSize) + '...' + title.substring(title.length - truncTitleSize)}</span>
         </Tooltip>
       );
     }

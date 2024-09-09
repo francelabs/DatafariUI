@@ -132,6 +132,7 @@
         "type": "ResultsList",
         "data": ["title", "url", "logo", "previewButton", "extract"],
         "folderLinkSources": ["enron"],
+        "maxTitleSize": 150,
         "folderTarget": "_blank",
         "previewTarget": "_self"
       }

@@ -72,12 +72,17 @@ const DEFAULT_UI = {
   center: {
     main: [
       {
+        "type": "NotConnectedUser",  
+        "displayNotConnectedUserWarning": true
+      },
+      {
         type: 'SearchInformation',
         data: ['filters', 'facets'],
       },
       {
         type: 'ResultsList',
         data: ['title', 'url', 'logo', 'previewButton', 'extract'],
+        maxTitleSize: 150,
       },
     ],
     tabs: [{ type: 'FieldFacet', field: 'repo_source', max: 3 }],
