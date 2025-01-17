@@ -5,7 +5,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { APIEndpointsContext } from '../../../Contexts/api-endpoints-context';
+import { UIConfigContext } from '../../../Contexts/ui-config-context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,8 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PreviewNavigation = (props) => {
-  const { apiEndpointsContext } = useContext(APIEndpointsContext);
-  const baseURL = apiEndpointsContext.datafariBaseURL;
+  const { uiDefinition } = useContext(UIConfigContext);
   const classes = useStyles();
   const { t } = useTranslation();
   const location = useLocation();
@@ -51,17 +50,43 @@ const PreviewNavigation = (props) => {
   };
 
   const prepareOpenFromSource = () => {
-    if (props.document) {
-      const url = new URL(`${baseURL}/URL`, window.location.href);
+    let docURL=null;
+
+    if (!props.document) {
+      return null;
+    }
+
+    const directLink = uiDefinition.center.orginalDocURL;
+    
+    // If direct link is active, search for the good URL prefix to apply the real document URL or apply to all URL
+    if (directLink.active){
+      let forPrefixURLs = directLink.forPrefixURLs;
+
+      if (directLink.forAll) {
+        docURL = props.document.url;
+      } else {
+        if (forPrefixURLs != null && forPrefixURLs.length > 0){
+          let i = 0;
+          while (docURL == null && i < forPrefixURLs.length){
+            if (props.document.url.startsWith(forPrefixURLs[i])) {
+              docURL = props.document.url;
+            }
+            i++;
+          }
+        }
+      }
+    }
+
+    // if direct link is not active or the URL prefix is not found, apply the this URL formatting
+    if (docURL == null) {
       const locationParams = new URLSearchParams(location.search);
       const queryParams = new URLSearchParams();
       queryParams.set('action', 'OPEN_FROM_PREVIEW');
       queryParams.set('id', locationParams.get('id'));
-      url.search = `?${queryParams.toString()}&url=${decodeURIComponent(props.document.url)}`;
-      const urlClick = `${props.document.click_url}&${queryParams.toString()}`;
-      return urlClick;
+
+      docURL = `${props.document.click_url}&${queryParams.toString()}`;
     }
-    return null;
+    return docURL;
   };
 
   return (

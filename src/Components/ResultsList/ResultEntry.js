@@ -295,12 +295,49 @@ const ResultEntry = (props) => {
     return result;
   };
 
+  /* 
+   * Returns the original document URL if the option "orginalDocURL" is activated in ui-config.json.
+   * If direct link is active, search for the good URL prefix to apply the real document URL or apply to all documents
+   */
+  const tryGetOriginalDocLink = () => {
+    let docURL = null;
+    const orginalLink = uiDefinition.center.orginalDocURL;
+    
+    if (orginalLink.active){
+      let forPrefixURLs = orginalLink.forPrefixURLs;
+
+      if (orginalLink.forAll) {
+        docURL = props.url;
+      } else {
+        if (forPrefixURLs != null && forPrefixURLs.length > 0){
+          let i = 0;
+          while (docURL == null && i < forPrefixURLs.length){
+            if (props.url.startsWith(forPrefixURLs[i])) {
+              docURL = props.url;
+            }
+            i++;
+          }
+        }
+      }
+    }
+
+    return docURL;
+  }
+
   /*
    * Builds the URL to use as the link href to send to the result
    */
   const prepareDocURL = () => {
-    let request = buildSearchQueryString();
-    return `${props.click_url}&${request}&position=${props.position}`;
+    let docURL = null;
+
+    docURL = tryGetOriginalDocLink();
+
+    // if direct link is not active or the URL prefix is not found, apply the this URL formatting
+    if (docURL == null) {
+      let request = buildSearchQueryString();
+      docURL = `${props.click_url}&${request}&position=${props.position}`;        
+    }
+    return docURL;
   };
 
   /*
@@ -308,8 +345,19 @@ const ResultEntry = (props) => {
    * defined by the props folderLinkSources which is an array of String)
    */
   const prepareFolderURL = () => {
-    let request = buildSearchQueryString();
-    return `${props.folder_url}&${request}&position=${props.position}`;
+    let folderURL = null;
+
+    let docURL = tryGetOriginalDocLink();
+    if (docURL != null){
+      // Extract folder to document URL
+      folderURL = docURL.substring(0, docURL.lastIndexOf('/'));
+    }
+
+    if (folderURL == null) {
+      let request = buildSearchQueryString();
+      folderURL = `${props.folder_url}&${request}&position=${props.position}`;      
+    }    
+    return folderURL;
   };
 
   /*

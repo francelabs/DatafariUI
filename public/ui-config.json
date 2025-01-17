@@ -136,7 +136,12 @@
         "folderTarget": "_blank",
         "previewTarget": "_self"
       }
-    ]
+    ],
+    "orginalDocURL": {
+      "active": false,
+      "forAll": false,
+      "forPrefixURLs":["file:"]
+    }  
   },
   "right": [
     {
