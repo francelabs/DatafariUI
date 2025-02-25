@@ -314,6 +314,11 @@ const ResultEntry = (props) => {
           while (docURL == null && i < forPrefixURLs.length){
             if (props.url.startsWith(forPrefixURLs[i])) {
               docURL = props.url;
+              // The "file" protocol must be replaced by "datafari", i.e.: file:// => datafari://
+              // It's because "file" protocol is always blocked by Windows
+              // "datafari" protocol must be used with register configuration:
+              // see our documentation here: https://datafari.atlassian.net/wiki/x/AYA_1Q?atlOrigin=eyJpIjoiODU3NzlmODA3MzdlNGU4ODgwOTFmZWI4NmJiMDgyYzMiLCJwIjoiYyJ9
+              docURL = docURL.replace("file", "datafari");
             }
             i++;
           }
